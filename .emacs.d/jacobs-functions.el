@@ -109,3 +109,68 @@ character is a whitespace or non-word character, then
   (insert "ssh devv1.cla")
   (comint-send-input)
   )
+
+(defun push-bugfix (bz)
+  "Finds the last yank used that matches a regexp"
+  (interactive "sBZ: ")
+  (block push-bugfix
+    (shell)
+    (sleep-for 1)
+    (insert "git log -n 1 | cat")
+    (comint-send-input)
+    (sleep-for 1)
+    (search-backward "commit")
+    (forward-char 7)
+
+    (setq begin (point))
+    (move-end-of-line nil)
+    (setq end (point))
+        
+    (setq commit (buffer-substring-no-properties begin end))
+    (end-of-buffer)
+
+    (insert "git push origin sltrewrite:m_and_e/slt_rewrite")
+    (comint-send-input)
+    (sleep-for 2)
+
+    (insert "git checkout trunk/release")
+    (comint-send-input)
+    (sleep-for 2)
+
+    (insert "git pull trunk rc")
+    (comint-send-input)
+    (sleep-for 3)
+
+    (insert "git merge sltrewrite")
+    (comint-send-input)
+    (sleep-for 2)
+
+    (search-backward "Merge made by recursive.")
+    (next-line)
+    (beginning-of-line)
+
+    (setq begin (point))
+    (search-forward "files changed,")
+    (move-end-of-line nil)
+    (setq end (point))
+    (setq files-changed (buffer-substring-no-properties begin end))
+    (end-of-buffer)
+
+    (insert (concat "git push origin trunk/release:bugfix/bz" bz))
+    (comint-send-input)
+    (setq branch-name (concat "bugfix/bz" bz))
+    (sleep-for 2)
+
+    (insert "git checkout sltrewrite")
+    (comint-send-input)
+
+    (get-buffer-create "dup_scratch_buffer")
+    (switch-to-buffer "dup_scratch_buffer")
+    (erase-buffer)
+    (insert commit)
+    (newline)
+    (insert branch-name)
+    (newline)
+    (insert files-changed)
+    (newline)
+    ))
