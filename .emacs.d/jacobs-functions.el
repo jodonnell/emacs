@@ -110,15 +110,21 @@ character is a whitespace or non-word character, then
   (comint-send-input)
   )
 
+(defun shell-insert-send-sleep (command sleep)
+  (insert command)
+  (comint-send-input)
+  (sleep-for sleep))
+
+
 (defun push-bugfix (bz)
   "Finds the last yank used that matches a regexp"
   (interactive "sBZ: ")
   (block push-bugfix
     (shell)
     (sleep-for 1)
-    (insert "git log -n 1 | cat")
-    (comint-send-input)
-    (sleep-for 1)
+
+    (shell-insert-send-sleep "git log -n 1 | cat" 2)
+
     (search-backward "commit")
     (forward-char 7)
 
@@ -129,21 +135,13 @@ character is a whitespace or non-word character, then
     (setq commit (buffer-substring-no-properties begin end))
     (end-of-buffer)
 
-    (insert "git push origin sltrewrite:m_and_e/slt_rewrite")
-    (comint-send-input)
-    (sleep-for 2)
+    (shell-insert-send-sleep "git push origin sltrewrite:m_and_e/slt_rewrite" 2)
 
-    (insert "git checkout trunk/release")
-    (comint-send-input)
-    (sleep-for 2)
+    (shell-insert-send-sleep "git checkout trunk/release" 2)
 
-    (insert "git pull trunk rc")
-    (comint-send-input)
-    (sleep-for 3)
+    (shell-insert-send-sleep "git pull trunk rc" 3)
 
-    (insert "git merge sltrewrite")
-    (comint-send-input)
-    (sleep-for 2)
+    (shell-insert-send-sleep "git merge sltrewrite" 2)
 
     (search-backward "Merge made by recursive.")
     (next-line)
@@ -156,13 +154,10 @@ character is a whitespace or non-word character, then
     (setq files-changed (buffer-substring-no-properties begin end))
     (end-of-buffer)
 
-    (insert (concat "git push origin trunk/release:bugfix/bz" bz))
-    (comint-send-input)
     (setq branch-name (concat "bugfix/bz" bz))
-    (sleep-for 2)
+    (shell-insert-send-sleep (concat "git push origin trunk/release:" branch-name) 2)
 
-    (insert "git checkout sltrewrite")
-    (comint-send-input)
+    (shell-insert-send-sleep "git checkout sltrewrite" 1)
 
     (get-buffer-create "dup_scratch_buffer")
     (switch-to-buffer "dup_scratch_buffer")
@@ -172,5 +167,4 @@ character is a whitespace or non-word character, then
     (insert branch-name)
     (newline)
     (insert files-changed)
-    (newline)
-    ))
+    (newline)))
