@@ -27,8 +27,17 @@
 (load "~/.emacs.d/jacobs-functions.el")
 (load "~/.emacs.d/yaml-mode.el")
 
+(require 'midnight)
 
-(require 'magit)
+(setq calendar-latitude 40.74)
+(setq calendar-longitude -74.01)
+
+(setq calendar-location-name "New York, NY")
+
+(if (equal (getenv "EMACS_ENV") "home_mac")
+    (load "~/.emacs.d/mac_home.el"))
+(if (equal (getenv "EMACS_ENV") "ubuntu_work")
+    (load "~/.emacs.d/ubuntu_work.el"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ISEARCH SHIT
@@ -37,21 +46,13 @@
 	    (define-key isearch-mode-map (kbd "C-h") 'backward-char)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TRAMP STUFF
-(require 'tramp)
-(add-to-list 'tramp-default-proxies-alist
-	     '("\\." nil "/ssh:jodonnell@devt1:"))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SHELL MODE
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; Fix junk characters in shell mode
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt) ;; hide passwords
 (add-hook 'shell-mode-hook
           '(lambda ()
              (define-key shell-mode-map "\M-n"
-                         'forward-word)))
-
+	       'forward-word)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COLORS
@@ -122,16 +123,27 @@
 			     (cperl-define-key "\C-j" 'universal-argument)
 			     (cperl-define-key "\C-h" nil)))
 
-                             
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PYTHON STUFF
 (defun my-python-mode-hook ()
    (mirror-mode)
    (local-set-key "\C-i" 'th-complete-or-indent)
+   (show-paren-mode 1)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
-   
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OBJ-C STUFF
+(add-to-list 'auto-mode-alist '("\\.h$" . objc-mode))
+(add-hook 'objc-mode-hook (lambda()
+			    (setq c-default-style "bsd"
+				  c-basic-offset 4
+				  indent-tabs-mode nil)
+			    (local-set-key "\C-i" 'th-complete-or-indent)
+			    (flyspell-prog-mode)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IBUFFER MODE
 (load-file "~/.emacs.d/ibuffer.el")
@@ -172,8 +184,10 @@
 (global-set-key [f8]       'sw-list)
 (global-set-key "\C-cp"    'new-shell)
 (global-set-key "\C-x\C-y" 'yank-regexp)
-(global-set-key "\C-cd"    (lambda () (interactive) (insert "/ssh:jodonnell@devv1.cla:")))
 (global-set-key "\C-xg"    'magit-status)
+
+(fset 'scroll-up-one   "\C-u1\C-c")
+(fset 'scroll-down-one "\C-u1\C-t")
 
 (keyboard-translate ?\C-u ?\C-x)
 (keyboard-translate ?\C-b ?\C-c)
