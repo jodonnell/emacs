@@ -34,7 +34,7 @@
 
 (setq calendar-location-name "New York, NY")
 
-(if (equal (getenv "EMACS_ENV") "home_mac")
+(if (equal (getenv "EMACS_ENV") "mac_home")
     (load "~/.emacs.d/mac_home.el"))
 (if (equal (getenv "EMACS_ENV") "ubuntu_work")
     (load "~/.emacs.d/ubuntu_work.el"))
