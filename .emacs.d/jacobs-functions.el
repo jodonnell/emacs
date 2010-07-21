@@ -135,13 +135,13 @@ character is a whitespace or non-word character, then
     (setq commit (buffer-substring-no-properties begin end))
     (end-of-buffer)
 
-    (shell-insert-send-sleep "git push origin sltrewrite:m_and_e/slt_rewrite" 2)
+    (shell-insert-send-sleep "git push origin slt_rewrite:m_and_e/slt_rewrite" 2)
 
     (shell-insert-send-sleep "git checkout trunk/release" 2)
 
     (shell-insert-send-sleep "git pull trunk rc" 3)
 
-    (shell-insert-send-sleep "git merge sltrewrite" 2)
+    (shell-insert-send-sleep "git merge slt_rewrite" 2)
 
     (search-backward "Merge made by recursive.")
     (next-line)
@@ -157,7 +157,7 @@ character is a whitespace or non-word character, then
     (setq branch-name (concat "bugfix/bz" bz))
     (shell-insert-send-sleep (concat "git push origin trunk/release:" branch-name) 2)
 
-    (shell-insert-send-sleep "git checkout sltrewrite" 1)
+    (shell-insert-send-sleep "git checkout slt_rewrite" 1)
 
     (get-buffer-create "dup_scratch_buffer")
     (switch-to-buffer "dup_scratch_buffer")
