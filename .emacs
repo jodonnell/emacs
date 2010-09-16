@@ -28,6 +28,7 @@
 (load "~/.emacs.d/yaml-mode.el")
 
 (require 'midnight)
+(require 'linum)
 
 (setq calendar-latitude 40.74)
 (setq calendar-longitude -74.01)
@@ -39,7 +40,7 @@
 (if (equal (getenv "EMACS_ENV") "ubuntu_work")
     (load "~/.emacs.d/ubuntu_work.el"))
 
- (setq column-number-mode t)
+(setq column-number-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ISEARCH SHIT
@@ -104,12 +105,8 @@
 (autoload 'javascript-mode "javascript" nil t)
 
 (add-hook 'javascript-mode-hook (lambda() 
-				  (local-set-key "\C-i" 'th-complete-or-indent)
-				  (setq indent-tabs-mode nil)))
-
-
-(add-hook 'scheme-mode-hook (lambda()
-			      (local-set-key "\C-i" 'th-complete-or-indent))
+ 				  (local-set-key "\C-i" 'th-complete-or-indent)
+ 				  (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PERL STUFF
