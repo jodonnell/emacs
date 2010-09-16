@@ -39,6 +39,8 @@
 (if (equal (getenv "EMACS_ENV") "ubuntu_work")
     (load "~/.emacs.d/ubuntu_work.el"))
 
+ (setq column-number-mode t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ISEARCH SHIT
 (add-hook 'isearch-mode-hook

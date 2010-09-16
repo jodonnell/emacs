@@ -1,0 +1,2 @@
+an extension that automatically tracks your time in different files.
+possibly could be used to find tighly coupled classes or other code smells (bad interfaces) by looking for two files being switched back and forth frequently
