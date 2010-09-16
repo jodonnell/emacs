@@ -5,8 +5,6 @@
 	     '("\\." nil "/ssh:jodonnell@devt1:"))
 
 
-(require 'magit)
-
 (defun ssh-devt1 ()
   (shell-insert-send-sleep "ssh devt1" 2))
 
@@ -37,7 +35,7 @@
   (ssh-dev-env env)
   (if (equal "env" "sgc")
       (shell-insert-send-sleep "tail -f cm_develop/var/error" 3)
-    (shell-insert-send-sleep "tail -f cm_develop/server/var/error" 3))
+    (shell-insert-send-sleep "tail -f cm_develop/var/error" 3))
 
   (set-buffer "sql")
   (ssh-devt1)

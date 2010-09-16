@@ -102,8 +102,12 @@
 (autoload 'javascript-mode "javascript" nil t)
 
 (add-hook 'javascript-mode-hook (lambda() 
-        (setq indent-tabs-mode nil)))
+				  (local-set-key "\C-i" 'th-complete-or-indent)
+				  (setq indent-tabs-mode nil)))
 
+
+(add-hook 'scheme-mode-hook (lambda()
+			      (local-set-key "\C-i" 'th-complete-or-indent))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PERL STUFF
@@ -190,7 +194,6 @@
 (global-set-key [f8]       'sw-list)
 (global-set-key "\C-cp"    'new-shell)
 (global-set-key "\C-x\C-y" 'yank-regexp)
-(global-set-key "\C-xg"    'magit-status)
 
 (fset 'scroll-up-one   "\C-u1\C-c")
 (fset 'scroll-down-one "\C-u1\C-t")

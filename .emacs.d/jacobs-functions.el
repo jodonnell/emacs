@@ -168,3 +168,25 @@ character is a whitespace or non-word character, then
     (newline)
     (insert files-changed)
     (newline)))
+
+
+;; (defadvice ido-switch-buffer (after record-time-in-buffer)
+;;   "When you switch to a buffer records the time spent in that buffer"
+;;   (setq buffer-name (buffer-name))
+;;   (setq buffer (current-buffer))
+;;   (find-file "~/time.org")
+;;   (org-clock-out 1)
+;;   (beginning-of-buffer)
+
+;;   (if (search-forward buffer-name nil t)
+;;       nil
+;;     (progn
+;;       (end-of-buffer)
+;;       (insert (concat "
+;; ** " buffer-name))))
+     
+;;   (org-clock-in)
+;;   (bury-buffer "time.org")
+;;   (switch-to-buffer buffer))
+
+;(ad-activate 'ido-switch-buffer)
