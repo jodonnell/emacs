@@ -28,6 +28,7 @@
 (load "~/.emacs.d/yaml-mode.el")
 
 (require 'midnight)
+(require 'linum)
 
 (setq calendar-latitude 40.74)
 (setq calendar-longitude -74.01)
@@ -39,7 +40,7 @@
 (if (equal (getenv "EMACS_ENV") "ubuntu_work")
     (load "~/.emacs.d/ubuntu_work.el"))
 
- (setq column-number-mode t)
+(setq column-number-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ISEARCH SHIT
@@ -104,8 +105,8 @@
 (autoload 'javascript-mode "javascript" nil t)
 
 (add-hook 'javascript-mode-hook (lambda() 
-        (setq indent-tabs-mode nil)))
-
+ 				  (local-set-key "\C-i" 'th-complete-or-indent)
+ 				  (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PERL STUFF
@@ -192,7 +193,6 @@
 (global-set-key [f8]       'sw-list)
 (global-set-key "\C-cp"    'new-shell)
 (global-set-key "\C-x\C-y" 'yank-regexp)
-(global-set-key "\C-xg"    'magit-status)
 
 (fset 'scroll-up-one   "\C-u1\C-c")
 (fset 'scroll-down-one "\C-u1\C-t")
