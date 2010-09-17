@@ -285,9 +285,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTION DEFINITIONS
 
-(fset 'set-trace
-   "use Data::Dumper; warn Dumper();")
-(global-set-key "\C-x\C-t" 'set-trace)
+
+(defun debugging-text ()
+  "Inserts debug text which is language dependant"
+  (interactive)
+  (setq current-file-extension (file-name-extension (buffer-file-name)))
+  (if (or (string= "pl" current-file-extension) (string= "pm" current-file-extension))
+      (insert-string  "use Data::Dumper; warn Dumper();"))
+  (if (string= "py" current-file-extension) 
+      (insert-string "use pdb; pdb.set_trace()"))
+  (if (string= "js" current-file-extension) 
+      (insert-string "console.log()")))
+
+(global-set-key "\C-x\C-t" 'debugging-text)
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
