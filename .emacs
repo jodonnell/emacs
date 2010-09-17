@@ -276,6 +276,8 @@
 ;; ANYTHING
 (require 'anything)
 
+(require 'dired+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTION DEFINITIONS
 
