@@ -77,3 +77,13 @@
     (save-excursion
       (shell-command-on-region (point) (mark) "perltidy -q" nil t)))
 
+
+(defun perl-syntax-check ()
+    "Checks to see if your perl program compiles"
+    (interactive)
+    (save-excursion
+      (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "perl -cW")))
+
+
+(add-hook 'after-save-hook (lambda() 
+			     (perl-syntax-check)))
