@@ -97,19 +97,6 @@ character is a whitespace or non-word character, then
          (t
           (indent-according-to-mode))))
 
-(defun dev-cd ()
-  "Opens a shell on the dev server and switches cd to the dev home dir"
-  (interactive)
-  (cd "/ssh:jodonnell@devv1.cla:")
-  (shell)
-  (sleep-for 3)
-  (insert "ssh devt1")
-  (comint-send-input)
-  (sleep-for 3)
-  (insert "ssh devv1.cla")
-  (comint-send-input)
-  )
-
 (defun shell-insert-send-sleep (command sleep)
   (insert command)
   (comint-send-input)
