@@ -76,12 +76,32 @@
       (shell-command-on-region (point) (mark) "perltidy -q" nil t)))
 
 
+(defun perl-syntax-get-syntax-error-line ()
+  (save-excursion
+      (set-buffer "*Shell Command Output*")
+      (goto-char (point-min))
+      (if (looking-at ".*line \\([0-9]+\\)")
+	  (string-to-number (match-string-no-properties 1))
+	nil)))
+  
 (defun perl-syntax-check ()
     "Checks to see if your perl program compiles"
     (interactive)
+
     (save-excursion
-      (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "perl -cW")))
+      (shell-command-on-region (goto-char (point-min)) (goto-char (point-max)) "perl -cW"))
+
+    (setq syntax-error-line (get-syntax-error-line))
+    (if syntax-error-line
+	(progn
+	  (goto-char (point-min))
+	  (goto-line (perl-syntax-get-syntax-error-line))
+	  (set-buffer "*Shell Command Output*")
+	  (message (buffer-string)))))
 
 
 (add-hook 'after-save-hook (lambda() 
-			     (perl-syntax-check)))
+			     (setq current-file-extension (file-name-extension (buffer-file-name)))
+			     (if (or (string= "pl" current-file-extension) (string= "pm" current-file-extension))
+				 (perl-syntax-check))))
+
