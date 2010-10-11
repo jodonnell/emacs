@@ -232,6 +232,10 @@ comments have been removed."
   "Regular expression matching the start of a function entry in
   an associative array.")
 
+(defconst js-function-heading-3-re 
+  "^.*\.prototype\.\\(\\w+\\).*function"
+  "Regular expression matching the start of a function header.")
+
 (defconst js-keyword-re
   (regexp-opt '("abstract" "break" "case" "catch" "class" "const"
                 "continue" "debugger" "default" "delete" "do" "else" 
@@ -258,7 +262,8 @@ comments have been removed."
   (list 
    "\\<import\\>" 
    (list js-function-heading-1-re 1 font-lock-function-name-face)
-   (list js-function-heading-2-re 1 font-lock-function-name-face))
+   (list js-function-heading-2-re 1 font-lock-function-name-face)
+   (list js-function-heading-3-re 1 font-lock-function-name-face))
   "Level one font lock.")
 
 (defconst js-font-lock-keywords-2
