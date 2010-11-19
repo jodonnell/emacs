@@ -183,7 +183,6 @@ character is a whitespace or non-word character, then
   (setq output (shell-command-to-string (concat "perl -e '" exec_string "'")))
   (message output))
 
-
 (defun git-bisect (good)
   (interactive "sLast good: ")
 
@@ -204,5 +203,3 @@ character is a whitespace or non-word character, then
       (shell-insert-send-sleep "git bisect good" 4)))
   
   (shell-insert-send-sleep "git bisect reset" 2))
-
-

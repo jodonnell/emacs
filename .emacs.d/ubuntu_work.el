@@ -99,5 +99,12 @@
 
 
 
+(defun js-run-tests ()
+  (interactive)
 
+  (shell "js-test")
+  (erase-buffer)
+  (shell-insert-send-sleep "java -jar JsTestDriver-1.2.2.jar --tests all" 1))
 
+(js-run-tests)
+  

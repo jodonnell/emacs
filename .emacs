@@ -290,7 +290,7 @@
       (progn (insert-string  "use Data::Dumper; warn Dumper();")
 	     (backward-char 2)))
   (if (string= "py" current-file-extension) 
-      (insert-string "use pdb; pdb.set_trace()"))
+      (insert-string "import pdb; pdb.set_trace()"))
   (if (string= "js" current-file-extension) 
       (progn (insert-string "console.log();")
 	     (backward-char 2))))
