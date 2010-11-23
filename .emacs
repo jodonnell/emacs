@@ -301,3 +301,19 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(warning-suppress-types (quote (nil))))
+
+
+(defun pass-buffer-to-racket ()
+  (interactive)
+  (save-excursion
+    (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "/Applications/Racketv5.0.2/bin/racket")))
+
+(add-hook 'scheme-mode-hook (lambda() 
+                             (setq tab-width 4
+                                   indent-tabs-mode nil)
+			     (show-paren-mode t)
+			     (hs-minor-mode t)
+			     (flyspell-prog-mode)
+			     (local-set-key "\C-i" 'th-complete-or-indent)
+			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
+
