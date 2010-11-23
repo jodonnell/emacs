@@ -177,3 +177,47 @@ character is a whitespace or non-word character, then
 ;;   (switch-to-buffer buffer))
 
 ;(ad-activate 'ido-switch-buffer)
+
+(defun refactor-extract-method(start end)
+  (interactive r)
+
+  (defun indent-our-region()
+    (save-excursion
+      (search-backward-regexp "^sub" nil t)
+      (beginning-of-line)
+      (let ((begin (point)))
+	(search-forward-regexp "}" nil t)
+	(indent-region begin (point)))))
+  
+
+  (defun get-and-delete-old-code (start end)
+    (setq new-method-body (buffer-substring-no-properties start end))
+    (delete-region start end))
+
+
+  (defun move-to-beginning-of-next-sub ()
+    (search-forward-regexp "^sub" nil t)
+    (beginning-of-line))
+
+  (defun create-new-method ()
+    (insert "sub {\n\n}\n\n")
+    (previous-line 3)
+    (insert new-method)
+    (indent-our-region))
+
+  (defun find-vars (new-method-body))
+    ;; search to bound till end of method
+    ;;looking for $, @, %
+    ;;take these symbols and look for a prefix of my, our, local
+    ;;my x or my (x,y,z)
+    ;;the rest are parameters
+    ;;rename method and parameters.
+    ;;pass in papa paramaters
+
+
+  (setq new-method-body (get-and-delete-old-code start end))
+  (move-to-beginning-of-next-sub)
+  (create-new-method)
+
+  (find-vars new-method-body)
+)
