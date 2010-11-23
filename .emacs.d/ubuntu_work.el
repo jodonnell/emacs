@@ -9,23 +9,15 @@
   (shell-insert-send-sleep "ssh devt1" 2))
 
 (defun ssh-dev-env (env)
-  (shell-insert-send-sleep (concat "ssh p-devv1." env) 2))
+  (shell-insert-send-sleep (concat "ssh " env) 2))
 
 (defun work-start-up (env)
   "Starts up all the shell buffers I need for work"
   (interactive)
-  (shell)
-  (rename-buffer "log")
-
-  (shell)
-  (rename-buffer "sql")
-
-  (shell)
-  (rename-buffer "release")
-
-  (shell)
-  (rename-buffer "httpd")
-
+  (shell "log")
+  (shell "sql")
+  (shell "release")
+  (shell "httpd")
   (shell)
   
   (sleep-for 3)
@@ -62,12 +54,12 @@
   (set-buffer "*shell*")
   (ssh-devt1)
   (ssh-dev-env env)
-  (insert (concat "/ssh:jodonnell@p-devv1." env ":"))
+  (insert (concat "/ssh:jodonnell@" env ":"))
 
   (find-file "~/.emacs"))
 
 
-(work-start-up "cla")
+;(work-start-up "devv1.cla")
 
 (defun perltidy-region ()
     "Run perltidy on the current region."
@@ -91,17 +83,28 @@
     (save-excursion
       (shell-command-on-region (goto-char (point-min)) (goto-char (point-max)) "perl -cW"))
 
-    (setq syntax-error-line (get-syntax-error-line))
-    (if syntax-error-line
-	(progn
-	  (goto-char (point-min))
-	  (goto-line (perl-syntax-get-syntax-error-line))
-	  (set-buffer "*Shell Command Output*")
-	  (message (buffer-string)))))
+    (let syntax-error-line (perl-syntax-get-syntax-error-line)
+	 (if syntax-error-line
+	     (progn
+	       (goto-char (point-min))
+	       (goto-line (syntax-error-line))
+	       (set-buffer "*Shell Command Output*")
+	       (message (buffer-string))))))
 
 
-(add-hook 'after-save-hook (lambda() 
-			     (setq current-file-extension (file-name-extension (buffer-file-name)))
-			     (if (or (string= "pl" current-file-extension) (string= "pm" current-file-extension))
-				 (perl-syntax-check))))
+;; (add-hook 'after-save-hook (lambda() 
+;; 			     (setq current-file-extension (file-name-extension (buffer-file-name)))
+;; 			     (if (or (string= "pl" current-file-extension) (string= "pm" current-file-extension))
+;; 				 (perl-syntax-check))))
 
+
+
+(defun js-run-tests ()
+  (interactive)
+
+  (shell "js-test")
+  (erase-buffer)
+  (shell-insert-send-sleep "java -jar JsTestDriver-1.2.2.jar --tests all" 1))
+
+(js-run-tests)
+  

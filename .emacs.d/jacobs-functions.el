@@ -178,6 +178,33 @@ character is a whitespace or non-word character, then
 
 ;(ad-activate 'ido-switch-buffer)
 
+(defun perl-execute (exec_string)
+  (interactive "sPerl: ")
+  (setq output (shell-command-to-string (concat "perl -e '" exec_string "'")))
+  (message output))
+
+(defun git-bisect (good)
+  (interactive "sLast good: ")
+
+  (shell "shell-change")
+  (sleep-for 3)
+  (shell-insert-send-sleep "cd ~/cm_develop" 2)
+
+  (shell-insert-send-sleep "git bisect start" 3)
+  (shell-insert-send-sleep "git bisect bad" 4)
+  (shell-insert-send-sleep (concat "git bisect good " good) 4)
+
+  (while (eq (search-backward "is the first bad commit" (point-min) t) nil)
+    (erase-buffer)
+    (shell-insert-send-sleep "perl -I lib/ lib/CTAH/Mailing/Preview/tests.t" 12)
+    
+    (if (eq (search-backward "not ok [0-9]+" (point-min) t) nil)
+	(shell-insert-send-sleep "git bisect bad" 4)
+      (shell-insert-send-sleep "git bisect good" 4)))
+  
+  (shell-insert-send-sleep "git bisect reset" 2))
+
+
 (defun refactor-extract-method(start end)
   (interactive r)
 
