@@ -59,7 +59,7 @@
   (find-file "~/.emacs"))
 
 
-;(work-start-up "devv1.cla")
+;(work-start-up "devv1.sgc")
 
 (defun perltidy-region ()
     "Run perltidy on the current region."
@@ -103,8 +103,7 @@
   (interactive)
 
   (shell "js-test")
-  (erase-buffer)
-  (shell-insert-send-sleep "java -jar JsTestDriver-1.2.2.jar --tests all" 1))
 
-(js-run-tests)
+  (erase-buffer)
+  (shell-insert-send-sleep "java -Xmx100M -jar JsTestDriver-1.2.2.jar --tests all --captureConsole --server http://devv1.cla.vm.tm0.com:9991" 1))
   

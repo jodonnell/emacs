@@ -74,7 +74,7 @@
 (make-face-bold 'font-lock-function-name-face nil 1)
 (set-face-foreground 'font-lock-function-name-face "Coral") ;; does this even work?
 (copy-face 'default  'font-lock-string-face)
-(make-face-italic 'font-lock-string-face nil 1)
+;;(make-face-italic 'font-lock-string-face nil 1)
 (set-face-foreground 'font-lock-string-face "green")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -106,6 +106,7 @@
 
 (add-hook 'javascript-mode-hook (lambda() 
  				  (local-set-key "\C-i" 'th-complete-or-indent)
+				  (local-set-key "\C-c\C-t" 'js-run-tests)
  				  (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -308,7 +309,7 @@
 (defun pass-buffer-to-racket ()
   (interactive)
   (save-excursion
-    (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "/Applications/Racketv5.0.2/bin/racket")))
+    (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "racket")))
 
 (add-hook 'scheme-mode-hook (lambda() 
                              (setq tab-width 4
@@ -318,4 +319,7 @@
 			     (flyspell-prog-mode)
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
+
+
+
 
