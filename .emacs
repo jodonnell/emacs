@@ -109,6 +109,14 @@
 				  (local-set-key "\C-c\C-t" 'js-run-tests)
  				  (setq indent-tabs-mode nil)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RUBY STUFF
+(add-hook 'ruby-mode-hook (lambda() 
+			    (local-set-key "\C-i" 'th-complete-or-indent)
+			    (setq indent-tabs-mode nil)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PERL STUFF
 (autoload 'cperl-mode "cperl-mode" "" t)
