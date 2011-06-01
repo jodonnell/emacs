@@ -114,6 +114,7 @@
 ;; RUBY STUFF
 (add-hook 'ruby-mode-hook (lambda() 
 			    (local-set-key "\C-i" 'th-complete-or-indent)
+			    (ruby-electric-mode 1)
 			    (setq indent-tabs-mode nil)))
 
 
