@@ -141,6 +141,7 @@
    (mirror-mode)
    (local-set-key "\C-i" 'th-complete-or-indent)
    (show-paren-mode 1)
+   (local-set-key "\C-c\C-t" 'py-run-tests)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -323,3 +324,28 @@
 
 
 
+(defun js-run-tests ()
+  (interactive)
+
+  (shell "js-test")
+
+  (erase-buffer)
+  (shell-insert-send-sleep "java -jar JsTestDriver-1.3.0.jar --verbose --tests all --captureConsole --server http://localhost:9999" 1))
+  
+(defun py-run-tests ()
+  (interactive)
+
+  (shell "py-test")
+
+  (erase-buffer)
+  (shell-insert-send-sleep "python manage.py test villagevines" 1))
+  
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))

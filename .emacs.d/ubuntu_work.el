@@ -105,5 +105,5 @@
   (shell "js-test")
 
   (erase-buffer)
-  (shell-insert-send-sleep "java -Xmx100M -jar JsTestDriver-1.2.2.jar --tests all --captureConsole --server http://devv1.cla.vm.tm0.com:9991" 1))
+  (shell-insert-send-sleep "java -jar JsTestDriver-1.3.0.jar --tests all --captureConsole --server http://localhost:9999" 1))
   
