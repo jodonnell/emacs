@@ -1,0 +1,23 @@
+;
+
+(deftest "when in a buffer get the filename"
+  (assert-equal "/Users/jacobodonnell/emacs/.emacs.d/rails_tests/rails-test.elk" (buffer-file-name)))
+
+
+
+;; (deftest "find the rails root based on the filename"
+;;   (assert-equal "/Users/jacobodonnell/programming/stretchlist/" (find-rails-root-from-test-filename "/Users/jacobodonnell/programming/stretchlist/rspec/models/crush_spec.rb")))
+
+(deftest "get parent directory"
+  (assert-equal "/Users/" (get-parent-directory "/Users/jacobodonnell/")))
+
+(deftest "does filename end with a file?"
+  (assert-equal t (path-end-with-a-file? "/Users/file.rb")))
+
+(deftest "filename has a filename in it"
+  (assert-equal nil (path-end-with-a-file? "/Users/file.rb/bob/")))
+
+
+(deftest "find pos last /"
+  (assert-equal "3" (find-last-/ "ba/")
+

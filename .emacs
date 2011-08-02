@@ -39,8 +39,18 @@
     (load "~/.emacs.d/mac_home.el"))
 (if (equal (getenv "EMACS_ENV") "ubuntu_work")
     (load "~/.emacs.d/ubuntu_work.el"))
+(if (equal (getenv "EMACS_ENV") "macbookair")
+    (load "~/.emacs.d/macbookair.el"))
 
 (setq column-number-mode t)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ELK
+(require 'elk-test)
+(add-to-list 'auto-mode-alist '("\\.elk\\'" . elk-test-mode))
+(define-key elk-test-mode-map (kbd "C-c C-t") 'elk-test-run-buffer)
+(define-key emacs-lisp-mode-map (kbd "<f7>") 'elk-test-run-a-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ISEARCH SHIT
