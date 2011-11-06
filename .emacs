@@ -1,6 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
 (setq load-path (append load-path (list "~/.emacs.d")))
+(let ((default-directory "~/.emacs.d/elpa/"))
+  (normal-top-level-add-to-load-path '("."))
+  (normal-top-level-add-subdirs-to-load-path))
+
 (setq w32-use-w32-font-dialog nil)
 
 (global-font-lock-mode t)
@@ -29,6 +33,8 @@
 
 (require 'midnight)
 (require 'linum)
+(require 'lambda-mode)
+(setq lambda-symbol (string (make-char 'greek-iso8859-7 107)))
 
 (setq calendar-latitude 40.74)
 (setq calendar-longitude -74.01)
@@ -120,12 +126,26 @@
  				  (setq indent-tabs-mode nil)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
+(require 'rails-dream)
+(require 'ruby-electric)
 (add-hook 'ruby-mode-hook (lambda() 
+                            (global-set-key "\C-ca" 'get-rails-function-argument-list-at-point)
+                            (global-set-key "\C-cd" 'get-rails-documentation)
+                            (global-set-key "\C-cm" 'get-instance-methods-current)
+                            (global-set-key "\C-cc" 'get-class-methods-current)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (ruby-electric-mode 1)
 			    (setq indent-tabs-mode nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ELISP STUFF
+(add-hook 'emacs-lisp-mode-hook (lambda() 
+			    (local-set-key "\C-i" 'th-complete-or-indent)
+			    (lambda-mode)
+			    (setq indent-tabs-mode nil)))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -359,12 +379,19 @@
   (erase-buffer)
   (shell-insert-send-sleep "python manage.py test villagevines" 1))
   
-;;; This was installed by package-install.el.
-;;; This provides support for the package system and
-;;; interfacing with ELPA, the package archive.
-;;; Move this code earlier if you want to reference
-;;; packages in your .emacs.
-(when
-    (load
-     (expand-file-name "~/.emacs.d/elpa/package.el"))
-  (package-initialize))
+(setq mac-option-key-is-meta nil)
+(setq mac-command-key-is-meta t)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+
+
+(require 'package)
+;; Add the original Emacs Lisp Package Archive
+(add-to-list 'package-archives
+             '("elpa" . "http://tromey.com/elpa/"))
+;; Add the user-contributed repository
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+
+
+
