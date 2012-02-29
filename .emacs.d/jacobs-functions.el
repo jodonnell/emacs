@@ -104,8 +104,8 @@ character is a whitespace or non-word character, then
 
 
 (defun git-bisect (good)
-  (interactive "sLast good: ")
-
+  (interactive "sLast good: "))
+(git-bisect)
   (shell "shell-change")
   (sleep-for 3)
   (shell-insert-send-sleep "cd ~/cm_develop" 2)
@@ -168,3 +168,12 @@ character is a whitespace or non-word character, then
 
   (find-vars new-method-body)
 )
+
+(defun replace-all (dir wildcard replace with)
+  (interactive "DDir: \nsFile wildcard: \nsReplace: \nsWith: ")
+  (find-name-dired dir wildcard)
+  (sleep-for 2)
+  (dired-toggle-marks)
+  (sleep-for 2)
+  (dired-do-query-replace-regexp replace with)
+  (save-some-buffers))
