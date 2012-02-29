@@ -70,8 +70,8 @@
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt) ;; hide passwords
 (add-hook 'shell-mode-hook
           '(lambda ()
-             (define-key shell-mode-map "\M-n"
-	       'forward-word)))
+             (setq history-length 100)
+             (define-key shell-mode-map "\M-n" 'forward-word)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COLORS
@@ -138,6 +138,23 @@
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (ruby-electric-mode 1)
 			    (setq indent-tabs-mode nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HAML
+(require 'haml-mode)
+(add-hook 'haml-mode-hook (lambda() 
+			    (setq indent-tabs-mode nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COFFEESCRIPT
+
+(require 'coffee-mode)
+(add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
+(add-to-list 'auto-mode-alist '("Cakefile" . coffee-mode))
+(add-hook 'coffee-mode-hook (lambda() 
+                            (set (make-local-variable 'tab-width) 2)
+                            (local-set-key "\C-i" 'th-complete-or-indent)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
