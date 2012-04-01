@@ -35,7 +35,6 @@
 (load "~/.emacs.d/xterm-256color.el")
 (load "~/.emacs.d/ascii-table.el")
 (load "~/.emacs.d/jacobs-functions.el")
-(load "~/.emacs.d/yaml-mode.el")
 
 (require 'midnight)
 (require 'linum)
@@ -230,9 +229,7 @@
 			    (flyspell-prog-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; IBUFFER MODE
-(load-file "~/.emacs.d/ibuffer.el")
-
+;; IBFUFER MODE
 (defun sw-list ()
   "switch to Ibuffer; this function should be bound to F9"
   (interactive)
@@ -313,10 +310,6 @@
 (setq ido-enable-flex-matching t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DJANGO-MODE
-(load "django-mode.el")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TOP MODE
 (load "top-mode.el")
 
@@ -340,8 +333,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ANYTHING
 (require 'anything)
-
-(require 'dired+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTION DEFINITIONS

@@ -97,7 +97,7 @@
 ;;    Made error buffer `next-error' capable.
 ;;
 ;; 2008-06-09 (0.2.1)
-;;    Fixed link jumping in terminal mode.  (Thanks to Johan BockgÃ¥rd).
+;;    Fixed link jumping in terminal mode.  (Thanks to Johan Bockgård).
 ;;
 ;; 2008-04-26 (0.2)
 ;;    Renamed `run-elk-test' and `run-elk-tests-buffer'.
