@@ -131,7 +131,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
 (require 'rails-dream)
-(require 'ruby-electric)
 (require 'flymake-ruby)
 (require 'rinari)
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
@@ -148,7 +147,6 @@
                             (global-set-key "\C-cm" 'get-instance-methods-current)
                             (global-set-key "\C-cc" 'get-class-methods-current)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
-			    (ruby-electric-mode 1)
                             (flymake-ruby-load)
                             (setq rinari-tags-file-name "TAGS")
 
@@ -402,6 +400,10 @@
 (require 'php-mode)
 (require 'yaml-mode)
 
+(require 'yasnippet-bundle)
+(setq yas/root-directory "~/.emacs.d/snippets")
+(yas/load-directory yas/root-directory)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SMEX MODE
 (require 'smex)
@@ -410,3 +412,4 @@
 (global-set-key "\C-x\C-m" 'smex)
 (global-set-key "\C-xm"    'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
+
