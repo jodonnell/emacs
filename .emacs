@@ -313,15 +313,6 @@
 (setq ido-enable-flex-matching t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SMEX MODE
-(require 'smex)
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key "\C-x\C-m" 'smex)
-(global-set-key "\C-xm"    'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DJANGO-MODE
 (load "django-mode.el")
 
@@ -432,3 +423,12 @@
 (require 'magit)
 (global-set-key "\C-cg" 'magit-status)
 (require 'php-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SMEX MODE
+(require 'smex)
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key "\C-x\C-m" 'smex)
+(global-set-key "\C-xm"    'execute-extended-command)
+(global-set-key "\C-c\C-m" 'execute-extended-command)
