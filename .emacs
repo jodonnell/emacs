@@ -132,6 +132,8 @@
 ;; RUBY STUFF
 (require 'rails-dream)
 (require 'ruby-electric)
+(require 'flymake-ruby)
+(require 'rinari)
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
@@ -147,7 +149,7 @@
                             (global-set-key "\C-cc" 'get-class-methods-current)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (ruby-electric-mode 1)
-                            (require 'rinari)
+                            (flymake-ruby-load)
                             (setq rinari-tags-file-name "TAGS")
 
 			    (setq indent-tabs-mode nil)))
