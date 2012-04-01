@@ -37,9 +37,8 @@
 (load "~/.emacs.d/jacobs-functions.el")
 
 (require 'midnight)
-(require 'linum)
-(require 'lambda-mode)
-(setq lambda-symbol (string (make-char 'greek-iso8859-7 107)))
+(require 'pretty-lambdada)
+(pretty-lambda-for-modes)
 
 (setq calendar-latitude 40.74)
 (setq calendar-longitude -74.01)
@@ -101,10 +100,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EMACS CUSTOM VARIABLES
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(cperl-array-face ((((class color) (background dark)) (:foreground "yellow"))))
  '(cperl-hash-face ((((class color) (background dark)) (:foreground "magenta3"))))
  '(cperl-nonoverridable-face ((((class color) (background dark)) (:foreground "royalblue1"))))
@@ -176,7 +175,6 @@
 ;; ELISP STUFF
 (add-hook 'emacs-lisp-mode-hook (lambda() 
 			    (local-set-key "\C-i" 'th-complete-or-indent)
-			    (lambda-mode)
 			    (setq indent-tabs-mode nil)))
 
 
@@ -210,7 +208,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PYTHON STUFF
 (defun my-python-mode-hook ()
-   (mirror-mode)
    (local-set-key "\C-i" 'th-complete-or-indent)
    (show-paren-mode 1)
    (local-set-key "\C-c\C-t" 'py-run-tests)
@@ -321,18 +318,10 @@
 (setq org-hide-leading-stars 0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MIRROR MODE
-(require 'mirror-mode)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SAVEPLACE
 (setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
 (setq-default save-place t)                   ;; activate it for all buffers
 (require 'saveplace)                          ;; get the package
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ANYTHING
-(require 'anything)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTION DEFINITIONS
@@ -354,10 +343,11 @@
 (global-set-key "\C-x\C-t" 'debugging-text)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
  '(warning-suppress-types (quote (nil))))
 
 
