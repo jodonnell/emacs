@@ -423,6 +423,7 @@
 (require 'magit)
 (global-set-key "\C-cg" 'magit-status)
 (require 'php-mode)
+(require 'yaml-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SMEX MODE
