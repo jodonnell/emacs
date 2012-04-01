@@ -32,8 +32,6 @@
 
 (setq backup-directory-alist '(("." . "~/.emacs.backups")))
 
-(load "~/.emacs.d/xterm-256color.el")
-(load "~/.emacs.d/ascii-table.el")
 (load "~/.emacs.d/jacobs-functions.el")
 
 (require 'midnight)
