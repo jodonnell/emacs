@@ -2,3 +2,9 @@
 /.emacs.d/auto-save-list/
 /.emacs.d/saveplace
 /.emacs.d/tramp
+/.emacs.d/eshell/
+/.emacs.d/games/
+/.emacs.d/places
+/.emacs.d/url/
+/.emacs.d/bookmarks
+/.emacs.d/.smex-items

@@ -11,6 +11,12 @@
 (setq font-lock-maximum-decoration t)
 (transient-mark-mode t)
 
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(fset 'yes-or-no-p 'y-or-n-p)
+(show-paren-mode t)
+
+
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -130,6 +136,14 @@
 ;; RUBY STUFF
 (require 'rails-dream)
 (require 'ruby-electric)
+(add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
+(add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
+(add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
+
+
 (add-hook 'ruby-mode-hook (lambda() 
                             (global-set-key "\C-ca" 'get-rails-function-argument-list-at-point)
                             (global-set-key "\C-cd" 'get-rails-documentation)
@@ -137,6 +151,9 @@
                             (global-set-key "\C-cc" 'get-class-methods-current)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (ruby-electric-mode 1)
+                            (require 'rinari)
+                            (setq rinari-tags-file-name "TAGS")
+
 			    (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -412,3 +429,5 @@
 
 
 
+(require 'clojure-mode)
+(require 'magit)
