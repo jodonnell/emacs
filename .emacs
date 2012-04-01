@@ -334,7 +334,6 @@
 ;; The following lines are always needed.  Choose your own keys.
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-cg" 'org-agenda)
 (setq org-hide-leading-stars 0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -431,3 +430,5 @@
 
 (require 'clojure-mode)
 (require 'magit)
+(global-set-key "\C-cg" 'magit-status)
+(require 'php-mode)
