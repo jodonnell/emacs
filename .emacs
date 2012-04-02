@@ -405,6 +405,8 @@
 (setq yas/root-directory "~/.emacs.d/snippets")
 (yas/load-directory yas/root-directory)
 
+(require 'sass-mode)
+
 (require 'ctags)
 (setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
 (global-set-key (kbd "<f5>") 'ctags-create-or-update-tags-table)
