@@ -97,6 +97,20 @@ character is a whitespace or non-word character, then
          (t
           (indent-according-to-mode))))
 
+(defun th-complete-or-indent2 (arg)
+  "If preceding character is a word character and the following
+character is a whitespace or non-word character, then
+`dabbrev-expand', else indent according to mode."
+  (interactive "*P")
+  (cond ((and
+          (= (char-syntax (preceding-char)) ?w)
+          (looking-at (rx (or word-end (any ".,;:#=?()[]{}")))))
+         (require 'sort)
+         (let ((case-fold-search t))
+           (auto-complete)))
+         (t
+          (indent-according-to-mode))))
+
 (defun shell-insert-send-sleep (command sleep)
   (insert command)
   (comint-send-input)

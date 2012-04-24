@@ -36,6 +36,7 @@
 
 (require 'midnight)
 (require 'pretty-lambdada)
+(require 'wrap-region)
 (pretty-lambda-for-modes)
 
 (setq calendar-latitude 40.74)
@@ -117,10 +118,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT STUFF
-;; (autoload 'js2-mode "js2" nil t)
-;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-;; (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
-;; (autoload 'javascript-mode "javascript" nil t)
 
 (add-hook 'js-mode-hook (lambda() 
  				  (local-set-key "\C-i" 'th-complete-or-indent)
@@ -134,6 +131,7 @@
 (require 'flymake-ruby)
 (require 'rinari)
 (require 'ruby-end)
+(require 'auto-complete)
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
@@ -147,10 +145,11 @@
                             (global-set-key "\C-cd" 'get-rails-documentation)
                             (global-set-key "\C-cm" 'get-instance-methods-current)
                             (global-set-key "\C-cc" 'get-class-methods-current)
-			    (local-set-key "\C-i" 'th-complete-or-indent)
+			    (local-set-key "\C-i" 'th-complete-or-indent2)
+                            (wrap-region-mode)
                             (flymake-ruby-load)
                             (setq rinari-tags-file-name "TAGS")
-
+                            (auto-complete-mode)
 			    (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -318,24 +317,6 @@
 (setq-default save-place t)                   ;; activate it for all buffers
 (require 'saveplace)                          ;; get the package
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; FUNCTION DEFINITIONS
-
-
-(defun debugging-text ()
-  "Inserts debug text which is language dependant"
-  (interactive)
-  (setq current-file-extension (file-name-extension (buffer-file-name)))
-  (if (or (string= "pl" current-file-extension) (string= "pm" current-file-extension))
-      (progn (insert-string  "use Data::Dumper; warn Dumper();")
-	     (backward-char 2)))
-  (if (string= "py" current-file-extension) 
-      (insert-string "import pdb; pdb.set_trace()"))
-  (if (string= "js" current-file-extension) 
-      (progn (insert-string "console.log();")
-	     (backward-char 2))))
-
-(global-set-key "\C-x\C-t" 'debugging-text)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -343,6 +324,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
+ '(scss-compile-at-save nil)
  '(warning-suppress-types (quote (nil))))
 
 
@@ -360,24 +342,6 @@
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
 
-
-
-
-(defun js-run-tests ()
-  (interactive)
-
-  (shell "js-test")
-
-  (erase-buffer)
-  (shell-insert-send-sleep "java -jar JsTestDriver-1.3.0.jar --verbose --tests all --captureConsole --server http://localhost:9999" 1))
-  
-(defun py-run-tests ()
-  (interactive)
-
-  (shell "py-test")
-
-  (erase-buffer)
-  (shell-insert-send-sleep "python manage.py test villagevines" 1))
   
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
@@ -406,6 +370,7 @@
 (yas/load-directory yas/root-directory)
 
 (require 'sass-mode)
+(require 'scss-mode)
 
 (require 'ctags)
 (setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
