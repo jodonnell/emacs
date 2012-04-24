@@ -240,7 +240,6 @@
 ;; GLOBAL KEY MAPPINGS
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-xm"    'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
 (global-set-key "\C-w"     'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-c\C-k" 'kill-region)
@@ -371,6 +370,7 @@
 
 (require 'sass-mode)
 (require 'scss-mode)
+(require 'rvm)
 
 (require 'ctags)
 (setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
