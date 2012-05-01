@@ -131,6 +131,7 @@
 (require 'flymake-ruby)
 (require 'rinari)
 (require 'ruby-end)
+(require 'rvm)
 (require 'auto-complete)
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
