@@ -130,7 +130,6 @@
 (require 'rails-dream)
 (require 'flymake-ruby)
 (require 'rinari)
-(require 'ruby-end)
 (require 'rvm)
 (require 'auto-complete)
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
