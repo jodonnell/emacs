@@ -146,7 +146,7 @@
                             (global-set-key "\C-cd" 'get-rails-documentation)
                             (global-set-key "\C-cm" 'get-instance-methods-current)
                             (global-set-key "\C-cc" 'get-class-methods-current)
-			    (local-set-key "\C-i" 'th-complete-or-indent2)
+			    (local-set-key "\C-i" 'th-complete-or-indent)
                             (wrap-region-mode)
                             (flymake-ruby-load)
                             (setq rinari-tags-file-name "TAGS")
