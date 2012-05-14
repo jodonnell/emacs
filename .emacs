@@ -130,8 +130,8 @@
 (require 'rails-dream)
 (require 'flymake-ruby)
 (require 'rinari)
-(require 'ruby-end)
-(require 'auto-complete)
+(require 'show-args)
+
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
@@ -145,17 +145,18 @@
                             (global-set-key "\C-cd" 'get-rails-documentation)
                             (global-set-key "\C-cm" 'get-instance-methods-current)
                             (global-set-key "\C-cc" 'get-class-methods-current)
-			    (local-set-key "\C-i" 'th-complete-or-indent2)
+			    (local-set-key "\C-i" 'th-complete-or-indent)
                             (wrap-region-mode)
+                            (show-args-mode)
                             (flymake-ruby-load)
                             (setq rinari-tags-file-name "TAGS")
-                            (auto-complete-mode)
 			    (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HAML
 (require 'haml-mode)
 (add-hook 'haml-mode-hook (lambda() 
+                            (show-args-mode)
 			    (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -384,4 +385,3 @@
 (global-set-key "\C-x\C-m" 'smex)
 (global-set-key "\C-xm"    'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
-
