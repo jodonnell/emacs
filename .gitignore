@@ -8,3 +8,6 @@
 /.emacs.d/url/
 /.emacs.d/bookmarks
 /.emacs.d/.smex-items
+/.emacs.d/ac-comphist.dat
+/.emacs.d/elpa/archives/gnu/archive-contents
+/.emacs.d/elpa/archives/marmalade/archive-contents
