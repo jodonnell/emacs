@@ -5,7 +5,7 @@
 
 ;; Author: Phil Hagelberg, Eric Schulte
 ;; URL: https://github.com/eschulte/rinari
-;; Version: 2.6
+;; Version: 2.8
 ;; Created: 2006-11-10
 ;; Keywords: ruby, rails, project, convenience, web
 ;; EmacsWiki: Rinari
@@ -110,6 +110,11 @@ leave this to the environment variables outside of Emacs.")
 (defvar rinari-minor-mode-prefixes
   (list ";" "'")
   "List of characters, each of which will be bound (with C-c) as a rinari-minor-mode keymap prefix.")
+
+(defcustom rinari-inf-ruby-prompt-pattern
+  "^\\(irb([^)]+)\\|\\(\[[0-9]+\] \\)?[Pp]ry ?([^)]+)\\|\\(jruby-\\|JRUBY-\\)?[1-9]\\.[0-9]\\.[0-9]+\\(-?p?[0-9]+\\)?\\) ?\\(:[0-9]+\\)* ?[\]>*\"'/`]>? *"
+  "The value used for `inf-ruby-prompt-pattern' in `rinari-console' buffers."
+  :group 'rinari)
 
 (defvar rinari-partial-regex
   "render \\(:partial *=> \\)?*[@'\"]?\\([A-Za-z/_]+\\)['\"]?"
@@ -277,7 +282,7 @@ argument allows editing of the console command arguments."
     (run-ruby command)
     (with-current-buffer "*ruby*"
       (set (make-local-variable 'inf-ruby-prompt-pattern)
-           "^\\(irb([^)]+)\\|\\(jruby-\\|JRUBY-\\)?[1-9]\\.[0-9]\\.[0-9]+\\(-?p?[0-9]+\\)?\\) ?\\(:[0-9]+\\)* ?[\]>*\"'/`]>? *")
+           rinari-inf-ruby-prompt-pattern)
       (set (make-local-variable 'inf-ruby-first-prompt-pattern) inf-ruby-prompt-pattern)
       (rinari-launch))))
 

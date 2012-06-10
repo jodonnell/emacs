@@ -3,7 +3,7 @@
 ;;
 ;;; Author: Steve Purcell <steve@sanityinc.com>
 ;;; URL: https://github.com/purcell/flymake-ruby
-;;; Version: 0.5
+;;; Version: 0.6
 ;;;
 ;;; Commentary:
 ;; Usage:
@@ -45,7 +45,7 @@ does not alter flymake's global configuration, so function
   (set (make-local-variable 'flymake-err-line-patterns) flymake-ruby-err-line-patterns)
   (if (executable-find flymake-ruby-executable)
       (flymake-mode t)
-    (message "Not enabling flymake: '%' command not found" flymake-ruby-executable)))
+    (message "Not enabling flymake: '%s' command not found" flymake-ruby-executable)))
 
 
 (defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
