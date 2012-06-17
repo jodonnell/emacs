@@ -148,7 +148,6 @@
 			    (local-set-key "\C-i" 'th-complete-or-indent)
                             (wrap-region-mode)
                             (show-args-mode)
-                            (flymake-ruby-load)
                             (setq rinari-tags-file-name "TAGS")
 			    (setq indent-tabs-mode nil)))
 
