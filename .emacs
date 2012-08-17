@@ -145,9 +145,14 @@
                             (global-set-key "\C-cd" 'get-rails-documentation)
                             (global-set-key "\C-cm" 'get-instance-methods-current)
                             (global-set-key "\C-cc" 'get-class-methods-current)
+
+                            (global-set-key "\C-crs" 'rubymotion-spec)
+                            (global-set-key "\C-crr" 'rubymotion-simulator)
+                            (global-set-key "\C-crd" 'rubymotion-device)
+
+                            
 			    (local-set-key "\C-i" 'th-complete-or-indent)
                             (wrap-region-mode)
-                            (show-args-mode)
                             (setq rinari-tags-file-name "TAGS")
 			    (setq indent-tabs-mode nil)))
 
@@ -211,6 +216,12 @@
    (local-set-key "\C-c\C-t" 'py-run-tests)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LUA STUFF
+(add-hook 'lua-mode-hook (lambda()
+			    (local-set-key "\C-i" 'th-complete-or-indent)
+			    (local-set-key "\C-c\C-t" 'run-lua-tests)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

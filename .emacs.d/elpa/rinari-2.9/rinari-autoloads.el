@@ -4,12 +4,12 @@
 
 
 ;;;### (autoloads (rinari-minor-mode rinari-launch) "rinari" "rinari.el"
-;;;;;;  (20437 240))
+;;;;;;  (20525 35770))
 ;;; Generated autoloads from rinari.el
 
 (autoload 'rinari-launch "rinari" "\
-Run `rinari-minor-mode' if inside of a rails projecct,
-otherwise turn `rinari-minor-mode' off if it is on.
+Call function `rinari-minor-mode' if inside a rails project.
+Otherwise, disable that minor mode if currently enabled.
 
 \(fn)" t nil)
 
@@ -19,14 +19,13 @@ Major Modes from which to launch Rinari.")
 (dolist (hook rinari-major-modes) (add-hook hook 'rinari-launch))
 
 (autoload 'rinari-minor-mode "rinari" "\
-Enable Rinari minor mode providing Emacs support for working
-with the Ruby on Rails framework.
+Enable Rinari minor mode to support working with the Ruby on Rails framework.
 
 \(fn &optional ARG)" t nil)
 
 ;;;***
 
-;;;### (autoloads nil nil ("rinari-pkg.el") (20437 240 759894))
+;;;### (autoloads nil nil ("rinari-pkg.el") (20525 35770 337452))
 
 ;;;***
 

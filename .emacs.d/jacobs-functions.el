@@ -123,7 +123,7 @@ character is a whitespace or non-word character, then
   (shell "shell-change")
   (sleep-for 3)
   (shell-insert-send-sleep "cd ~/cm_develop" 2)
-
+  
   (shell-insert-send-sleep "git bisect start" 3)
   (shell-insert-send-sleep "git bisect bad" 4)
   (shell-insert-send-sleep (concat "git bisect good " good) 4)
@@ -183,6 +183,26 @@ character is a whitespace or non-word character, then
   (find-vars new-method-body)
 )
 
+(defun rubymotion (command)
+  (if (get-buffer "rubymotion")
+      (kill-buffer "rubymotion"))
+  (shell "rubymotion")
+  (process-kill-without-query (get-buffer-process "rubymotion"))
+  (insert (concat "cd ~/programming/FallingChars; rake " command))
+  (comint-send-input))
+
+(defun rubymotion-simulator ()
+  (interactive)
+  (rubymotion ""))
+
+(defun rubymotion-spec ()
+  (interactive)
+  (rubymotion "spec"))
+
+(defun rubymotion-device ()
+  (interactive)
+  (rubymotion "device"))
+
 (defun replace-all (dir wildcard replace with)
  (interactive "DDir: \nsFile wildcard: \nsReplace: \nsWith: ")
  (find-name-dired dir wildcard)
@@ -191,3 +211,19 @@ character is a whitespace or non-word character, then
  (sleep-for 2)
  (dired-do-query-replace-regexp replace with)
  (save-some-buffers))
+
+
+
+(defun kill-lua-tests (process output)
+  (insert (ansi-color-apply output))
+  (if (string-match "Simulation Terminated: Lua script called os.exit() with status" output)
+      (comint-kill-subjob)))
+
+(defun run-lua-tests ()
+  "runs the lua corona tests for zombie run"
+  (interactive)
+  (shell "lua-tests")
+  (erase-buffer)
+  (insert "cd ~/programming/zombie_run/lua/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua")
+  (comint-send-input)
+  (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))

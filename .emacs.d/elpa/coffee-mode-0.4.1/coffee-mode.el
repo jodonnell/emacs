@@ -1,57 +1,77 @@
-;;; coffee-mode.el --- Major mode to edit CoffeeScript files in Emacs
+;;; coffee-mode.el --- Major mode for CoffeeScript files
 
-;; Copyright (C) 2010 Chris Wanstrath
+;; Copyright (C) 2010-2012 Free Software Foundation, Inc.
 
-;; Version: 0.3.0
+;; Version: 0.4.1
 ;; Keywords: CoffeeScript major mode
 ;; Author: Chris Wanstrath <chris@ozmm.org>
-;; URL: http://github.com/defunkt/coffee-script
+;; URL: http://github.com/defunkt/coffee-mode
 
-;; This file is not part of GNU Emacs.
+;; This file is part of GNU Emacs.
 
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+;; GNU Emacs is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation, either version 3 of the License,
+;; or (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+;; GNU Emacs is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary
 
-;; For commentary please see the README.md or
-;; http://github.com/defunkt/coffee-mode#readme
+;; CoffeeScript mode is an Emacs major mode for [CoffeeScript][cs],
+;; unfancy JavaScript.  It provides syntax highlighting, indentation
+;; support, imenu support, a menu bar, and a few cute commands.
 
-;;; Installation
+;; Installing this package enables CoffeeScript mode for file named
+;; *.coffee and Cakefile.
 
-;; In your shell:
+;; Commands:
 
-;;     $ cd ~/.emacs.d/vendor
-;;     $ git clone git://github.com/defunkt/coffee-mode.git
+;; M-x coffee-compile-file compiles the current file as a JavaScript
+;; file.  Operating on "basic.coffee" and running this command will
+;; save a "basic.js" in the same directory.  Subsequent runs will
+;; overwrite the file.
+;;
+;; If there are compilation errors and we the compiler have returned a
+;; line number to us for the first error, the point is moved to that
+;; line, so you can investigate.  If this annoys you, you can set
+;; `coffee-compile-jump-to-error` to `nil`.
+;;
+;; M-x coffee-compile-buffer compiles the current buffer to JavaScript
+;; using the command specified by the `coffee-command` variable, and
+;; opens the contents in a new buffer using the mode configured for
+;; ".js" files.
+;;
+;; M-x coffee-compile-region compiles the selected region to
+;; JavaScript using the same configuration variables as
+;; `coffee-compile-buffer`.
+;;
+;; `C-c C-o C-s' (coffee-cos-mode) toggles a minor mode implementing
+;; "compile-on-save" behavior.
+;;
+;; M-x coffee-repl starts a repl via `coffee-command` in a new buffer.
 
-;; In your emacs config:
+;; Options:
+;;
+;; `coffee-tab-width' - Tab width to use when indenting.
+;; `coffee-command'   - CoffeeScript command for evaluating code.
+;;                      Must be in your path.
+;; `coffee-args-repl' - Command line arguments for `coffee-command'
+;;                      when starting a REPL.
+;; `coffee-args-compile'          - Arguments for `coffee-command'
+;;                                  when compiling a file.
+;; `coffee-compiled-buffer-name'  - Name of the scratch buffer used
+;;                                  when compiling CoffeeScript.
+;; `coffee-compile-jump-to-error' - Whether to jump to the first error
+;;                                  if compilation fails.
 
-;;     (add-to-list 'load-path "~/.emacs.d/vendor/coffee-mode")
-;;     (require 'coffee-mode)
-
-;;; Thanks
-
-;; Major thanks to http://xahlee.org/emacs/elisp_syntax_coloring.html
-;; the instructions.
-
-;; Also thanks to Jason Blevins's markdown-mode.el and Steve Yegge's
-;; js2-mode for guidance.
-
-;; TODO:
-;; - Execute {buffer,region,line} and show output in new buffer
-;; - Make prototype accessor assignments like `String::length: -> 10` pretty.
-;; - mirror-mode - close brackets and parens automatically
+;; Please file bugs at <http://github.com/defunkt/coffee-mode/issues>
 
 ;;; Code:
 
@@ -66,27 +86,12 @@
 ;; Customizable Variables
 ;;
 
-(defconst coffee-mode-version "0.3.0"
-  "The version of this `coffee-mode'.")
+(defconst coffee-mode-version "0.4.1"
+  "The version of `coffee-mode'.")
 
 (defgroup coffee nil
   "A CoffeeScript major mode."
   :group 'languages)
-
-(defcustom coffee-debug-mode nil
-  "Whether to run in debug mode or not. Logs to `*Messages*'."
-  :type 'boolean
-  :group 'coffee-mode)
-
-(defcustom coffee-js-mode 'js2-mode
-  "The mode to use when viewing compiled JavaScript."
-  :type 'string
-  :group 'coffee)
-
-(defcustom coffee-cleanup-whitespace t
-  "Should we `delete-trailing-whitespace' on save? Probably."
-  :type 'boolean
-  :group 'coffee)
 
 (defcustom coffee-tab-width tab-width
   "The tab width to use when indenting."
@@ -94,40 +99,27 @@
   :group 'coffee)
 
 (defcustom coffee-command "coffee"
-  "The CoffeeScript command used for evaluating code. Must be in your
-path."
+  "The CoffeeScript command used for evaluating code."
   :type 'string
   :group 'coffee)
 
 (defcustom js2coffee-command "js2coffee"
-  "The js2coffee command used for evaluating code. Must be in your
-path."
+  "The js2coffee command used for evaluating code."
   :type 'string
   :group 'coffee)
 
-
 (defcustom coffee-args-repl '("-i")
-  "The command line arguments to pass to `coffee-command' to start a REPL."
+  "The arguments to pass to `coffee-command' to start a REPL."
   :type 'list
   :group 'coffee)
 
 (defcustom coffee-args-compile '("-c")
-  "The command line arguments to pass to `coffee-command' when compiling a file."
+  "The arguments to pass to `coffee-command' to compile a file."
   :type 'list
   :group 'coffee)
 
-(defcustom coffee-cygwin-mode t
-  "For Windows systems, add support for Cygwin-style absolute paths."
-  :type 'boolean
-  :group 'coffee)
-
-(defcustom coffee-cygwin-prefix "/cygdrive/C"
-  "The prefix with which to replace the drive-letter for your Windows partition, e.g. 'C:' would be replaced by '/c/cygdrive'."
-  :type 'string
-  :group 'coffee)
-
 (defcustom coffee-compiled-buffer-name "*coffee-compiled*"
-  "The name of the scratch buffer used when compiling CoffeeScript."
+  "The name of the scratch buffer used for compiled CoffeeScript."
   :type 'string
   :group 'coffee)
 
@@ -135,55 +127,23 @@ path."
   "Whether to jump to the first error if compilation fails.
 Please note that the coffee compiler doesn't always give a line
 number for the issue and in that case it is not possible to jump
-to the error, of course."
+to the error."
   :type 'boolean
   :group 'coffee)
 
 (defcustom coffee-watch-buffer-name "*coffee-watch*"
-  "The name of the scratch buffer used when using the --watch flag with  CoffeeScript."
+  "The name of the scratch buffer used when using the --watch flag
+with CoffeeScript."
   :type 'string
   :group 'coffee)
 
-(defvar coffee-mode-hook nil
-  "A hook for you to run your own code when the mode is loaded.")
+(defcustom coffee-mode-hook nil
+  "Hook called by `coffee-mode'."
+  :type 'hook
+  :group 'coffee)
 
 (defvar coffee-mode-map (make-keymap)
   "Keymap for CoffeeScript major mode.")
-
-;;
-;; Compat
-;;
-
-(unless (fboundp 'apply-partially)
-  (defun apply-partially (fun &rest args)
-    "Return a function that is a partial application of FUN to ARGS.
-ARGS is a list of the first N arguments to pass to FUN.
-The result is a new function which does the same as FUN, except that
-the first N arguments are fixed at the values with which this function
-was called."
-    (lexical-let ((fun fun) (args1 args))
-      (lambda (&rest args2) (apply fun (append args1 args2))))))
-
-;;
-;; Macros
-;;
-
-(defmacro setd (var val)
-  "Like setq but optionally logs the variable's value using `coffee-debug'."
-  (if (and (boundp 'coffee-debug-mode) coffee-debug-mode)
-      `(progn
-         (coffee-debug "%s: %s" ',var ,val)
-         (setq ,var ,val))
-    `(setq ,var ,val)))
-
-(defun coffee-debug (string &rest args)
-  "Print a message when in debug mode."
-  (when coffee-debug-mode
-      (apply 'message (append (list string) args))))
-
-(defmacro coffee-line-as-string ()
-  "Returns the current line as a string."
-  `(buffer-substring (point-at-bol) (point-at-eol)))
 
 ;;
 ;; Commands
@@ -206,27 +166,29 @@ If FILENAME is omitted, the current buffer's file name is used."
   (concat (file-name-sans-extension (or filename (buffer-file-name))) ".js"))
 
 (defun coffee-compile-file ()
-  "Compiles and saves the current file to disk. Doesn't open in a buffer.."
+  "Compiles and saves the current file to disk."
   (interactive)
   (let ((compiler-output (shell-command-to-string (coffee-command-compile (buffer-file-name)))))
     (if (string= compiler-output "")
         (message "Compiled and saved %s" (coffee-compiled-file-name))
       (let* ((msg (car (split-string compiler-output "[\n\r]+")))
-	     (line (and (string-match "on line \\([0-9]+\\)" msg)
-			(string-to-number (match-string 1 msg)))))
-	(message msg)
-	(when (and coffee-compile-jump-to-error line (> line 0))
-	  (goto-char (point-min))
-	  (forward-line (1- line)))))))
+             (line (and (string-match "on line \\([0-9]+\\)" msg)
+                        (string-to-number (match-string 1 msg)))))
+        (message msg)
+        (when (and coffee-compile-jump-to-error line (> line 0))
+          (goto-char (point-min))
+          (forward-line (1- line)))))))
 
 (defun coffee-compile-buffer ()
-  "Compiles the current buffer and displays the JS in another buffer."
+  "Compiles the current buffer and displays the JavaScript in a buffer
+called `coffee-compiled-buffer-name'."
   (interactive)
   (save-excursion
     (coffee-compile-region (point-min) (point-max))))
 
 (defun coffee-compile-region (start end)
-  "Compiles a region and displays the JS in another buffer."
+  "Compiles a region and displays the JavaScript in a buffer called
+`coffee-compiled-buffer-name'."
   (interactive "r")
 
   (let ((buffer (get-buffer coffee-compiled-buffer-name)))
@@ -238,49 +200,32 @@ If FILENAME is omitted, the current buffer's file name is used."
                           nil)
          (append coffee-args-compile (list "-s" "-p")))
   (switch-to-buffer (get-buffer coffee-compiled-buffer-name))
-  (funcall coffee-js-mode)
+  (let ((buffer-file-name "tmp.js")) (set-auto-mode))
   (goto-char (point-min)))
 
 (defun coffee-js2coffee-replace-region (start end)
-  "Replace JS to coffee in current buffer."
+  "Convert JavaScript in the region into CoffeeScript."
   (interactive "r")
 
   (let ((buffer (get-buffer coffee-compiled-buffer-name)))
     (when buffer
       (kill-buffer buffer)))
 
-  (call-process-region start end 
+  (call-process-region start end
                        js2coffee-command nil
-                       (current-buffer)
-                       )
-  (delete-region start end)
-  )
+                       (current-buffer))
+  (delete-region start end))
 
-(defun coffee-show-version ()
-  "Prints the `coffee-mode' version."
+(defun coffee-version ()
+  "Show the `coffee-mode' version in the echo area."
   (interactive)
-  (message (concat "coffee-mode v" coffee-mode-version)))
-
-(defun coffee-open-reference ()
-  "Open browser to CoffeeScript reference."
-  (interactive)
-  (browse-url "http://jashkenas.github.com/coffee-script/"))
-
-(defun coffee-open-node-reference ()
-  "Open browser to node.js documentation."
-  (interactive)
-  (browse-url "http://nodejs.org/docs/"))
-
-(defun coffee-open-github ()
-  "Open browser to `coffee-mode' project on GithHub."
-  (interactive)
-  (browse-url "http://github.com/defunkt/coffee-mode"))
+  (message (concat "coffee-mode version " coffee-mode-version)))
 
 (defun coffee-watch (dir-or-file)
-  "Run `coffee-run-cmd' with the --watch flag enabled for a directory or file"
+  "Run `coffee-run-cmd' with the --watch flag on a directory or file."
   (interactive "fDirectory or File: ")
   (let ((coffee-compiled-buffer-name coffee-watch-buffer-name)
-        (args (mapconcat 'identity (append coffee-args-compile (list "--watch" (coffee-universal-path dir-or-file))) " ")))
+        (args (mapconcat 'identity (append coffee-args-compile (list "--watch" (expand-file-name dir-or-file))) " ")))
     (coffee-run-cmd args)))
 
 ;;
@@ -295,9 +240,6 @@ If FILENAME is omitted, the current buffer's file name is used."
     ["Compile Region" coffee-compile-region]
     ["REPL" coffee-repl]
     "---"
-    ["CoffeeScript Reference" coffee-open-reference]
-    ["node.js Reference" coffee-open-node-reference]
-    ["coffee-mode on GitHub" coffee-open-github]
     ["Version" coffee-show-version]
     ))
 
@@ -324,7 +266,7 @@ If FILENAME is omitted, the current buffer's file name is used."
 (defvar coffee-namespace-regexp "\\b\\(class\\s +\\(\\S +\\)\\)\\b")
 
 ;; Booleans
-(defvar coffee-boolean-regexp "\\b\\(true\\|false\\|yes\\|no\\|on\\|off\\|null\\)\\b")
+(defvar coffee-boolean-regexp "\\b\\(true\\|false\\|yes\\|no\\|on\\|off\\|null\\|undefined\\)\\b")
 
 ;; Regular Expressions
 (defvar coffee-regexp-regexp "\\/\\(\\\\.\\|\\[\\(\\\\.\\|.\\)+?\\]\\|[^/]\\)+?\\/")
@@ -373,39 +315,22 @@ If FILENAME is omitted, the current buffer's file name is used."
 ;; Helper Functions
 ;;
 
-(defun coffee-before-save ()
-  "Hook run before file is saved. Deletes whitespace if
-`coffee-cleanup-whitespace' is non-nil."
-  (when coffee-cleanup-whitespace
-    (delete-trailing-whitespace)))
-
 (defun coffee-comment-dwim (arg)
   "Comment or uncomment current line or region in a smart way.
-For detail, see `comment-dwim'."
+For details, see `comment-dwim'."
   (interactive "*P")
   (require 'newcomment)
   (let ((deactivate-mark nil) (comment-start "#") (comment-end ""))
     (comment-dwim arg)))
 
-(defun coffee-cygwin-path (expanded-file-name)
-  "Given an expanded file name, derive the absolute Cygwin path based on `coffee-cygwin-prefix'."
-  (replace-regexp-in-string "^[a-zA-Z]:" coffee-cygwin-prefix expanded-file-name t))
-
-(defun coffee-universal-path (file-name)
-  "Handle different paths for different OS configurations for CoffeeScript"
-  (let ((full-file-name (expand-file-name file-name)))
-    (if (and (equal system-type 'windows-nt)
-             coffee-cygwin-mode)
-        (coffee-cygwin-path full-file-name)
-      full-file-name)))
-
 (defun coffee-command-compile (file-name)
-  "The `coffee-command' with args to compile a file."
-  (let ((full-file-name (coffee-universal-path file-name)))
+  "Run `coffee-command' to compile FILE."
+  (let ((full-file-name (expand-file-name file-name)))
     (mapconcat 'identity (append (list coffee-command) coffee-args-compile (list full-file-name)) " ")))
 
 (defun coffee-run-cmd (args)
-  "Given an arbitrary set of arguments for the `coffee-command', compile the command and show output in a custom compilation buffer."
+  "Run `coffee-command' with the given arguments, and display the
+output in a compilation buffer."
   (interactive "sArguments: ")
   (let ((compilation-buffer-name-function (lambda (this-mode)
                                             (generate-new-buffer-name coffee-compiled-buffer-name))))
@@ -473,8 +398,6 @@ For detail, see `comment-dwim'."
             (point-max)
             t)
 
-      (coffee-debug "Match: %s" (match-string 0))
-
       ;; If this is the start of a new namespace, save the namespace's
       ;; indentation level and name.
       (when (match-string 8)
@@ -485,10 +408,7 @@ For detail, see `comment-dwim'."
         (setq ns-name (concat ns-name "::"))
 
         ;; Save the indentation level.
-        (setq ns-indent (length (match-string 1)))
-
-        ;; Debug
-        (coffee-debug "ns: Found %s with indent %s" ns-name ns-indent))
+        (setq ns-indent (length (match-string 1))))
 
       ;; If this is an assignment, save the token being
       ;; assigned. `Please.print:` will be `Please.print`, `block:`
@@ -506,12 +426,9 @@ For detail, see `comment-dwim'."
           (when (and ns-name (> indent ns-indent))
             (setq assign (concat ns-name assign)))
 
-          (coffee-debug "=: Found %s with indent %s" assign indent)
-
           ;; Clear the namespace if we're no longer indented deeper
           ;; than it.
           (when (and ns-name (<= indent ns-indent))
-            (coffee-debug "ns: Clearing %s" ns-name)
             (setq ns-name nil)
             (setq ns-indent nil))
 
@@ -534,24 +451,14 @@ For detail, see `comment-dwim'."
   (if (= (point) (point-at-bol))
       (insert-tab)
     (save-excursion
-      (let ((prev-indent 0) (cur-indent 0))
-        ;; Figure out the indentation of the previous line
-        (setd prev-indent (coffee-previous-indent))
-
-        ;; Figure out the current line's indentation
-        (setd cur-indent (current-indentation))
-
+      (let ((prev-indent (coffee-previous-indent))
+            (cur-indent (current-indentation)))
         ;; Shift one column to the left
         (beginning-of-line)
         (insert-tab)
 
-        (coffee-debug "point: %s" (point))
-        (coffee-debug "point-at-bol: %s" (point-at-bol))
-
         (when (= (point-at-bol) (point))
           (forward-char coffee-tab-width))
-
-        (coffee-debug "New indent: %s" (current-indentation))
 
         ;; We're too far, remove all indentation.
         (when (> (- (current-indentation) prev-indent) coffee-tab-width)
@@ -560,22 +467,16 @@ For detail, see `comment-dwim'."
 
 (defun coffee-previous-indent ()
   "Return the indentation level of the previous non-blank line."
-
   (save-excursion
     (forward-line -1)
     (if (bobp)
         0
       (progn
-        (while (and (coffee-line-empty-p) (not (bobp))) (forward-line -1))
+        (while (and (looking-at "^[ \t]*$") (not (bobp))) (forward-line -1))
         (current-indentation)))))
 
-(defun coffee-line-empty-p ()
-  "Is this line empty? Returns non-nil if so, nil if not."
-  (or (bobp)
-   (string-match "^\\s *$" (coffee-line-as-string))))
-
 (defun coffee-newline-and-indent ()
-  "Inserts a newline and indents it to the same level as the previous line."
+  "Insert a newline and indent it to the same level as the previous line."
   (interactive)
 
   ;; Remember the current line indentation level,
@@ -614,8 +515,8 @@ next line should probably be indented.")
 should probably be indented.")
 
 (defun coffee-line-wants-indent ()
-  "Does the current line want to be indented deeper than the previous
-line? Returns `t' or `nil'. See the README for more details."
+  "Return t if the current line should be indented relative to the
+previous line."
   (interactive)
 
   (save-excursion
@@ -627,7 +528,7 @@ line? Returns `t' or `nil'. See the README for more details."
       ;; If the next few characters match one of our magic indenter
       ;; keywords, we want to indent the line we were on originally.
       (when (looking-at (coffee-indenters-bol-regexp))
-        (setd indenter-at-bol t))
+        (setq indenter-at-bol t))
 
       ;; If that didn't match, go to the back of the line and check to
       ;; see if the last character matches one of our indenter
@@ -636,22 +537,24 @@ line? Returns `t' or `nil'. See the README for more details."
         (end-of-line)
 
         ;; Optimized for speed - checks only the last character.
-        (when (some (lambda (char)
-                        (= (char-before) char))
-                      coffee-indenters-eol)
-          (setd indenter-at-eol t)))
+        (let ((indenters coffee-indenters-eol))
+          (while indenters
+            (if (/= (char-before) (car indenters))
+                (setq indenters (cdr indenters))
+              (setq indenter-at-eol t)
+              (setq indenters nil)))))
 
       ;; If we found an indenter, return `t'.
       (or indenter-at-bol indenter-at-eol))))
 
 (defun coffee-previous-line-is-comment ()
-  "Returns `t' if the previous line is a CoffeeScript comment."
+  "Return t if the previous line is a CoffeeScript comment."
   (save-excursion
     (forward-line -1)
     (coffee-line-is-comment)))
 
 (defun coffee-line-is-comment ()
-  "Returns `t' if the current line is a CoffeeScript comment."
+  "Return t if the current line is a CoffeeScript comment."
   (save-excursion
     (backward-to-indentation 0)
     (= (char-after) (string-to-char "#"))))
@@ -695,10 +598,7 @@ line? Returns `t' or `nil'. See the README for more details."
   (setq imenu-create-index-function 'coffee-imenu-create-index)
 
   ;; no tabs
-  (setq indent-tabs-mode nil)
-
-  ;; hooks
-  (set (make-local-variable 'before-save-hook) 'coffee-before-save))
+  (setq indent-tabs-mode nil))
 
 ;;
 ;; Compile-on-Save minor mode
