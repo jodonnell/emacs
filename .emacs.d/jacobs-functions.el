@@ -227,3 +227,14 @@ character is a whitespace or non-word character, then
   (insert "cd ~/programming/zombie_run/lua/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua")
   (comint-send-input)
   (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))
+
+(defun find-file-at-point-with-line()
+  (interactive)
+  (setq line-num 0)
+  (save-excursion
+    (search-forward-regexp "[^ ]:" (point-max) t)
+    (if (looking-at "[0-9]+")
+         (setq line-num (string-to-number (buffer-substring (match-beginning 0) (match-end 0))))))
+  (find-file-at-point)
+  (if (not (equal line-num 0))
+      (goto-line line-num)))

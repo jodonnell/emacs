@@ -261,7 +261,7 @@
 (global-set-key "\M-s"     'isearch-forward-regexp)
 (global-set-key "\M-g"     'goto-line)
 (global-set-key "\C-xt"    'toggle-truncate-lines)
-(global-set-key "\C-xa"    'find-file-at-point)
+(global-set-key "\C-xa"    'find-file-at-point-with-line)
 (global-set-key "\C-xp"    'shell)
 (global-set-key "\C-x\C-p" 'rename-buffer)
 (global-set-key [f8]       'sw-list)
