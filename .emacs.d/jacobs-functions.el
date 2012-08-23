@@ -217,14 +217,38 @@ character is a whitespace or non-word character, then
 (defun kill-lua-tests (process output)
   (insert (ansi-color-apply output))
   (if (string-match "Simulation Terminated: Lua script called os.exit() with status" output)
-      (comint-kill-subjob)))
+      (progn
+        (highlight-regexp "FAIL:" 'hi-red-b)
+        (end-of-buffer)
+        (search-backward "Simulation Terminated: Lua script called os.exit() with status" nil t)
+        (next-line)
+        (beginning-of-line)
+        (delete-region (point) (point-max))
+        
+        (beginning-of-buffer)
+        (search-forward "-- Starting suite")
+        (previous-line)
+        (end-of-line)
+        (delete-region (point-min) (point))
+
+        (end-of-buffer)
+
+        (highlight-regexp "[0-9]+ passed" 'hi-green-b)
+        (highlight-regexp "[0-9]+ failed" 'hi-red-b)
+        (highlight-regexp "[0-9]+ error" 'hi-blue-b)
+
+        (newline)
+        (newline)
+        (newline)
+
+        (comint-kill-subjob))))
 
 (defun run-lua-tests ()
   "runs the lua corona tests for zombie run"
   (interactive)
   (shell "lua-tests")
   (erase-buffer)
-  (insert "cd ~/programming/zombie_run/lua/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua")
+  (insert "cd ~/programming/zombie_run/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua")
   (comint-send-input)
   (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))
 
