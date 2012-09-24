@@ -53,6 +53,10 @@
 (if (equal (getenv "EMACS_ENV") "macbookair")
     (load "~/.emacs.d/macbookair.el"))
 
+(when (equal system-type 'darwin)
+  (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
+  (push "/usr/local/git/bin" exec-path))
+
 (setq column-number-mode t)
 
 
