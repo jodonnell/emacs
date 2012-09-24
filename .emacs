@@ -235,8 +235,8 @@
 (add-to-list 'auto-mode-alist '("\\.h$" . objc-mode))
 (add-hook 'objc-mode-hook (lambda()
 			    (setq c-default-style "bsd"
-				  c-basic-offset 4
-				  indent-tabs-mode nil)
+				  c-basic-offset 8
+				  indent-tabs-mode t)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (flyspell-prog-mode)))
 
