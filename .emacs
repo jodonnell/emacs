@@ -13,6 +13,8 @@
 
 (setq make-backup-files nil)
 (setq auto-save-default nil)
+(setq make-backup-files nil)
+
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 
