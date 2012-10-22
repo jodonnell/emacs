@@ -3,9 +3,9 @@
 ;;; Code:
 
 
-;;;### (autoloads (rinari-minor-mode rinari-launch) "rinari" "rinari.el"
-;;;;;;  (20525 35770))
-;;; Generated autoloads from rinari.el
+;;;### (autoloads (rinari-minor-mode rinari-launch) "rinari" "../../../../.emacs.d/elpa/rinari-2.9/rinari.el"
+;;;;;;  "9504c98c73d3b3ced717a22e309f4716")
+;;; Generated autoloads from ../../../../.emacs.d/elpa/rinari-2.9/rinari.el
 
 (autoload 'rinari-launch "rinari" "\
 Call function `rinari-minor-mode' if inside a rails project.
@@ -25,7 +25,9 @@ Enable Rinari minor mode to support working with the Ruby on Rails framework.
 
 ;;;***
 
-;;;### (autoloads nil nil ("rinari-pkg.el") (20525 35770 337452))
+;;;### (autoloads nil nil ("../../../../.emacs.d/elpa/rinari-2.9/rinari-pkg.el"
+;;;;;;  "../../../../.emacs.d/elpa/rinari-2.9/rinari.el") (20570
+;;;;;;  29686 690721))
 
 ;;;***
 

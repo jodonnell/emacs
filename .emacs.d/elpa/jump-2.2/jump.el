@@ -1,13 +1,14 @@
+
 ;;; jump.el --- build functions which contextually jump between files
 
 ;; Copyright (C) 2008 Eric Schulte
 
 ;; Author: Eric Schulte
 ;; URL: http://github.com/eschulte/jump.el/tree/master
-;; Version: 2.0
+;; Version: 2.2
 ;; Created: 2008-08-21
 ;; Keywords: project, convenience, navigation
-;; Package-Requires: ((findr "0.7") (inflections "1.0"))
+;; Package-Requires: ((findr "0.7") (inflections "1.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -63,9 +64,14 @@
 ;;   'ruby-add-log-current-method)
 
 ;;; Code:
+(if (featurep 'xemacs)
+  (add-to-list 'load-path (file-name-as-directory (or load-file-name buffer-file-name))))
 (require 'which-func)
 (require 'findr)
 (require 'inflections)
+
+;; ido-mode must be defined (only an issue with Xemacs)
+(unless (fboundp 'ido-mode) (defvar ido-mode nil))
 
 (defvar jump-ignore-file-regexp ;; TODO actually start using this
   "\\(.*\\.\\(git\\|svn\\|cvs\\).*\\|.*~\\|.*\\#.*\\#\\)"
@@ -75,7 +81,9 @@
   "if `ido-mode' is turned on use ido speedups completing the read"
   (if ido-mode
       (ido-completing-read prompt choices predicate require-match initial-input hist def)
-    (completing-read prompt choices predicate require-match initial-input hist def)))
+    (if (featurep 'xemacs)
+        (completing-read prompt (mapcar 'list choices) predicate require-match initial-input hist def)
+      (completing-read prompt choices predicate require-match initial-input hist def))))
 
 (defun jump-find-file-in-dir (dir)
   "if `ido-mode' is turned on use ido speedups finding the file"
@@ -107,10 +115,14 @@ Return the path selected or nil if files was empty."
     (if file (find-file (cdr (assoc file files))))))
 
 (defun jump-remove-unwanted-files (files)
-  (delete-if nil (mapcar (lambda (file-cons)
-			   (unless (string-match
-				    jump-ignore-file-regexp (cdr file-cons)) file-cons))
-			 files)))
+  "Remove file matching `jump-ignore-file-regexp' from the list
+of possible jumps."
+  (delete-if nil
+	     (mapcar
+	      (lambda (file-cons)
+		(unless (string-match jump-ignore-file-regexp (cdr file-cons))
+		  file-cons))
+	      files)))
 
 (defun jump-to-file (&optional file)
   "Open the file located at file if file ends in a / then look in
@@ -133,9 +145,14 @@ from all matches."
 			(jump-uniqueify file-cons))
 		      (add-to-list 'file-alist file-cons)
 		      file-cons))
-		  (findr (car file-cons)
-			 (expand-file-name (or (file-name-directory
-						(cdr file-cons)) "") root)))))))))
+		  (let ((dir (expand-file-name
+			      (or (file-name-directory (cdr file-cons)) "")
+			      root)))
+		    (when (and (file-exists-p dir) (file-directory-p dir))
+			(findr (car file-cons)
+			       (expand-file-name
+				(or (file-name-directory
+				     (cdr file-cons)) "") root)))))))))))
 
 (defun jump-to-method (&optional method)
   "If `jump-method' returns method in buffer, go to the first
@@ -148,7 +165,7 @@ line inside of method."
 			  (and (> (forward-line 1) 0)
 			       (goto-char (point-min)))))))
     (when (and (commandp 'recenter-top-bottom) (not (equal results 1))) (recenter-top-bottom))))
-  
+
 (defun jump-to-path (path)
   "Jump to the location specified by PATH (regexp allowed in
 path).  If path ends in / then just look in that directory"
@@ -240,10 +257,10 @@ MAKE to create the target file."
 		      (reverse matches)) t))))
 	((functionp spec) (eval (list spec)))
 	((equal t spec) t)
-	(t (message (format "unrecognized jump-from specification format %s")))))
+	(t (message (format "unrecognized jump-from specification format %s" spec)))))
 
 ;;;###autoload
-(defun defjump (name specs root &optional doc make method-command)
+(defmacro defjump (name specs root &optional doc make method-command)
   "Define NAME as a function with behavior determined by SPECS.
 SPECS should be a list of cons cells of the form
 
@@ -269,31 +286,37 @@ MAKE `find-file' will be used to open the path.
 
 Optional argument METHOD-COMMAND overrides the function used to
 find the current method which defaults to `which-function'."
-  (eval
-   `(defun ,name (&optional create) ,(concat doc "\n\nautomatically created by `defjump'")
-      (interactive "P")
-      (let ((root ,(if (functionp root) `(,root) root))
-	    (method-command (quote ,(or method-command 'which-function)))
-	    matches)
-	(loop ;; try every rule in mappings
-	 for spec in (quote ,(mapcar
-			      (lambda (spec)
-				(if (stringp (car spec))
-				    (cons (replace-regexp-in-string
-					   "\\\\[[:digit:]]+" "\\\\(.*?\\\\)"
-					   (car spec)) (cdr spec))
-				  spec))
-			      specs))
-	 ;; don't stop until both the front and the back match
-	 ;;
-	 ;; the back should match if the user is presented with a list
-	 ;; of files, or a single file is jumped to
-	 until (and (setf matches (jump-from (car spec)))
-		    (cond
-		     ((equal t matches)
-		      (jump-to (cdr spec) nil (if create (quote ,make))))
-		     ((consp matches)
-		      (jump-to (cdr spec) matches (if create (quote ,make)))))))))))
+  `(defun ,name (&optional create)
+     ,(concat doc "\n\nautomatically created by `defjump'")
+     (interactive "P")
+     (let ((root ,(if (functionp root) `(,root) root))
+	   (method-command ,(or method-command 'which-function))
+	   matches)
+       (loop ;; try every rule in mappings
+	for spec in (quote ,(mapcar
+			     (lambda (spec)
+			       (if (stringp (car spec))
+				   ;;xemacs did not understand :digit: class
+				   (if (featurep 'xemacs)
+				       (cons (replace-regexp-in-string
+					      "\\\\[0-9]+" "\\\\(.*?\\\\)"
+					      (car spec)) (cdr spec))
+				     (cons (replace-regexp-in-string
+					    "\\\\[[:digit:]]+" "\\\\(.*?\\\\)"
+					    (car spec)) (cdr spec)))
+				 spec))
+			     specs))
+	;; don't stop until both the front and the back match
+	;;
+	;; the back should match if the user is presented with a list
+	;; of files, or a single file is jumped to
+	until
+	(and (setf matches (jump-from (car spec)))
+	     (cond
+	      ((equal t matches)
+	       (jump-to (cdr spec) nil (when create ,make)))
+	      ((consp matches)
+	       (jump-to (cdr spec) matches (when create ,make)))))))))
 
 (provide 'jump)
 ;;; jump.el ends here
