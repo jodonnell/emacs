@@ -243,16 +243,27 @@ character is a whitespace or non-word character, then
 
         (comint-kill-subjob))))
 
+
+(defun run-lua-tests-get-parent-dir-name()
+  (string-match ".*programming/\\(.*?\\)/" (buffer-file-name))
+  (match-string 1 (buffer-file-name)))
+
 (defun run-lua-tests ()
   "runs the lua corona tests for zombie run"
   (interactive)
+
+  (setq run-lua-tests-dir (run-lua-tests-get-parent-dir-name))
+  (delete-other-windows)
+  (split-window-right)
+  (other-window 1)
   (shell "lua-tests")
   (erase-buffer)
-  (insert "cd ~/programming/zombie_run/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua")
+  (insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua"))
   (comint-send-input)
   (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))
 
 (defun find-file-at-point-with-line()
+  "if file has an attached line num goto that line, ie boom.rb:12"
   (interactive)
   (setq line-num 0)
   (save-excursion
