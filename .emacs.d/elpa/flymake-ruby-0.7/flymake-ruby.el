@@ -3,7 +3,7 @@
 ;;
 ;;; Author: Steve Purcell <steve@sanityinc.com>
 ;;; URL: https://github.com/purcell/flymake-ruby
-;;; Version: 0.6
+;;; Version: 0.7
 ;;;
 ;;; Commentary:
 ;; Usage:
@@ -13,7 +13,7 @@
 
 ;;; Code:
 
-(defconst flymake-ruby-err-line-patterns '(("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3)))
+(defconst flymake-ruby-err-line-patterns '(("^\\(.*\.rb\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3)))
 
 (defvar flymake-ruby-executable "ruby"
   "The ruby executable to use for syntax checking.")
@@ -30,7 +30,7 @@ location."
 (defun flymake-ruby-init ()
   "Construct a command that flymake can use to check ruby source."
   (list flymake-ruby-executable
-        (list "-c" (flymake-init-create-temp-buffer-copy
+        (list "-w" "-c" (flymake-init-create-temp-buffer-copy
                     'flymake-ruby--create-temp-in-system-tempdir))))
 
 ;;;###autoload
