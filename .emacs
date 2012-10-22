@@ -137,6 +137,7 @@
 (require 'flymake-ruby)
 (require 'rinari)
 (require 'show-args)
+(require 'rspec-mode)
 (require 'rvm)
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
@@ -155,7 +156,7 @@
                             (global-set-key "\C-crs" 'rubymotion-spec)
                             (global-set-key "\C-crr" 'rubymotion-simulator)
                             (global-set-key "\C-crd" 'rubymotion-device)
-
+                            (rspec-mode)
                             
 			    (local-set-key "\C-i" 'th-complete-or-indent)
                             (wrap-region-mode)
@@ -166,7 +167,6 @@
 ;; HAML
 (require 'haml-mode)
 (add-hook 'haml-mode-hook (lambda() 
-                            (show-args-mode)
 			    (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -339,6 +339,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(rspec-use-rvm t)
  '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
  '(scss-compile-at-save nil)
  '(warning-suppress-types (quote (nil))))
