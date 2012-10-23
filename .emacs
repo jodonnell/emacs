@@ -273,6 +273,7 @@
 (global-set-key [f8]       'sw-list)
 (global-set-key "\C-cp"    'new-shell)
 (global-set-key "\C-x\C-y" 'yank-regexp)
+(global-set-key "\C-cs"    'restart-server)
 
 (keyboard-translate ?\C-u ?\C-x)
 (keyboard-translate ?\C-b ?\C-c)

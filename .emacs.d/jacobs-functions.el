@@ -273,3 +273,9 @@ character is a whitespace or non-word character, then
   (find-file-at-point)
   (if (not (equal line-num 0))
       (goto-line line-num)))
+
+(defun restart-server()
+  (interactive)
+  (set-buffer "server")
+  (comint-kill-subjob)
+  (shell-insert-send-sleep "rails s" 0))
