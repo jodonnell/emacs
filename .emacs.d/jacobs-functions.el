@@ -279,3 +279,26 @@ character is a whitespace or non-word character, then
   (set-buffer "server")
   (comint-kill-subjob)
   (shell-insert-send-sleep "rails s" 0))
+
+(defun js-make-private ()
+  (interactive)
+  (let ((token (thing-at-point 'word)))
+    (save-excursion
+      (beginning-of-buffer)
+      (query-replace token (concat "_" token)))))
+
+
+(defun get-image-size (file-name)
+  (interactive "fFile name: ")
+
+  (let ((image-size (shell-command-to-string (concat "identify -format '%w %h' " file-name))))
+       (message
+        (concat 
+         "width: "
+         (car (split-string image-size))
+         " height: "
+         (car (cdr (split-string image-size)))))))
+
+
+
+  

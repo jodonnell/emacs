@@ -1,8 +1,8 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
-(setq load-path (append load-path (list "~/.emacs.d")))
-(let ((default-directory "~/.emacs.d/elpa/"))
-  (normal-top-level-add-to-load-path '("."))
+ (setq load-path (append load-path (list "~/.emacs.d")))
+ (let ((default-directory "~/.emacs.d/elpa/"))
+   (normal-top-level-add-to-load-path '(".")) 
   (normal-top-level-add-subdirs-to-load-path))
 
 (setq w32-use-w32-font-dialog nil)
@@ -58,6 +58,13 @@
   (push "/usr/local/git/bin" exec-path))
 
 (setq column-number-mode t)
+
+
+
+(add-hook 'log-edit-mode-hook
+          (lambda ()
+            (local-unset-key (kbd "M-n"))
+            (local-set-key (kbd "M-n") 'forward-word)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -122,12 +129,16 @@
  '(underline ((t nil))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; JAVASCRIPT STUFF
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;; JAVASCRIPT STUFF
+;;(require 'flymake-jshint)
+;; (push "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin" exec-path)
+;; (setenv "PATH" (concat "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin:" (getenv "PATH")))
 
 (add-hook 'js-mode-hook (lambda() 
  				  (local-set-key "\C-i" 'th-complete-or-indent)
 				  (local-set-key "\C-c\C-t" 'js-run-tests)
+;;                                  'flymake-mode
  				  (setq indent-tabs-mode nil)))
 
 
@@ -341,6 +352,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(rspec-use-rvm t)
+ '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
  '(scss-compile-at-save nil)
  '(warning-suppress-types (quote (nil))))
@@ -419,3 +431,22 @@
           (rename-buffer new-name)
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
+
+;; ; -------------------- Autocomplete --------------------
+;; ;; Use with Rsense for Ruby autocomplete:
+;; ;; http://cx4a.org/software/rsense/
+;; ;; Follow instructions on: http://itstickers.blogspot.com/2010/11/all-about-emacs.html
+;; (require 'auto-complete-config)
+;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+;; (ac-config-default)
+
+;; ;; Rsense
+;; (setq rsense-home "/opt/rsense-0.3")
+;; (add-to-list 'load-path (concat rsense-home "/etc"))
+;; (require 'rsense)
+ 
+;; ;; Rsense + Autocomplete
+;; (add-hook 'ruby-mode-hook
+;;           (lambda ()
+;;             (add-to-list 'ac-sources 'ac-source-rsense-method)
+;;             (add-to-list 'ac-sources 'ac-source-rsense-constant)))
