@@ -38,7 +38,6 @@
 
 (require 'midnight)
 (require 'pretty-lambdada)
-(require 'wrap-region)
 (pretty-lambda-for-modes)
 
 (setq calendar-latitude 40.74)
@@ -46,15 +45,12 @@
 
 (setq calendar-location-name "New York, NY")
 
-(if (equal (getenv "EMACS_ENV") "mac_home")
-    (load "~/.emacs.d/mac_home.el"))
-(if (equal (getenv "EMACS_ENV") "ubuntu_work")
-    (load "~/.emacs.d/ubuntu_work.el"))
 (if (equal (getenv "EMACS_ENV") "macbookair")
     (load "~/.emacs.d/macbookair.el"))
 
 (when (equal system-type 'darwin)
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
+  (setq ispell-program-name "/usr/local/bin/ispell")
   (push "/usr/local/git/bin" exec-path))
 
 (setq column-number-mode t)
@@ -147,9 +143,14 @@
 (require 'rails-dream)
 (require 'flymake-ruby)
 (require 'rinari)
-(require 'show-args)
+;(require 'show-args)
 (require 'rspec-mode)
 (require 'rvm)
+(require 'robe)
+(require 'company)
+(push 'company-robe company-backends)
+
+
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
@@ -163,14 +164,14 @@
                             (global-set-key "\C-cd" 'get-rails-documentation)
                             (global-set-key "\C-cm" 'get-instance-methods-current)
                             (global-set-key "\C-cc" 'get-class-methods-current)
-
+                            
                             (global-set-key "\C-crs" 'rubymotion-spec)
                             (global-set-key "\C-crr" 'rubymotion-simulator)
                             (global-set-key "\C-crd" 'rubymotion-device)
                             (rspec-mode)
-                            
+                            (robe-mode)
+                            (company-mode)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
-                            (wrap-region-mode)
                             (setq rinari-tags-file-name "TAGS")
 			    (setq indent-tabs-mode nil)))
 
@@ -450,3 +451,6 @@
 ;;           (lambda ()
 ;;             (add-to-list 'ac-sources 'ac-source-rsense-method)
 ;;             (add-to-list 'ac-sources 'ac-source-rsense-constant)))
+
+
+
