@@ -7,13 +7,18 @@
     (save-excursion
       (old-method-into-ripper))
     (new-method-into-ripper)
+    (run-with-idle-timer 3 nil 'add-args method-name)))
+    
+
+(defun add-args(method-name)
+  (save-excursion
     (let (args)
       (setq args (grab-arguments))
       (replace-string method-name (concat method-name " " args)))))
-    
 
 (defun grab-arguments()
   (save-excursion
+    (set-buffer "*ruby*")
     (search-backward "=> ")
     (forward-char 4)
     (let (start)
@@ -70,12 +75,16 @@
     (comint-send-input))
   (get-used))
 
+(defun boom()
+  (insert "module ASTRefactor;  def find_used_assigned_vars ruby_ast, var, assigned_vars;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var and assigned_vars.include? thing;    if thing.is_a? Array;      find_used_assigned_vars thing, var, assigned_vars;    elsif thing == :@ident;      next_is_var = true;    end;  end;  return var;end; def get_assigned_vars ruby_ast, var, assignment=false;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var;    if thing.is_a? Array;      get_assigned_vars thing, var, assignment;    elsif thing == :assign;      assignment = true;    elsif thing == :@ident and assignment;      next_is_var = true;    end;  end;  return var;end; end; include ASTRefactor ")
+  (comint-send-input))
+
 (defun get-used()
-  (insert "def find_used_assigned_vars ruby_ast, var, assigned_vars;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var and assigned_vars.include? thing;    if thing.is_a? Array;      find_used_assigned_vars thing, var, assigned_vars;    elsif thing == :@ident;      next_is_var = true;    end;  end;  return var;end; (find_used_assigned_vars b, [], results).join(', ')")
+  (insert "(find_used_assigned_vars b, [], results).join(', ')")
   (comint-send-input))
 
 (defun get-all-used()
-  (insert "def get_assigned_vars ruby_ast, var, assignment=false;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var;    if thing.is_a? Array;      get_assigned_vars thing, var, assignment;    elsif thing == :assign;      assignment = true;    elsif thing == :@ident and assignment;      next_is_var = true;    end;  end;  return var;end;results = get_assigned_vars a, []")
+  (insert "results = get_assigned_vars a, []")
   (comint-send-input))
 
 
