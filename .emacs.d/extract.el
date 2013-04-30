@@ -1,5 +1,23 @@
+(defvar extract-running nil)
+
+(defvar extract-ruby-path
+  (let ((current (or load-file-name (buffer-file-name))))
+    (expand-file-name (file-name-directory current)))
+  "Path to the backend Ruby code.")
+
 (defun extract-method(method-name)
   (interactive "sNew method name: ")
+  (when (not extract-running)
+    (progn
+      (setq extract-running t)
+      (let ((script (format (mapconcat #'identity
+                                       '("unless defined? ASTRefactor"
+                                         "$:.unshift '%s'"
+                                         "require 'extract'"
+                                         "end\n")
+                                       "; ")
+                            extract-ruby-path)))
+        (comint-send-string (inf-ruby-proc) script))
   (save-excursion 
     (replace-region-with-method method-name)
     (find-spot-to-insert-new-method)
