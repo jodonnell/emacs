@@ -27,4 +27,3 @@ class ASTRefactor
     return var
   end
 end
-ast_refactor = ASTRefactor.new

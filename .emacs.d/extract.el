@@ -14,10 +14,12 @@
                                        '("unless defined? ASTRefactor"
                                          "$:.unshift '%s'"
                                          "require 'extract'"
+                                         "require 'ripper'"
+                                         "ast_refactor = ASTRefactor.new"
                                          "end\n")
                                        "; ")
                             extract-ruby-path)))
-        (comint-send-string (inf-ruby-proc) script))
+        (comint-send-string (inf-ruby-proc) script))))
   (save-excursion 
     (replace-region-with-method method-name)
     (find-spot-to-insert-new-method)
@@ -70,13 +72,8 @@
     (end-of-defun)
     (setq old-method (buffer-substring-no-properties start (point)))
     (set-buffer "*ruby*")
-    (insert "require 'ripper'")
-    (comint-send-input)
-    (insert "a = Ripper.sexp('")
+    (comint-send-string (inf-ruby-proc) (concat "a = Ripper.sexp('" old-method "')\n")))
     ; need to escape any '
-    (insert old-method)
-    (insert "')")
-    (comint-send-input))
   (get-all-used))
 
 (defun new-method-into-ripper()
@@ -93,16 +90,12 @@
     (comint-send-input))
   (get-used))
 
-(defun boom()
-  (insert "module ASTRefactor;  def find_used_assigned_vars ruby_ast, var, assigned_vars;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var and assigned_vars.include? thing;    if thing.is_a? Array;      find_used_assigned_vars thing, var, assigned_vars;    elsif thing == :@ident;      next_is_var = true;    end;  end;  return var;end; def get_assigned_vars ruby_ast, var, assignment=false;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var;    if thing.is_a? Array;      get_assigned_vars thing, var, assignment;    elsif thing == :assign;      assignment = true;    elsif thing == :@ident and assignment;      next_is_var = true;    end;  end;  return var;end; end; include ASTRefactor ")
-  (comint-send-input))
-
 (defun get-used()
-  (insert "(find_used_assigned_vars b, [], results).join(', ')")
+  (insert "(ast_refactor.find_used_assigned_vars b, [], results).join(', ')")
   (comint-send-input))
 
 (defun get-all-used()
-  (insert "results = get_assigned_vars a, []")
+  (insert "results = ast_refactor.get_assigned_vars a, []")
   (comint-send-input))
 
 
