@@ -67,24 +67,20 @@
 
 (defun old-method-into-ripper()
   (beginning-of-defun 2)
-  (let (start old-method)
-    (setq start (point))
-    (end-of-defun)
-    (setq old-method (buffer-substring-no-properties start (point)))
-    (set-buffer "*ruby*")
-    (comint-send-string (inf-ruby-proc) (concat "a = Ripper.sexp('" old-method "')\n")))
-    ; need to escape any '
+  (comint-send-string (inf-ruby-proc) (concat "a = Ripper.sexp('" (get-method) "')\n"))
   (get-all-used))
 
 (defun new-method-into-ripper()
   (beginning-of-defun)
-  (let (start new-method)
+  (comint-send-string (inf-ruby-proc) (concat "b = Ripper.sexp('" (get-method) "')\n"))
+  (get-used))
+
+(defun get-method() 
+  ; need to escape any '
+  (let (start)
     (setq start (point))
     (end-of-defun)
-    (setq new-method (buffer-substring-no-properties start (point)))
-    ; need to escape any '
-    (comint-send-string (inf-ruby-proc) (concat "b = Ripper.sexp('" new-method "')\n")))
-  (get-used))
+    (buffer-substring-no-properties start (point))))
 
 (defun get-used()
   (comint-send-string (inf-ruby-proc) "(ast_refactor.find_used_assigned_vars b, [], results).join(', ')\n"))
