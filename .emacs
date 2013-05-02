@@ -402,6 +402,10 @@
 
 (require 'sass-mode)
 (require 'scss-mode)
+(add-hook 'scss-mode-hook (lambda()
+                            (setq css-indent-offset 2
+                                  indent-tabs-mode nil)))
+
 (require 'rvm)
 
 (require 'ctags)
