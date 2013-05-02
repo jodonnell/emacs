@@ -82,22 +82,16 @@
     (setq start (point))
     (end-of-defun)
     (setq new-method (buffer-substring-no-properties start (point)))
-    (set-buffer "*ruby*")
-    (insert "b = Ripper.sexp('")
     ; need to escape any '
-    (insert new-method)
-    (insert "')")
-    (comint-send-input))
+    (comint-send-string (inf-ruby-proc) (concat "b = Ripper.sexp('" new-method "')\n")))
   (get-used))
 
 (defun get-used()
-  (insert "(ast_refactor.find_used_assigned_vars b, [], results).join(', ')")
-  (comint-send-input))
+  (comint-send-string (inf-ruby-proc) "(ast_refactor.find_used_assigned_vars b, [], results).join(', ')\n"))
+
 
 (defun get-all-used()
-  (insert "results = ast_refactor.get_assigned_vars a, []")
-  (comint-send-input))
-
+  (comint-send-string (inf-ruby-proc) "results = ast_refactor.get_assigned_vars a, []\n"))
 
 (defun insert-and-indent(text)
   (insert text)
