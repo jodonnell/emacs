@@ -28,7 +28,6 @@
       (old-method-into-ripper))
     (new-method-into-ripper)
     (run-with-idle-timer 3 nil 'add-args method-name)))
-    
 
 (defun add-args(method-name)
   (save-excursion
@@ -46,7 +45,6 @@
       (search-forward "\"")
       (backward-char)
       (buffer-substring-no-properties start (point)))))
-
 
 (defun replace-region-with-method(method-name)
   (kill-region (point) (mark))
