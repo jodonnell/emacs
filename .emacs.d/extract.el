@@ -1,5 +1,25 @@
+(defvar extract-running nil)
+
+(defvar extract-ruby-path
+  (let ((current (or load-file-name (buffer-file-name))))
+    (expand-file-name (file-name-directory current)))
+  "Path to the backend Ruby code.")
+
 (defun extract-method(method-name)
   (interactive "sNew method name: ")
+  (when (not extract-running)
+    (progn
+      (setq extract-running t)
+      (let ((script (format (mapconcat #'identity
+                                       '("unless defined? ASTRefactor"
+                                         "$:.unshift '%s'"
+                                         "require 'extract'"
+                                         "require 'ripper'"
+                                         "ast_refactor = ASTRefactor.new"
+                                         "end\n")
+                                       "; ")
+                            extract-ruby-path)))
+        (comint-send-string (inf-ruby-proc) script))))
   (save-excursion 
     (replace-region-with-method method-name)
     (find-spot-to-insert-new-method)
@@ -7,13 +27,17 @@
     (save-excursion
       (old-method-into-ripper))
     (new-method-into-ripper)
+    (run-with-idle-timer 3 nil 'add-args method-name)))
+
+(defun add-args(method-name)
+  (save-excursion
     (let (args)
       (setq args (grab-arguments))
       (replace-string method-name (concat method-name " " args)))))
-    
 
 (defun grab-arguments()
   (save-excursion
+    (set-buffer "*ruby*")
     (search-backward "=> ")
     (forward-char 4)
     (let (start)
@@ -21,7 +45,6 @@
       (search-forward "\"")
       (backward-char)
       (buffer-substring-no-properties start (point)))))
-
 
 (defun replace-region-with-method(method-name)
   (kill-region (point) (mark))
@@ -42,42 +65,27 @@
 
 (defun old-method-into-ripper()
   (beginning-of-defun 2)
-  (let (start old-method)
-    (setq start (point))
-    (end-of-defun)
-    (setq old-method (buffer-substring-no-properties start (point)))
-    (set-buffer "*ruby*")
-    (insert "require 'ripper'")
-    (comint-send-input)
-    (insert "a = Ripper.sexp('")
-    ; need to escape any '
-    (insert old-method)
-    (insert "')")
-    (comint-send-input))
+  (comint-send-string (inf-ruby-proc) (concat "a = Ripper.sexp('" (get-method) "')\n"))
   (get-all-used))
 
 (defun new-method-into-ripper()
   (beginning-of-defun)
-  (let (start new-method)
-    (setq start (point))
-    (end-of-defun)
-    (setq new-method (buffer-substring-no-properties start (point)))
-    (set-buffer "*ruby*")
-    (insert "b = Ripper.sexp('")
-    ; need to escape any '
-    (insert new-method)
-    (insert "')")
-    (comint-send-input))
+  (comint-send-string (inf-ruby-proc) (concat "b = Ripper.sexp('" (get-method) "')\n"))
   (get-used))
 
+(defun get-method() 
+  ; need to escape any '
+  (let (start)
+    (setq start (point))
+    (end-of-defun)
+    (buffer-substring-no-properties start (point))))
+
 (defun get-used()
-  (insert "def find_used_assigned_vars ruby_ast, var, assigned_vars;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var and assigned_vars.include? thing;    if thing.is_a? Array;      find_used_assigned_vars thing, var, assigned_vars;    elsif thing == :@ident;      next_is_var = true;    end;  end;  return var;end; (find_used_assigned_vars b, [], results).join(', ')")
-  (comint-send-input))
+  (comint-send-string (inf-ruby-proc) "(ast_refactor.find_used_assigned_vars b, [], results).join(', ')\n"))
+
 
 (defun get-all-used()
-  (insert "def get_assigned_vars ruby_ast, var, assignment=false;  next_is_var = false;  ruby_ast.each do |thing|;    return var.push(thing) if next_is_var;    if thing.is_a? Array;      get_assigned_vars thing, var, assignment;    elsif thing == :assign;      assignment = true;    elsif thing == :@ident and assignment;      next_is_var = true;    end;  end;  return var;end;results = get_assigned_vars a, []")
-  (comint-send-input))
-
+  (comint-send-string (inf-ruby-proc) "results = ast_refactor.get_assigned_vars a, []\n"))
 
 (defun insert-and-indent(text)
   (insert text)
