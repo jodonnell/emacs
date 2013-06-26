@@ -215,6 +215,7 @@ character is a whitespace or non-word character, then
 
 
 (defun kill-lua-tests (process output)
+  (set-buffer "lua-tests")
   (insert (ansi-color-apply output))
   (if (string-match "Simulation Terminated: Lua script called os.exit() with status" output)
       (progn
@@ -259,6 +260,7 @@ character is a whitespace or non-word character, then
   (shell "lua-tests")
   (erase-buffer)
   (insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua"))
+  ;(insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true love ."))
   (comint-send-input)
   (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))
 
