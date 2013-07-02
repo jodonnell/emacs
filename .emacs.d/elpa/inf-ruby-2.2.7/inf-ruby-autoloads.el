@@ -3,14 +3,20 @@
 ;;; Code:
 
 
-;;;### (autoloads (run-ruby inf-ruby inf-ruby-setup-keybindings)
-;;;;;;  "inf-ruby" "inf-ruby.el" (20683 33411))
+;;;### (autoloads (inf-ruby-switch-setup run-ruby inf-ruby inf-ruby-minor-mode
+;;;;;;  inf-ruby-setup-keybindings) "inf-ruby" "inf-ruby.el" (20946
+;;;;;;  14824 0 0))
 ;;; Generated autoloads from inf-ruby.el
 
 (autoload 'inf-ruby-setup-keybindings "inf-ruby" "\
-Set local key defs to invoke inf-ruby from ruby-mode.
+Hook up `inf-ruby-minor-mode' to each of `ruby-source-modes'.
 
 \(fn)" nil nil)
+
+(autoload 'inf-ruby-minor-mode "inf-ruby" "\
+Minor mode for interacting with the inferior process buffer.
+
+\(fn &optional ARG)" t nil)
 
 (autoload 'inf-ruby "inf-ruby" "\
 Run an inferior Ruby process in a buffer.
@@ -31,11 +37,17 @@ of `ruby-program-name').  Runs the hooks `inferior-ruby-mode-hook'
 
 \(fn &optional COMMAND NAME)" t nil)
 
-(eval-after-load 'ruby-mode '(inf-ruby-setup-keybindings))
+(autoload 'inf-ruby-switch-setup "inf-ruby" "\
+Modify `rspec-compilation-mode' and `ruby-compilation-mode'
+keymaps to bind `inf-ruby-switch-from-compilation' to `!-x C-q'.
+
+\(fn)" nil nil)
+ (inf-ruby-setup-keybindings)
 
 ;;;***
 
-;;;### (autoloads nil nil ("inf-ruby-pkg.el") (20683 33411 224291))
+;;;### (autoloads nil nil ("inf-ruby-pkg.el") (20946 14824 648795
+;;;;;;  0))
 
 ;;;***
 

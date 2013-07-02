@@ -6,7 +6,7 @@
 ;; URL: http://github.com/nonsequitur/inf-ruby
 ;; Created: 8 April 1998
 ;; Keywords: languages ruby
-;; Version: 2.2.4
+;; Version: 2.2.5
 
 ;;; Commentary:
 ;;
@@ -15,56 +15,70 @@
 ;; If you're installing manually, you'll need to:
 ;; * drop the file somewhere on your load path (perhaps ~/.emacs.d)
 ;; * Add the following lines to your .emacs file:
+;;
 ;;    (autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby process" t)
 ;;    (autoload 'inf-ruby-setup-keybindings "inf-ruby" "" t)
 ;;    (eval-after-load 'ruby-mode
 ;;      '(add-hook 'ruby-mode-hook 'inf-ruby-setup-keybindings))
-
-;;; TODO:
 ;;
-;; inferior-ruby-error-regexp-alist doesn't match this example
-;;   SyntaxError: /home/eschulte/united/org/work/arf/arf/lib/cluster.rb:35: syntax error, unexpected '~', expecting kEND
-;;               similarity = comparison_cache[m][n] ||= clusters[m] ~ clusters[n]
+;; Additionally, consider adding
 ;;
-;; M-p skips the first entry in the input ring.
+;;    (inf-ruby-switch-setup)
 ;;
+;; to your init file to easily switch from common Ruby compilation
+;; modes to interact with a debugger.
 
 (require 'comint)
 (require 'compile)
 (require 'ruby-mode)
 
 (defvar inf-ruby-default-implementation "ruby"
-  "Which ruby implementation to use if none is specified.")
+  "Which Ruby implementation to use if none is specified.")
 
-(defvar inf-ruby-first-prompt-pattern "^irb(.*)[0-9:]+0> *"
-  "First prompt regex pattern of ruby interpreter.")
+(defconst inf-ruby-prompt-format
+  (mapconcat
+   #'identity
+   '("\\(^%s> .*\\)"                     ; Simple
+     "\\(^\\(irb([^)]+)"                 ; IRB default
+     "\\(\[[0-9]+\] \\)?[Pp]ry ?([^)]+)" ; Pry
+     "\\(jruby-\\|JRUBY-\\)?[1-9]\\.[0-9]\\.[0-9]+\\(-?p?[0-9]+\\)?" ; RVM
+     "^rbx-head"                         ; RVM continued
+     ;; Statement and nesting counters, common to the last four.
+     "\\) ?[0-9:]* ?%s *\\)")
+   "\\|")
+  "Format string for the prompt regexp pattern.
+Two placeholders: first char in the Simple prompt, and the last
+graphical char in all other prompts.")
 
-(defvar inf-ruby-prompt-pattern "^\\(irb(.*)[0-9:]+[>*\"'] *\\)+"
-  "Prompt regex pattern of ruby interpreter.")
+(defvar inf-ruby-first-prompt-pattern (format inf-ruby-prompt-format ">" ">")
+  "First prompt regex pattern of Ruby interpreter.")
+
+(defvar inf-ruby-prompt-pattern (format inf-ruby-prompt-format "[?>]" "[\]>*\"'/`]")
+  "Prompt regex pattern of Ruby interpreter.")
 
 (defvar inf-ruby-mode-hook nil
-  "*Hook for customising inf-ruby mode.")
+  "Hook for customizing inf-ruby mode.")
 
 (defvar inf-ruby-mode-map
   (let ((map (copy-keymap comint-mode-map)))
-    (define-key map (kbd "C-c C-l") 'inf-ruby-load-file)
+    (define-key map (kbd "C-c C-l") 'ruby-load-file)
     (define-key map (kbd "C-x C-e") 'ruby-send-last-sexp)
     (define-key map (kbd "TAB") 'inf-ruby-complete)
     map)
-  "*Mode map for inf-ruby-mode")
+  "Mode map for inf-ruby-mode")
 
 (defvar inf-ruby-implementations
-  '(("ruby"     . "irb --inf-ruby-mode -r irb/completion")
-    ("jruby"    . "jruby -S irb -r irb/completion")
+  '(("ruby"     . "irb --prompt default -r irb/completion")
+    ("jruby"    . "jruby -S irb --prompt default -r irb/completion")
     ("rubinius" . "rbx -r irb/completion")
-    ("yarv"     . "irb1.9 --inf-ruby-mode -r irb/completion")) ;; TODO: ironruby?
+    ("yarv"     . "irb1.9 -r irb/completion")
+    ("macruby"  . "macirb -r irb/completion"))
   "An alist of ruby implementations to irb executable names.")
 
-;; TODO: do we need these two defvars?
-(defvar ruby-source-modes '(ruby-mode)
-  "*Used to determine if a buffer contains Ruby source code.
+(defvar ruby-source-modes '(ruby-mode enh-ruby-mode)
+  "Used to determine if a buffer contains Ruby source code.
 If it's loaded into a buffer that is in one of these major modes, it's
-considered a ruby source file by ruby-load-file.
+considered a ruby source file by `ruby-load-file'.
 Used by these commands to determine defaults.")
 
 (defvar ruby-prev-l/c-dir/file nil
@@ -76,44 +90,55 @@ next one.")
 (defvar inf-ruby-at-top-level-prompt-p t)
 
 (defconst inf-ruby-error-regexp-alist
-  '(("SyntaxError: compile error\n^\\([^\(].*\\):\\([1-9][0-9]*\\):" 1 2)
+  '(("SyntaxError: \\(?:compile error\n\\)?\\([^\(].*\\):\\([1-9][0-9]*\\):" 1 2)
     ("^\tfrom \\([^\(].*\\):\\([1-9][0-9]*\\)\\(:in `.*'\\)?$" 1 2)))
 
 ;;;###autoload
 (defun inf-ruby-setup-keybindings ()
-  "Set local key defs to invoke inf-ruby from ruby-mode."
-  (define-key ruby-mode-map "\M-\C-x" 'ruby-send-definition)
-  (define-key ruby-mode-map "\C-x\C-e" 'ruby-send-last-sexp)
-  (define-key ruby-mode-map "\C-c\C-b" 'ruby-send-block)
-  (define-key ruby-mode-map "\C-c\M-b" 'ruby-send-block-and-go)
-  (define-key ruby-mode-map "\C-c\C-x" 'ruby-send-definition)
-  (define-key ruby-mode-map "\C-c\M-x" 'ruby-send-definition-and-go)
-  (define-key ruby-mode-map "\C-c\C-r" 'ruby-send-region)
-  (define-key ruby-mode-map "\C-c\M-r" 'ruby-send-region-and-go)
-  (define-key ruby-mode-map "\C-c\C-z" 'ruby-switch-to-inf)
-  (define-key ruby-mode-map "\C-c\C-l" 'ruby-load-file)
-  (define-key ruby-mode-map "\C-c\C-s" 'inf-ruby))
+  "Hook up `inf-ruby-minor-mode' to each of `ruby-source-modes'."
+  (dolist (mode ruby-source-modes)
+    (add-hook (intern (format "%s-hook" mode)) 'inf-ruby-minor-mode)))
+
+(defvar inf-ruby-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-M-x") 'ruby-send-definition)
+    (define-key map (kbd "C-x C-e") 'ruby-send-last-sexp)
+    (define-key map (kbd "C-c C-b") 'ruby-send-block)
+    (define-key map (kbd "C-c M-b") 'ruby-send-block-and-go)
+    (define-key map (kbd "C-c C-x") 'ruby-send-definition)
+    (define-key map (kbd "C-c M-x") 'ruby-send-definition-and-go)
+    (define-key map (kbd "C-c C-r") 'ruby-send-region)
+    (define-key map (kbd "C-c M-r") 'ruby-send-region-and-go)
+    (define-key map (kbd "C-c C-z") 'ruby-switch-to-inf)
+    (define-key map (kbd "C-c C-l") 'ruby-load-file)
+    (define-key map (kbd "C-c C-s") 'inf-ruby)
+    map))
+
+;;;###autoload
+(define-minor-mode inf-ruby-minor-mode
+  "Minor mode for interacting with the inferior process buffer."
+  :lighter "" :keymap inf-ruby-minor-mode-map)
 
 (defvar inf-ruby-buffer nil "Current irb process buffer.")
 
 (defun inf-ruby-mode ()
-  "Major mode for interacting with an inferior ruby (irb) process.
+  "Major mode for interacting with an inferior Ruby (irb) process.
 
 The following commands are available:
 \\{inf-ruby-mode-map}
 
-A ruby process can be fired up with M-x inf-ruby.
+A Ruby process can be fired up with M-x inf-ruby.
 
-Customisation: Entry to this mode runs the hooks on comint-mode-hook and
-inf-ruby-mode-hook (in that order).
+Customization: When entered, this mode runs `comint-mode-hook' and
+`inf-ruby-mode-hook' (in that order).
 
 You can send text to the inferior ruby process from other buffers containing
 Ruby source.
-    ruby-switch-to-inf switches the current buffer to the ruby process buffer.
-    ruby-send-definition sends the current definition to the ruby process.
-    ruby-send-region sends the current region to the ruby process.
 
-    ruby-send-definition-and-go, ruby-send-region-and-go,
+    `ruby-switch-to-inf' switches the current buffer to the ruby process buffer.
+    `ruby-send-definition' sends the current definition to the ruby process.
+    `ruby-send-region' sends the current region to the ruby process.
+    `ruby-send-definition-and-go' and `ruby-send-region-and-go'
         switch to the ruby process buffer after sending their text.
 
 Commands:
@@ -122,7 +147,7 @@ Return after the end of the process' output sends the text from the
 Return before the end of the process' output copies the sexp ending at point
     to the end of the process' output, and sends it.
 Delete converts tabs to spaces as it moves back.
-Tab indents for ruby; with arugment, shifts rest
+Tab indents for ruby; with argument, shifts rest
     of expression rigidly with the current line.
 C-M-q does Tab on each line starting within following expression.
 Paragraphs are separated only by blank lines.  # start comments.
@@ -136,27 +161,21 @@ to continue it."
   (setq mode-name "Inf-Ruby")
   (setq mode-line-process '(":%s"))
   (use-local-map inf-ruby-mode-map)
-  (setq comint-input-filter (function inf-ruby-input-filter))
-  (add-to-list 'comint-output-filter-functions 'inf-ruby-output-filter)
+  (add-hook 'comint-output-filter-functions 'inf-ruby-output-filter nil t)
   (setq comint-get-old-input (function inf-ruby-get-old-input))
   (make-local-variable 'compilation-error-regexp-alist)
   (setq compilation-error-regexp-alist inf-ruby-error-regexp-alist)
+  (when (eq system-type 'windows-nt)
+    (setq comint-process-echoes t))
   (compilation-shell-minor-mode t)
   (run-hooks 'inf-ruby-mode-hook))
 
-(defvar inf-ruby-filter-regexp "\\`\\s *\\S ?\\S ?\\s *\\'"
-  "*Input matching this regexp are not saved on the history list.
-Defaults to a regexp ignoring all inputs of 0, 1, or 2 letters.")
-
-(defun inf-ruby-input-filter (str)
-  "Don't save anything matching inf-ruby-filter-regexp"
-  (not (string-match inf-ruby-filter-regexp str)))
-
 (defun inf-ruby-output-filter (output)
   "Check if the current prompt is a top-level prompt"
-  (setq inf-ruby-at-top-level-prompt-p
-        (string-match inf-ruby-prompt-pattern
-                      (car (last (split-string output "\n"))))))
+  (unless (zerop (length output))
+    (setq inf-ruby-at-top-level-prompt-p
+          (string-match inf-ruby-first-prompt-pattern
+                        (car (last (split-string output "\n")))))))
 
 ;; adapted from replace-in-string in XEmacs (subr.el)
 (defun inf-ruby-remove-in-string (str regexp)
@@ -269,7 +288,7 @@ Must not contain ruby meta characters.")
 (defun ruby-send-last-sexp ()
   "Send the previous sexp to the inferior Ruby process."
   (interactive)
-  (ruby-send-region (save-excursion (backward-sexp) (point)) (point)))
+  (ruby-send-region (save-excursion (ruby-backward-sexp) (point)) (point)))
 
 (defun ruby-send-block ()
   "Send the current block to the inferior Ruby process."
@@ -329,12 +348,13 @@ Then switch to the process buffer."
     (replace-regexp-in-string "\n" "\\\\n"
       (replace-regexp-in-string "\\\\" "\\\\\\\\" str))))
 
-(defun inf-ruby-fix-completions-on-windows ()
+(defsubst inf-ruby-fix-completions-on-windows (completions)
   "On Windows, the string received by `accept-process-output'
 starts with the last line that was sent to the Ruby process.
 The reason for this is unknown. Remove this line from `completions'."
   (if (eq system-type 'windows-nt)
-    (setq completions (cdr completions))))
+      (cdr completions)
+    completions))
 
 (defun inf-ruby-completions (seed)
   "Return a list of completions for the line of ruby code starting with SEED."
@@ -347,7 +367,7 @@ The reason for this is unknown. Remove this line from `completions'."
     (while (and (not (string-match inf-ruby-prompt-pattern kept))
                 (accept-process-output proc 2)))
     (setq completions (butlast (split-string kept "\r?\n") 2))
-    (inf-ruby-fix-completions-on-windows)
+    (setq completions (inf-ruby-fix-completions-on-windows completions))
     (set-process-filter proc comint-filt)
     completions))
 
@@ -379,9 +399,26 @@ Module used by readline when running irb through a terminal"
       (call-interactively 'indent-for-tab-command)
     (inf-ruby-complete command)))
 
+(defun inf-ruby-switch-from-compilation ()
+  "Make the buffer writable and switch to `inf-ruby-mode'.
+Recommended for use when the program being executed enters
+interactive mode, i.e. hits a debugger breakpoint."
+  (interactive)
+  (setq buffer-read-only nil)
+  (inf-ruby-mode))
+
 ;;;###autoload
-(eval-after-load 'ruby-mode
-  '(inf-ruby-setup-keybindings))
+(defun inf-ruby-switch-setup ()
+  "Modify `rspec-compilation-mode' and `ruby-compilation-mode'
+keymaps to bind `inf-ruby-switch-from-compilation' to `!-x C-q'."
+  (eval-after-load 'rspec-mode
+    '(define-key rspec-compilation-mode-map (kbd "C-x C-q")
+       'inf-ruby-switch-from-compilation))
+  (eval-after-load 'ruby-compilation
+    '(define-key ruby-compilation-mode-map (kbd "C-x C-q")
+       'inf-ruby-switch-from-compilation)))
+
+;;;###autoload (inf-ruby-setup-keybindings)
 
 (provide 'inf-ruby)
 ;;; inf-ruby.el ends here

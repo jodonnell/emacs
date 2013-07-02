@@ -243,8 +243,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LUA STUFF
 (add-hook 'lua-mode-hook (lambda()
-			    (local-set-key "\C-i" 'th-complete-or-indent)
-			    (local-set-key "\C-c\C-t" 'run-lua-tests)))
+                           (setq indent-tabs-mode nil)
+                           (local-set-key "\C-i" 'th-complete-or-indent)
+                           (local-set-key "\C-c\C-t" 'run-lua-tests)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

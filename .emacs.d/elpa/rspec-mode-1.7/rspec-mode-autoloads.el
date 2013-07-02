@@ -3,8 +3,9 @@
 ;;; Code:
 
 
-;;;### (autoloads (rspec-buffer-is-spec-p rspec-verifiable-mode rspec-mode)
-;;;;;;  "rspec-mode" "rspec-mode.el" (20786 36391))
+;;;### (autoloads (rspec-enable-appropriate-mode rspec-buffer-is-spec-p
+;;;;;;  rspec-dired-mode rspec-verifiable-mode rspec-mode) "rspec-mode"
+;;;;;;  "rspec-mode.el" (20938 20473 0 0))
 ;;; Generated autoloads from rspec-mode.el
 
 (autoload 'rspec-mode "rspec-mode" "\
@@ -17,18 +18,29 @@ Minor mode for Ruby files that have specs
 
 \(fn &optional ARG)" t nil)
 
+(autoload 'rspec-dired-mode "rspec-mode" "\
+Minor mode for Dired buffers with spec files
+
+\(fn &optional ARG)" t nil)
+
 (autoload 'rspec-buffer-is-spec-p "rspec-mode" "\
 Returns true if the current buffer is a spec
 
 \(fn)" nil nil)
 
-(add-hook 'ruby-mode-hook (lambda nil (if (rspec-buffer-is-spec-p) (rspec-mode) (rspec-verifiable-mode))))
+(autoload 'rspec-enable-appropriate-mode "rspec-mode" "\
+
+
+\(fn)" nil nil)
+
+(dolist (hook '(ruby-mode-hook enh-ruby-mode-hook)) (add-hook hook 'rspec-enable-appropriate-mode))
 
 (add-hook 'rails-minor-mode-hook 'rspec-verifiable-mode)
 
 ;;;***
 
-;;;### (autoloads nil nil ("rspec-mode-pkg.el") (20786 36391 423638))
+;;;### (autoloads nil nil ("rspec-mode-pkg.el") (20938 20473 412180
+;;;;;;  0))
 
 ;;;***
 
