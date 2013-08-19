@@ -38,6 +38,7 @@
 
 (require 'midnight)
 (require 'pretty-lambdada)
+(add-to-list 'pretty-lambda-auto-modes 'javascript-mode)
 (pretty-lambda-for-modes)
 
 (setq calendar-latitude 40.74)
@@ -407,6 +408,11 @@
 (require 'yasnippet-bundle)
 (setq yas/root-directory "~/.emacs.d/snippets")
 (yas/load-directory yas/root-directory)
+(require 'dropdown-list)
+(setq yas/prompt-functions '(yas/dropdown-prompt
+                             yas/ido-prompt
+                             yas/completing-prompt))
+
 
 (require 'sass-mode)
 (require 'scss-mode)
@@ -477,3 +483,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/helm")
 (require 'helm-config)
+
+(require 'projectile)
+(projectile-global-mode)
+
