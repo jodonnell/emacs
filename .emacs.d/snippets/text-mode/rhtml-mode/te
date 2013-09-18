@@ -1,0 +1,3 @@
+#name : Quick textarea
+# --
+<textarea${1: class="$2"} ${name="$2"}${3: placeholder="$4"}>$0</textarea>
