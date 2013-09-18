@@ -416,7 +416,9 @@
 
 (require 'sass-mode)
 (require 'scss-mode)
+(require 'rainbow-mode)
 (add-hook 'scss-mode-hook (lambda()
+                            (rainbow-mode)
                             (setq css-indent-offset 2
                                   indent-tabs-mode nil)))
 
