@@ -245,6 +245,7 @@
 ;; LUA STUFF
 (add-hook 'lua-mode-hook (lambda()
                            (setq indent-tabs-mode nil)
+                           (setq lua-indent-level 2)
                            (local-set-key "\C-i" 'th-complete-or-indent)
                            (local-set-key "\C-c\C-t" 'run-lua-tests)))
 
@@ -359,9 +360,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(rspec-use-rvm t)
+ '(custom-safe-themes (quote ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
+ '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
  '(warning-suppress-types (quote (nil))))
 
@@ -481,11 +483,8 @@
 
 (setq-default tab-width 2)
 
-
-
 (add-to-list 'load-path "~/.emacs.d/helm")
 (require 'helm-config)
 
 (require 'projectile)
 (projectile-global-mode)
-

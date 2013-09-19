@@ -1,2 +1,17 @@
 an extension that automatically tracks your time in different files.
 possibly could be used to find tighly coupled classes or other code smells (bad interfaces) by looking for two files being switched back and forth frequently
+
+TAGS that span css (includes), javascript
+
+jump from class in html to css definition
+
+finish ruby extract method
+
+switch major mode in html file based on where cursor is
+
+css auto complete for property; display: inline|block|none|inline-block;
+
+from rgb() -> #hex
+
+Remote debugging with Chrome Developer Tools - http://blog.chromium.org/2011/05/remote-debugging-with-chrome-developer.html
+

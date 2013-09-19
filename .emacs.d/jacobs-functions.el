@@ -242,6 +242,11 @@ character is a whitespace or non-word character, then
         (newline)
         (newline)
 
+        (beginning-of-buffer)
+        (replace-regexp (concat (format-time-string "%Y-%m-%d" (current-time)) ".*FAIL") "FAIL")
+        (replace-regexp (concat (format-time-string "%Y-%m-%d" (current-time)) ".*ERROR") "ERROR")
+        (replace-regexp (concat (format-time-string "%Y-%m-%d" (current-time)) ".*") "")
+
         (comint-kill-subjob))))
 
 
@@ -304,3 +309,43 @@ character is a whitespace or non-word character, then
 
 
   
+
+
+(defun lua-calculate-indentation-info (&optional parse-end)
+  "Reformat functions to be only 2 levels deep"
+  (let ((combined-line-end (line-end-position))
+        indentation-info)
+
+    (while (lua-is-continuing-statement-p)
+      (lua-forward-line-skip-blanks 'back))
+
+    ;; calculate indentation modifiers for the line itself
+    (setq indentation-info (list (cons 'absolute (current-indentation))))
+
+    (back-to-indentation)
+    (setq indentation-info
+          (lua-calculate-indentation-info-1
+           indentation-info (min parse-end (line-end-position))))
+
+    (setq indentation-info (cons (car indentation-info)  (cdr (cdr indentation-info))))
+
+    ;; and do the following for each continuation line before PARSE-END
+    (while (and (eql (forward-line 1) 0)
+                (<= (point) parse-end))
+
+      ;; handle continuation lines:
+      (if (lua-is-continuing-statement-p)
+          ;; if it's the first continuation line, add one level
+          (unless (eq (car (car indentation-info)) 'continued-line)
+            (push (cons 'continued-line lua-indent-level) indentation-info))
+
+        ;; if it's the first non-continued line, subtract one level
+        (when (eq (car (car indentation-info)) 'continued-line)
+          (pop indentation-info)))
+
+      ;; add modifiers found in this continuation line
+      (setq indentation-info
+            (lua-calculate-indentation-info-1
+             indentation-info (min parse-end (line-end-position)))))
+
+    indentation-info))
