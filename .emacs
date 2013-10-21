@@ -397,13 +397,18 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;;add melpa repository
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/"))
+;; (add-to-list 'package-archives
+;;              '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 
 (require 'clojure-mode)
 (require 'magit)
 (global-set-key "\C-cg" 'magit-status)
+
+(add-hook 'magit-log-mode-hook (lambda()
+                                 (local-set-key "\M-n" 'forward-word)))
+
+
 (require 'php-mode)
 (require 'yaml-mode)
 
