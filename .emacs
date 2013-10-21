@@ -488,3 +488,15 @@
 
 (require 'projectile)
 (projectile-global-mode)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'reverse)
+
+
+(setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
+(require 'multi-web-mode)
+(setq mweb-default-major-mode 'rhtml-mode)
+(setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
+                  (css-mode "<style[^>]*>" "</style>")))
+(setq mweb-filename-extensions '("htm" "html" "erb"))
+(multi-web-global-mode 1)
