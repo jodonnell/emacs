@@ -1,0 +1,3 @@
+#name : Text align
+# --
+text-align: $1;$0
