@@ -14,6 +14,7 @@
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 (setq make-backup-files nil)
+(setq visible-bell t)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
