@@ -274,6 +274,16 @@
   (delete-other-windows))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HIGHLIGHT SYMBOL AT POINT
+;(global-set-key (kbd "<return>") 'newline) 
+(require 'highlight-symbol)
+(global-set-key [(control .)] 'highlight-symbol-at-point)
+(global-set-key [(meta s)] 'highlight-symbol-next)
+(global-set-key [(meta r)] 'highlight-symbol-prev)
+(global-set-key [(meta m)] 'highlight-symbol-query-replace)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL KEY MAPPINGS
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-xm"    'execute-extended-command)
