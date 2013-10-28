@@ -345,6 +345,8 @@
 (global-unset-key (kbd "M-j"))
 (global-set-key (kbd "M-j") 'universal-argument)
 
+(global-set-key (kbd "C-c e") 'erase-buffer)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
