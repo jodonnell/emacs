@@ -367,6 +367,14 @@
 (setq-default save-place t)                   ;; activate it for all buffers
 (require 'saveplace)                          ;; get the package
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIRED
+(defun my-dired-mode-hook ()
+   (local-set-key "\C-t" 'next-line))
+
+(add-hook 'dired-mode-hook 'my-dired-mode-hook)
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
