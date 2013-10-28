@@ -352,7 +352,16 @@
 ;; IDO MODE
 (require 'ido)
 (ido-mode t)
-(setq ido-enable-flex-matching t)
+
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+
+(setq gc-cons-threshold 10000000) ; set emacs garbage collection to 10 mb
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ORG MODE
