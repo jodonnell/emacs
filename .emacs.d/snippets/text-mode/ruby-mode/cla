@@ -1,0 +1,5 @@
+#name : Class definition
+# --
+class `(replace-regexp-in-string " " "" (capitalize (replace-regexp-in-string "_" " " (file-relative-name (file-name-sans-extension buffer-file-name)))))`
+			$0
+end

@@ -14,6 +14,7 @@
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 (setq make-backup-files nil)
+(setq visible-bell t)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
@@ -274,6 +275,16 @@
   (delete-other-windows))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HIGHLIGHT SYMBOL AT POINT
+;(global-set-key (kbd "<return>") 'newline) 
+(require 'highlight-symbol)
+(global-set-key [(control .)] 'highlight-symbol-at-point)
+(global-set-key [(meta s)] 'highlight-symbol-next)
+(global-set-key [(meta r)] 'highlight-symbol-prev)
+(global-set-key [(meta m)] 'highlight-symbol-query-replace)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL KEY MAPPINGS
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-xm"    'execute-extended-command)
@@ -334,12 +345,23 @@
 (global-unset-key (kbd "M-j"))
 (global-set-key (kbd "M-j") 'universal-argument)
 
+(global-set-key (kbd "C-c e") 'erase-buffer)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
 (require 'ido)
 (ido-mode t)
-(setq ido-enable-flex-matching t)
+
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+
+(setq gc-cons-threshold 10000000) ; set emacs garbage collection to 10 mb
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ORG MODE
@@ -353,6 +375,14 @@
 (setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
 (setq-default save-place t)                   ;; activate it for all buffers
 (require 'saveplace)                          ;; get the package
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIRED
+(defun my-dired-mode-hook ()
+   (local-set-key "\C-t" 'next-line))
+
+(add-hook 'dired-mode-hook 'my-dired-mode-hook)
+
 
 
 (custom-set-variables
@@ -397,13 +427,18 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;;add melpa repository
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/"))
+;; (add-to-list 'package-archives
+;;              '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 
 (require 'clojure-mode)
 (require 'magit)
 (global-set-key "\C-cg" 'magit-status)
+
+(add-hook 'magit-log-mode-hook (lambda()
+                                 (local-set-key "\M-n" 'forward-word)))
+
+
 (require 'php-mode)
 (require 'yaml-mode)
 
@@ -488,3 +523,15 @@
 
 (require 'projectile)
 (projectile-global-mode)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'reverse)
+
+
+(setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
+(require 'multi-web-mode)
+(setq mweb-default-major-mode 'rhtml-mode)
+(setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
+                  (css-mode "<style[^>]*>" "</style>")))
+(setq mweb-filename-extensions '("htm" "html" "erb"))
+(multi-web-global-mode 1)
