@@ -542,7 +542,6 @@
 (setq mweb-filename-extensions '("htm" "html" "erb"))
 (multi-web-global-mode 1)
 
+(require 'smart-mode-line)
 (setq sml/theme 'dark)
 (sml/setup)
-
-
