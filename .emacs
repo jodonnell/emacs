@@ -535,3 +535,8 @@
                   (css-mode "<style[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("htm" "html" "erb"))
 (multi-web-global-mode 1)
+
+(setq sml/theme 'dark)
+(sml/setup)
+
+
