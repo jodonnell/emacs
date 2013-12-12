@@ -306,6 +306,11 @@
 (global-set-key "\C-x\C-y" 'yank-regexp)
 (global-set-key "\C-cs"    'restart-server)
 
+(defun other-window-back()
+  (interactive)
+  (other-window -1))
+(global-set-key "\C-x\C-o" 'other-window-back)
+
 (keyboard-translate ?\C-u ?\C-x)
 (keyboard-translate ?\C-b ?\C-c)
 (keyboard-translate ?\C-c ?\C-b)
@@ -391,6 +396,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes (quote ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
+ '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
  '(rspec-use-rvm t)
@@ -535,3 +541,7 @@
                   (css-mode "<style[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("htm" "html" "erb"))
 (multi-web-global-mode 1)
+
+(require 'smart-mode-line)
+(setq sml/theme 'dark)
+(sml/setup)

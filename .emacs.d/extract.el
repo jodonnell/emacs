@@ -1,4 +1,6 @@
-(defvar extract-running nil)
+(defvar extract-process-name "extract-process")
+
+(defvar extract-method-name nil)
 
 (defvar extract-ruby-path
   (let ((current (or load-file-name (buffer-file-name))))
@@ -7,33 +9,69 @@
 
 (defun extract-method(method-name)
   (interactive "sNew method name: ")
-  (when (not extract-running)
-    (progn
-      (setq extract-running t)
-      (let ((script (format (mapconcat #'identity
-                                       '("unless defined? ASTRefactor"
-                                         "$:.unshift '%s'"
-                                         "require 'extract'"
-                                         "require 'ripper'"
-                                         "ast_refactor = ASTRefactor.new"
-                                         "end\n")
-                                       "; ")
-                            extract-ruby-path)))
-        (comint-send-string (inf-ruby-proc) script))))
+  (setq extract-method-name method-name)
+  (setup-process)
   (save-excursion 
-    (replace-region-with-method method-name)
-    (find-spot-to-insert-new-method)
-    (insert-new-method method-name)
-    (save-excursion
-      (old-method-into-ripper))
-    (new-method-into-ripper)
-    (run-with-idle-timer 3 nil 'add-args method-name)))
+    (move-code-to-new-method method-name))
+  (add-arguments-to-method method-name))
+
+
+(defun add-arguments-to-method(method-name) ; bad method name
+  (save-excursion
+    (old-method-into-ripper))
+  (new-method-into-ripper)
+  (get-used))
+    ;; (run-with-idle-timer 3 nil 'add-args method-name)))
+
+  
+
+(defun setup-process()
+  (when (not (and (extract-process) (process-live-p (extract-process))))
+    (progn
+      (start-extract-process)
+      (require-ruby-code))))
+
+(defun start-extract-process()
+  (let ((process-connection-type nil))  ; use a pipe
+    (start-process extract-process-name nil "~/programming/syp/bin/rails" "console"))
+  (set-process-filter (extract-process) 'extract-process-filter))
+
+(defun require-ruby-code()
+  (process-send-string (extract-process)
+                       (format (mapconcat #'identity
+                                          '("unless defined? ASTRefactor"
+                                            "$:.unshift '%s'"
+                                            "require 'extract'"
+                                            "require 'ripper'"
+                                            "ast_refactor = ASTRefactor.new"
+                                            "end\n")
+                                          "; ")
+                               extract-ruby-path)))
+
+(defun extract-process-filter(process output)
+  (string-match "\=\> \"\\(.*\\)\"" output)
+  (let ((args (match-string 1 output)))
+    (if args
+        (progn
+          (beginning-of-buffer)
+          (search-forward (concat "def " extract-method-name))
+          (insert " ")
+          (insert args)))))
+
+
+(defun extract-process()
+  (get-process extract-process-name))
 
 (defun add-args(method-name)
   (save-excursion
     (let (args)
       (setq args (grab-arguments))
       (replace-string method-name (concat method-name " " args)))))
+
+(defun move-code-to-new-method(method-name)
+  (replace-region-with-method method-name)
+  (find-spot-to-insert-new-method)
+  (insert-new-method method-name))
 
 (defun grab-arguments()
   (save-excursion
@@ -64,14 +102,12 @@
   (newline))
 
 (defun old-method-into-ripper()
-  (beginning-of-defun 2)
-  (comint-send-string (inf-ruby-proc) (concat "a = Ripper.sexp('" (get-method) "')\n"))
-  (get-all-used))
+  (beginning-of-defun)
+  (process-send-string (extract-process) (concat "a = Ripper.sexp('" (get-method) "')\n")))
 
 (defun new-method-into-ripper()
-  (beginning-of-defun)
-  (comint-send-string (inf-ruby-proc) (concat "b = Ripper.sexp('" (get-method) "')\n"))
-  (get-used))
+  (end-of-defun)
+  (process-send-string (extract-process) (concat "b = Ripper.sexp('" (get-method) "')\n")))
 
 (defun get-method() 
   ; need to escape any '
@@ -81,11 +117,7 @@
     (buffer-substring-no-properties start (point))))
 
 (defun get-used()
-  (comint-send-string (inf-ruby-proc) "(ast_refactor.find_used_assigned_vars b, [], results).join(', ')\n"))
-
-
-(defun get-all-used()
-  (comint-send-string (inf-ruby-proc) "results = ast_refactor.get_assigned_vars a, []\n"))
+  (process-send-string (extract-process) "((ast_refactor.get_variable_references b, []) & (ast_refactor.get_local_variables_from_caller a, [])).join(', ')\n"))
 
 (defun insert-and-indent(text)
   (insert text)
@@ -101,3 +133,12 @@
 
 ; run vote tally, look for assigns get idents "sum"
 ; look for var_field in boom that uses @ident sum if found pass it in
+
+
+; look at new method.
+; find all var_ref variables (these are all variables, methods etc used)
+; look at old method 
+; look at all var_field and params (these are all variables declared and passed in)
+; the intersection needs to be passed in.
+; also may need to add self.
+; might need to return variabl
