@@ -1,6 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
- (setq load-path (append load-path (list "~/.emacs.d")))
  (let ((default-directory "~/.emacs.d/elpa/"))
    (normal-top-level-add-to-load-path '(".")) 
   (normal-top-level-add-subdirs-to-load-path))
@@ -133,6 +132,7 @@
 ;; (push "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin" exec-path)
 ;; (setenv "PATH" (concat "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin:" (getenv "PATH")))
 
+(add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
 (add-hook 'js-mode-hook (lambda() 
  				  (local-set-key "\C-i" 'th-complete-or-indent)
 				  (local-set-key "\C-c\C-t" 'js-run-tests)
@@ -142,9 +142,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
-(require 'rails-dream)
-(require 'flymake-ruby)
-(require 'rinari)
+;;(require 'rails-dream)
+;;(require 'flymake-ruby)
+;;(require 'rinari)
 ;(require 'show-args)
 (require 'rspec-mode)
 (require 'rvm)
@@ -165,7 +165,6 @@
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
 
-
 (add-hook 'ruby-mode-hook (lambda() 
                             (global-set-key "\C-ca" 'get-rails-function-argument-list-at-point)
                             (global-set-key "\C-cd" 'get-rails-documentation)
@@ -178,9 +177,8 @@
                             (rspec-mode)
 ;                            (robe-mode)
                             (company-mode)
-			    (local-set-key "\C-i" 'th-complete-or-indent)
-                            (setq rinari-tags-file-name "TAGS")
-			    (setq indent-tabs-mode nil)))
+                            (local-set-key "\C-i" 'th-complete-or-indent)
+                            (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HAML
@@ -256,8 +254,8 @@
 (add-to-list 'auto-mode-alist '("\\.h$" . objc-mode))
 (add-hook 'objc-mode-hook (lambda()
 			    (setq c-default-style "bsd"
-				  c-basic-offset 8
-				  indent-tabs-mode t)
+                                  c-basic-offset 4
+                                  indent-tabs-mode nil)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (flyspell-prog-mode)))
 
@@ -433,8 +431,8 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;;add melpa repository
-;; (add-to-list 'package-archives
-;;              '("melpa" . "http://melpa.milkbox.net/packages/"))
+(add-to-list 'package-archives
+              '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 
 (require 'clojure-mode)
@@ -464,8 +462,6 @@
                             (rainbow-mode)
                             (setq css-indent-offset 2
                                   indent-tabs-mode nil)))
-
-(require 'rvm)
 
 (require 'ctags)
 (setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
@@ -542,6 +538,6 @@
 (setq mweb-filename-extensions '("htm" "html" "erb"))
 (multi-web-global-mode 1)
 
-(require 'smart-mode-line)
-(setq sml/theme 'dark)
-(sml/setup)
+;; (require 'smart-mode-line)
+;; (setq sml/theme 'dark)
+;; (sml/setup)
