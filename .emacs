@@ -257,6 +257,7 @@
                                   c-basic-offset 4
                                   indent-tabs-mode nil)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
+          (local-set-key "\C-c\C-o" 'ff-find-other-file)
 			    (flyspell-prog-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
