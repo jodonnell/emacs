@@ -349,3 +349,19 @@ character is a whitespace or non-word character, then
              indentation-info (min parse-end (line-end-position)))))
 
     indentation-info))
+
+(defun create-header-for-method()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (let ((buffer-read-only t))
+      (kill-line 1))
+    (ff-find-other-file)
+    (search-forward "@end" nil t)
+    (previous-line)
+    (end-of-line)
+    (newline)
+    (yank)
+    (backward-char)
+    (delete-char 1)
+    (insert ";")))

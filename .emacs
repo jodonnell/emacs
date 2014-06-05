@@ -258,6 +258,7 @@
                                   indent-tabs-mode nil)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
           (local-set-key "\C-c\C-o" 'ff-find-other-file)
+          (local-set-key "\C-c\C-a" 'create-header-for-method)
 			    (flyspell-prog-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
