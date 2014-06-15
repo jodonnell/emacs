@@ -262,6 +262,11 @@
 			    (flyspell-prog-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SWIFT STUFF
+(add-hook 'swift-mode-hook (lambda()
+			    (local-set-key "\C-i" 'th-complete-or-indent)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IBFUFER MODE
 (defun sw-list ()
   "switch to Ibuffer; this function should be bound to F9"
