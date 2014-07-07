@@ -378,7 +378,11 @@
 ;; The following lines are always needed.  Choose your own keys.
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
+
 (setq org-hide-leading-stars 0)
+(defun my-org-mode-hook ()
+   (local-set-key "\M-h" 'backward-word))
+(add-hook 'org-mode-hook 'my-org-mode-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SAVEPLACE
