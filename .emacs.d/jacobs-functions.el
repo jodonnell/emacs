@@ -295,9 +295,14 @@ character is a whitespace or non-word character, then
       (query-replace token (concat "_" token)))))
 
 
-(defun get-image-size (file-name)
-  (interactive "fFile name: ")
+(defun get-image-size ()
+  (interactive)
+  (let ((extension (file-name-extension (buffer-file-name))))
+    (if (or (string= extension "png") (string= extension "jpg") (string= extension "gif"))
+        (get-image-size-from-file (buffer-file-name))
+      (get-image-size-from-file (read-file-name "File name: ")))))
 
+(defun get-image-size-from-file (file-name)
   (let ((image-size (shell-command-to-string (concat "identify -format '%w %h' " file-name))))
        (message
         (concat 
@@ -305,11 +310,6 @@ character is a whitespace or non-word character, then
          (car (split-string image-size))
          " height: "
          (car (cdr (split-string image-size)))))))
-
-
-
-  
-
 
 (defun lua-calculate-indentation-info (&optional parse-end)
   "Reformat functions to be only 2 levels deep"
