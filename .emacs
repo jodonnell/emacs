@@ -241,6 +241,12 @@
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HASKELL STUFF
+(defun my-haskell-mode-hook ()
+   (local-set-key "\C-i" 'th-complete-or-indent))
+(add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LUA STUFF
 (add-hook 'lua-mode-hook (lambda()
                            (setq indent-tabs-mode nil)
