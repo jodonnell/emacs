@@ -35,6 +35,7 @@
 (setq backup-directory-alist '(("." . "~/.emacs.backups")))
 
 (load "~/.emacs.d/jacobs-functions.el")
+(load "~/.emacs.d/jacobs/django_tests.el")
 
 (require 'midnight)
 (require 'pretty-lambdada)
@@ -236,7 +237,7 @@
 (defun my-python-mode-hook ()
    (local-set-key "\C-i" 'th-complete-or-indent)
    (show-paren-mode 1)
-   (local-set-key "\C-c\C-t" 'py-run-tests)
+   (local-set-key "\C-c\C-t" 'django-tests-run)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
