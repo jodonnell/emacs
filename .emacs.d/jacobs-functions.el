@@ -264,8 +264,8 @@ character is a whitespace or non-word character, then
   (other-window 1)
   (shell "lua-tests")
   (erase-buffer)
-  (insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua"))
-  ;(insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true love ."))
+  ;(insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua"))
+  (insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true love ."))
   (comint-send-input)
   (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))
 
