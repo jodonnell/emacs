@@ -38,7 +38,7 @@
   (if (string-match "^nosetests.*" output)
       (setq django-tests-is-running t))
 
-  (if (string-match "FAILED (failures=.*)" output)
+  (if (string-match "^FAILED (.*)" output)
       (django-tests-failed)))
 
 (defun django-tests-run ()
