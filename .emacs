@@ -237,9 +237,23 @@
 (defun my-python-mode-hook ()
    (local-set-key "\C-i" 'th-complete-or-indent)
    (show-paren-mode 1)
+   (subword-mode 1)
    (local-set-key "\C-c\C-t" 'django-tests-run)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
+
+(when (load "flymake" t)
+  (defun flymake-flake8-init ()
+    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+           (local-file (file-relative-name
+                        temp-file
+                        (file-name-directory buffer-file-name))))
+      (list "flake8" (list local-file))))
+  (add-to-list 'flymake-allowed-file-name-masks
+               '("\\.py\\'" flymake-flake8-init)))
+
+(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HASKELL STUFF

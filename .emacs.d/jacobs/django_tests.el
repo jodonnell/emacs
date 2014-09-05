@@ -51,7 +51,8 @@
   (let ((cb (current-buffer)))
     (shell django-tests-shell-buffer-name)
     (erase-buffer)
-    (insert (concat "source ~/programming/gprenewables/virt/bin/activate; cd ~/programming/gprenewables/gp-dashboard/; REUSE_DB=1 ./manage.py test"))
+    (insert (concat "source " (car (projectile-get-project-directories)) "venv/bin/activate; cd " (car (projectile-get-project-directories)) "; REUSE_DB=1 ./manage.py test"))
     (comint-send-input)
     (switch-to-buffer cb)
     (set-process-filter (get-buffer-process django-tests-shell-buffer-name) 'django-tests-parse-output)))
+
