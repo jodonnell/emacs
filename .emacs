@@ -18,6 +18,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 
+(require 'exec-path-from-shell)
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -249,12 +252,12 @@
            (local-file (file-relative-name
                         temp-file
                         (file-name-directory buffer-file-name))))
-      (list "flake8" (list local-file))))
+      (list "flake8" (list "--max-line-length=100" local-file))))
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-flake8-init)))
 
 (add-hook 'find-file-hook 'flymake-find-file-hook)
-
+(require 'flymake-cursor)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HASKELL STUFF
 (defun my-haskell-mode-hook ()
