@@ -242,6 +242,7 @@
    (show-paren-mode 1)
    (subword-mode 1)
    (local-set-key "\C-c\C-t" 'django-tests-run)
+   (flymake-cursor-mode)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -257,6 +258,8 @@
                '("\\.py\\'" flymake-flake8-init)))
 
 (add-hook 'find-file-hook 'flymake-find-file-hook)
+(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
+
 (require 'flymake-cursor)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HASKELL STUFF
@@ -333,7 +336,6 @@
 (global-set-key [f8]       'sw-list)
 (global-set-key "\C-cp"    'new-shell)
 (global-set-key "\C-x\C-y" 'yank-regexp)
-(global-set-key "\C-cs"    'restart-server)
 
 (defun other-window-back()
   (interactive)
