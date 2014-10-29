@@ -1,0 +1,5 @@
+#name : It block
+# --
+it "$1" do
+  $0	
+end

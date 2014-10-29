@@ -365,3 +365,8 @@ character is a whitespace or non-word character, then
     (backward-char)
     (delete-char 1)
     (insert ";")))
+
+
+(defun google(query)
+  (interactive "sQuery: ")
+  (eww (concat "http://www.google.com/search?gbv=1&source=hp&hl=en&ie=ISO-8859-1&btnG=Google+Search&q=" query)))

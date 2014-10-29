@@ -257,8 +257,9 @@
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-flake8-init)))
 
-(add-hook 'find-file-hook 'flymake-find-file-hook)
-(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
+;(add-hook 'find-file-hook 'flymake-find-file-hook)
+;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
+
 
 (require 'flymake-cursor)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
