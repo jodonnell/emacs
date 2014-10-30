@@ -140,6 +140,7 @@
 (add-hook 'js-mode-hook (lambda() 
  				  (local-set-key "\C-i" 'th-complete-or-indent)
 				  (local-set-key "\C-c\C-t" 'js-run-tests)
+          ;(setq js-indent-level 2)
 ;;                                  'flymake-mode
  				  (setq indent-tabs-mode nil)))
 
@@ -579,3 +580,21 @@
 ;; (require 'smart-mode-line)
 ;; (setq sml/theme 'dark)
 ;; (sml/setup)
+
+
+
+
+
+(defun wrap-region-html (b e tag)
+  "'tag' every line in the region with a tag"
+  (interactive "r\nMTag for line: ")
+  (save-restriction
+    (narrow-to-region b e)
+    (save-excursion
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+        (beginning-of-line)
+        (insert (format "<%s>" tag))
+        (end-of-line)
+        (insert (format "</%s>" tag))
+        (forward-line 1)))))
