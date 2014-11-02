@@ -582,19 +582,34 @@
 ;; (sml/setup)
 
 
+(defun wrap-lines-region-html (b e tag)
+  "'tag' every line in the region with a tag"
+  (interactive "r\nMTag for line: ")
+  (setq p (point-marker))
+  (save-excursion
+    (goto-char b)
+    (while (< (point) p)
+      (beginning-of-line)
+      (indent-according-to-mode)
+      (insert (format "<%s>" tag))
+      (end-of-line)
+      (insert (format "</%s>" tag))
+      (forward-line 1))))
 
-
+(defun insert-tag-at-position-and-indent (start format-tag)
+  (goto-char start)
+  (beginning-of-line)
+  (indent-according-to-mode)
+  (insert (format format-tag tag))
+  (newline))
 
 (defun wrap-region-html (b e tag)
   "'tag' every line in the region with a tag"
   (interactive "r\nMTag for line: ")
-  (save-restriction
-    (narrow-to-region b e)
-    (save-excursion
-      (goto-char (point-min))
-      (while (< (point) (point-max))
-        (beginning-of-line)
-        (insert (format "<%s>" tag))
-        (end-of-line)
-        (insert (format "</%s>" tag))
-        (forward-line 1)))))
+  (setq p (point-marker))
+  (save-excursion
+    (insert-tag-at-position-and-indent b "<%s>")
+    (insert-tag-at-position-and-indent p "</%s>")
+    (indent-region b p)
+    (beginning-of-line)
+    (indent-according-to-mode)))
