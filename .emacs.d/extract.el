@@ -1,29 +1,28 @@
 (defvar extract-process-name "extract-process")
 
 (defvar extract-method-name nil)
+(defvar extract-method-current-buffer nil)
+(defvar extract-method-call-marker nil)
 
 (defvar extract-ruby-path
-  (let ((current (or load-file-name (buffer-file-name))))
+  (let ((current (buffer-file-name)))
     (expand-file-name (file-name-directory current)))
   "Path to the backend Ruby code.")
 
 (defun extract-method(method-name)
   (interactive "sNew method name: ")
   (setq extract-method-name method-name)
+  (setq extract-method-current-buffer (current-buffer))
   (setup-process)
   (save-excursion 
-    (move-code-to-new-method method-name))
-  (add-arguments-to-method method-name))
-
+    (move-code-to-new-method method-name)
+    (add-arguments-to-method method-name)))
 
 (defun add-arguments-to-method(method-name) ; bad method name
   (save-excursion
     (old-method-into-ripper))
   (new-method-into-ripper)
   (get-used))
-    ;; (run-with-idle-timer 3 nil 'add-args method-name)))
-
-  
 
 (defun setup-process()
   (when (not (and (extract-process) (process-live-p (extract-process))))
@@ -33,8 +32,9 @@
 
 (defun start-extract-process()
   (let ((process-connection-type nil))  ; use a pipe
-    (start-process extract-process-name nil "~/programming/syp/bin/rails" "console"))
-  (set-process-filter (extract-process) 'extract-process-filter))
+    (start-process-shell-command extract-process-name "yowser" "(cd /Users/jacob/programming/kickoffkit && rails c)")
+  (set-process-filter (extract-process) 'extract-process-filter)))
+;(delete-process (extract-process))
 
 (defun require-ruby-code()
   (process-send-string (extract-process)
@@ -49,24 +49,22 @@
                                extract-ruby-path)))
 
 (defun extract-process-filter(process output)
-  (string-match "\=\> \"\\(.*\\)\"" output)
+  (set-buffer extract-method-current-buffer)
+  (string-match "\"\\(.*\\)\"$" output)
   (let ((args (match-string 1 output)))
     (if args
         (progn
+          (set-buffer extract-method-current-buffer)
           (beginning-of-buffer)
           (search-forward (concat "def " extract-method-name))
           (insert " ")
+          (insert args)
+          (goto-char extract-method-call-marker)
+          (insert " ")
           (insert args)))))
-
 
 (defun extract-process()
   (get-process extract-process-name))
-
-(defun add-args(method-name)
-  (save-excursion
-    (let (args)
-      (setq args (grab-arguments))
-      (replace-string method-name (concat method-name " " args)))))
 
 (defun move-code-to-new-method(method-name)
   (replace-region-with-method method-name)
@@ -75,7 +73,7 @@
 
 (defun grab-arguments()
   (save-excursion
-    (set-buffer "*ruby*")
+    (set-buffer "yowser")
     (search-backward "=> ")
     (forward-char 4)
     (let (start)
@@ -87,6 +85,7 @@
 (defun replace-region-with-method(method-name)
   (kill-region (point) (mark))
   (insert-and-indent method-name)
+  (setq extract-method-call-marker (point-marker))
   (newline))
 
 (defun find-spot-to-insert-new-method()
@@ -103,10 +102,11 @@
 
 (defun old-method-into-ripper()
   (beginning-of-defun)
+  (beginning-of-defun)
   (process-send-string (extract-process) (concat "a = Ripper.sexp('" (get-method) "')\n")))
 
 (defun new-method-into-ripper()
-  (end-of-defun)
+  (beginning-of-defun)
   (process-send-string (extract-process) (concat "b = Ripper.sexp('" (get-method) "')\n")))
 
 (defun get-method() 

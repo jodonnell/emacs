@@ -43,7 +43,9 @@ class ASTRefactor
     ruby_ast.each_with_index do |thing, index|
       if thing.is_a? Array
         get_variable_references thing, variable_references
-      elsif thing == :var_ref and ruby_ast[index + 1][0] == :@ident
+        #elsif thing == :var_ref and ruby_ast[index + 1][0] == :@ident
+      elsif thing == :vcall and ruby_ast[index + 1][0] == :@ident
+        puts ruby_ast[index + 1][1]
         return variable_references.push(ruby_ast[index + 1][1])
       end
     end
