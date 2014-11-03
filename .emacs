@@ -6,6 +6,13 @@
 
 (setq w32-use-w32-font-dialog nil)
 
+;(setq mac-command-modifier 'meta) ; make cmd key do Meta
+(setq mac-option-modifier 'super) ; make opt key do Super
+;(setq mac-control-modifier 'control) ; make Control key do Control
+;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
+
+
+
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (transient-mark-mode t)
@@ -263,11 +270,6 @@
 
 
 (require 'flymake-cursor)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HASKELL STUFF
-(defun my-haskell-mode-hook ()
-   (local-set-key "\C-i" 'th-complete-or-indent))
-(add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LUA STUFF
@@ -386,6 +388,13 @@
 (global-set-key (kbd "C-c e") 'erase-buffer)
 
 
+(global-set-key (kbd "s-a") 'erase-buffer)
+(global-set-key (kbd "H-a") 'erase-buffer)
+(global-set-key (kbd "A-a") 'erase-buffer)
+
+(global-set-key (kbd "s-h") 'beginning-of-defun)
+(global-set-key (kbd "s-n") 'end-of-defun)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
 (require 'ido)
@@ -432,10 +441,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
+ '(custom-safe-themes
+   (quote
+    ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
+ '(debug-on-error t)
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
- '(pretty-lambda-auto-modes (quote (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
+ '(pretty-lambda-auto-modes
+   (quote
+    (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
  '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
  '(warning-suppress-types (quote (nil))))
