@@ -32,7 +32,7 @@
 
 (defun start-extract-process()
   (let ((process-connection-type nil))  ; use a pipe
-    (start-process extract-process-name "yowser" "irb")
+    (start-process extract-process-name nil "irb")
   (set-process-filter (extract-process) 'extract-process-filter)))
 ;(delete-process (extract-process))
 
