@@ -50,18 +50,17 @@
 
 (defun extract-process-filter(process output)
   (set-buffer extract-method-current-buffer)
-  (string-match "\"\\(.*\\)\"$" output)
-  (let ((args (match-string 1 output)))
-    (if args
-        (progn
-          (set-buffer extract-method-current-buffer)
-          (beginning-of-buffer)
-          (search-forward (concat "def " extract-method-name))
-          (insert " ")
-          (insert args)
-          (goto-char extract-method-call-marker)
-          (insert " ")
-          (insert args)))))
+  (if (string-match "\"\\(.*\\)\"$" output)
+      (progn
+      (let ((args (match-string 1 output)))
+        (set-buffer extract-method-current-buffer)
+        (beginning-of-buffer)
+        (search-forward (concat "def " extract-method-name))
+        (insert " ")
+        (insert args)
+        (goto-char extract-method-call-marker)
+        (insert " ")
+        (insert args)))))
 
 (defun extract-process()
   (get-process extract-process-name))
