@@ -71,17 +71,6 @@
   (find-spot-to-insert-new-method)
   (insert-new-method method-name))
 
-(defun grab-arguments()
-  (save-excursion
-    (set-buffer "yowser")
-    (search-backward "=> ")
-    (forward-char 4)
-    (let (start)
-      (setq start (point))
-      (search-forward "\"")
-      (backward-char)
-      (buffer-substring-no-properties start (point)))))
-
 (defun replace-region-with-method(method-name)
   (kill-region (point) (mark))
   (insert-and-indent method-name)
