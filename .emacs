@@ -269,8 +269,6 @@
 ;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
 
 
-(require 'flymake-cursor)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LUA STUFF
 (add-hook 'lua-mode-hook (lambda()
