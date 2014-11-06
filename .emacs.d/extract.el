@@ -14,15 +14,15 @@
   (setq extract-method-name method-name)
   (setq extract-method-current-buffer (current-buffer))
   (setup-process)
-  (save-excursion 
-    (move-code-to-new-method method-name)
-    (add-arguments-to-method method-name)))
+  (move-code-to-new-method method-name)
+  (add-arguments-to-method method-name))
 
 (defun add-arguments-to-method(method-name) ; bad method name
   (save-excursion
-    (old-method-into-ripper))
-  (new-method-into-ripper)
-  (get-used))
+    (save-excursion
+      (old-method-into-ripper))
+    (new-method-into-ripper)
+    (get-used)))
 
 (defun setup-process()
   (when (not (and (extract-process) (process-live-p (extract-process))))
@@ -66,9 +66,10 @@
   (get-process extract-process-name))
 
 (defun move-code-to-new-method(method-name)
-  (replace-region-with-method method-name)
-  (find-spot-to-insert-new-method)
-  (insert-new-method method-name))
+  (save-excursion
+    (replace-region-with-method method-name)
+    (find-spot-to-insert-new-method)
+    (insert-new-method method-name)))
 
 (defun replace-region-with-method(method-name)
   (kill-region (point) (mark))
@@ -90,11 +91,10 @@
 
 (defun old-method-into-ripper()
   (beginning-of-defun)
-  (beginning-of-defun)
   (process-send-string (extract-process) (concat "a = Ripper.sexp('" (get-method) "')\n")))
 
 (defun new-method-into-ripper()
-  (beginning-of-defun)
+  (end-of-defun)
   (process-send-string (extract-process) (concat "b = Ripper.sexp('" (get-method) "')\n")))
 
 (defun get-method() 
