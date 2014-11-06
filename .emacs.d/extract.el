@@ -91,11 +91,14 @@
 
 (defun old-method-into-ripper()
   (beginning-of-defun)
-  (process-send-string (extract-process) (concat "a = Ripper.sexp('" (get-method) "')\n")))
+  (process-send-string (extract-process) (ripper-sexp "a")))
 
 (defun new-method-into-ripper()
   (end-of-defun)
-  (process-send-string (extract-process) (concat "b = Ripper.sexp('" (get-method) "')\n")))
+  (process-send-string (extract-process) (ripper-sexp "b")))
+
+(defun ripper-sexp(var)
+  (concat var " = Ripper.sexp(<<ruby_emacs_extract_string\n" (get-method) "\nruby_emacs_extract_string\n)\n"))
 
 (defun get-method() 
   ; need to escape any '
