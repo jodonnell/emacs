@@ -7,7 +7,7 @@
 (setq w32-use-w32-font-dialog nil)
 
 ;(setq mac-command-modifier 'meta) ; make cmd key do Meta
-(setq mac-option-modifier 'super) ; make opt key do Super
+
 ;(setq mac-control-modifier 'control) ; make Control key do Control
 ;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 
@@ -390,8 +390,10 @@
 (global-set-key (kbd "H-a") 'erase-buffer)
 (global-set-key (kbd "A-a") 'erase-buffer)
 
-(global-set-key (kbd "s-h") 'beginning-of-defun)
-(global-set-key (kbd "s-n") 'end-of-defun)
+(global-set-key (kbd "s-c") 'beginning-of-defun)
+(global-set-key (kbd "s-t") 'end-of-defun)
+(global-set-key (kbd "s-n") 'forward-sexp)
+(global-set-key (kbd "s-h") 'backward-sexp)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
@@ -625,3 +627,6 @@
     (indent-region b p)
     (beginning-of-line)
     (indent-according-to-mode)))
+
+
+(setq mac-option-modifier 'super) ; make opt key do Super
