@@ -215,6 +215,28 @@
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (setq indent-tabs-mode nil)))
 
+(defface elisp-prefix-face
+  '((t (:foreground "grey50")))
+  "Face for simplified prefixes.")
+
+(defun elisp-simplify-prefix (prefix rep)
+  "Replace PREFIX with REP visually on this buffer.
+
+PREFIX is simply displayed as REP, but not actually replaced with REP."
+  (interactive "sVisually replace this long prefix: \nsWith this short prefix: ")
+  (font-lock-add-keywords
+   nil `((
+          ;; ;; not sure why these don't work
+          ;; ,(rx-to-string `(group word-boundary ,prefix word-boundary))
+          ;; ,(rx-to-string `(: word-boundary ,prefix word-boundary))
+          ;; ,(rx-to-string `(: ,prefix))
+
+          ,(rx-to-string `(group ,prefix))
+
+          (0 (progn (put-text-property (match-beginning 0) (match-end 0)
+                                       'display ,rep)
+                    'elisp-prefix-face)))))
+  (font-lock-fontify-buffer))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
