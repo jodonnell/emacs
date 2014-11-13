@@ -656,3 +656,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 (setq mac-option-modifier 'super) ; make opt key do Super
+
+
+                                        ; osascript -e 'tell application "Rdio" to playpause'
+                                        ; osascript -e 'tell application "Rdio" to next track'
+; previous track
+
