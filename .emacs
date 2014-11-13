@@ -670,6 +670,10 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
   (interactive)
   (shell-command "osascript -e 'tell application \"Rdio\" to previous track'"))
 
+
+(global-set-key "\C-\M-n" 'rdio-next)
+(global-set-key "\C-\M-h" 'rdio-previous)
+
                                         ; osascript -e 'tell application "Rdio" to playpause'c
                                         ; osascript -e 'tell application "Rdio" to next track'
 ; previous track
