@@ -658,7 +658,19 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq mac-option-modifier 'super) ; make opt key do Super
 
 
-                                        ; osascript -e 'tell application "Rdio" to playpause'
+(defun rdio-play ()
+  (interactive)
+  (shell-command "osascript -e 'tell application \"Rdio\" to playpause'"))
+
+(defun rdio-next ()
+  (interactive)
+  (shell-command "osascript -e 'tell application \"Rdio\" to next track'"))
+
+(defun rdio-previous ()
+  (interactive)
+  (shell-command "osascript -e 'tell application \"Rdio\" to previous track'"))
+
+                                        ; osascript -e 'tell application "Rdio" to playpause'c
                                         ; osascript -e 'tell application "Rdio" to next track'
 ; previous track
 
