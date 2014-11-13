@@ -102,7 +102,7 @@
 (set-background-color "black")
 (set-foreground-color "ghost white")
 
-(set-cursor-color  "purple")
+(set-cursor-color  "firebrick1")
 
 (copy-face 'default  'font-lock-comment-face)
 (set-face-foreground 'font-lock-comment-face "orange")
