@@ -272,7 +272,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (show-paren-mode 1)
    (subword-mode 1)
    (local-set-key "\C-c\C-t" 'django-tests-run)
-   (flymake-cursor-mode)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -455,6 +454,11 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (local-set-key "\C-t" 'next-line))
 
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
+
+(progn
+  ;; modify dired keys
+  (require 'wdired)
+  (define-key wdired-mode-map (kbd "C-n") 'forward-char))
 
 
 
