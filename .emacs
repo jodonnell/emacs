@@ -282,7 +282,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
            (local-file (file-relative-name
                         temp-file
                         (file-name-directory buffer-file-name))))
-      (list "flake8" (list "--max-line-length=100" local-file))))
+      (list "flake8" (list "--max-line-length=120" local-file))))
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-flake8-init)))
 
