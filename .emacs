@@ -686,7 +686,3 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ; previous track
 
 
-
-(key-chord-mode 1)
-(key-chord-define-global "eb" 'erase-buffer)
-(key-chord-define-global "uf" 'helm-projectile)
