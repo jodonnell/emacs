@@ -592,15 +592,14 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 
+(require 'helm)
+(require 'helm-projectile)
 
 
 
 ; syp
 
 (setq-default tab-width 2)
-
-(add-to-list 'load-path "~/.emacs.d/helm")
-(require 'helm-config)
 
 (require 'projectile)
 (projectile-global-mode)
