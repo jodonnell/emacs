@@ -602,6 +602,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (define-key helm-map (kbd "C-w") 'backward-kill-word)
 (global-set-key (kbd "s-f") 'helm-projectile)
 
+(require 'helm)
+(require 'helm-projectile)
 
 
 
