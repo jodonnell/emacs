@@ -415,6 +415,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "s-t") 'end-of-defun)
 (global-set-key (kbd "s-n") 'forward-sexp)
 (global-set-key (kbd "s-h") 'backward-sexp)
+(global-set-key (kbd "s-d") 'kill-sexp)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
@@ -591,6 +592,15 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;;             (add-to-list 'ac-sources 'ac-source-rsense-constant)))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HELM
+(require 'helm)
+
+(define-key helm-map (kbd "C-b") 'helm-previous-line)
+(define-key helm-map (kbd "C-t") 'helm-next-line)
+(define-key helm-map (kbd "C-w") 'backward-kill-word)
+(define-key helm-map (kbd "C-w") 'backward-kill-word)
+(global-set-key (kbd "s-f") 'helm-projectile)
 
 
 
@@ -598,9 +608,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ; syp
 
 (setq-default tab-width 2)
-
-(add-to-list 'load-path "~/.emacs.d/helm")
-(require 'helm-config)
 
 (require 'projectile)
 (projectile-global-mode)
