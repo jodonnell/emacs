@@ -402,6 +402,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "s-h") 'backward-sexp)
 (global-set-key (kbd "s-d") 'kill-sexp)
 
+(global-set-key "\C-\M-n" 'rdio-next)
+(global-set-key "\C-\M-h" 'rdio-previous)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
 (require 'ido)
@@ -597,56 +600,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; (sml/setup)
 
 
-(defun wrap-lines-region-html (b e tag)
-  "'tag' every line in the region with a tag"
-  (interactive "r\nMTag for line: ")
-  (setq p (point-marker))
-  (save-excursion
-    (goto-char b)
-    (while (< (point) p)
-      (beginning-of-line)
-      (indent-according-to-mode)
-      (insert (format "<%s>" tag))
-      (end-of-line)
-      (insert (format "</%s>" tag))
-      (forward-line 1))))
-
-(defun insert-tag-at-position-and-indent (start format-tag)
-  (goto-char start)
-  (beginning-of-line)
-  (indent-according-to-mode)
-  (insert (format format-tag tag))
-  (newline))
-
-(defun wrap-region-html (b e tag)
-  "'tag' every line in the region with a tag"
-  (interactive "r\nMTag for line: ")
-  (setq p (point-marker))
-  (save-excursion
-    (insert-tag-at-position-and-indent b "<%s>")
-    (insert-tag-at-position-and-indent p "</%s>")
-    (indent-region b p)
-    (beginning-of-line)
-    (indent-according-to-mode)))
-
-
 (setq mac-option-modifier 'super) ; make opt key do Super
 
-
-(defun rdio-play ()
-  (interactive)
-  (shell-command "osascript -e 'tell application \"Rdio\" to playpause'"))
-
-(defun rdio-next ()
-  (interactive)
-  (shell-command "osascript -e 'tell application \"Rdio\" to next track'"))
-
-(defun rdio-previous ()
-  (interactive)
-  (shell-command "osascript -e 'tell application \"Rdio\" to previous track'"))
-
-(global-set-key "\C-\M-n" 'rdio-next)
-(global-set-key "\C-\M-h" 'rdio-previous)
 
 (setq ido-enable-flex-matching t)
 

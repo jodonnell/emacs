@@ -370,3 +370,48 @@ character is a whitespace or non-word character, then
 (defun google(query)
   (interactive "sQuery: ")
   (eww (concat "http://www.google.com/search?gbv=1&source=hp&hl=en&ie=ISO-8859-1&btnG=Google+Search&q=" query)))
+
+(defun wrap-lines-region-html (b e tag)
+  "'tag' every line in the region with a tag"
+  (interactive "r\nMTag for line: ")
+  (setq p (point-marker))
+  (save-excursion
+    (goto-char b)
+    (while (< (point) p)
+      (beginning-of-line)
+      (indent-according-to-mode)
+      (insert (format "<%s>" tag))
+      (end-of-line)
+      (insert (format "</%s>" tag))
+      (forward-line 1))))
+
+(defun insert-tag-at-position-and-indent (start format-tag)
+  (goto-char start)
+  (beginning-of-line)
+  (indent-according-to-mode)
+  (insert (format format-tag tag))
+  (newline))
+
+(defun wrap-region-html (b e tag)
+  "'tag' every line in the region with a tag"
+  (interactive "r\nMTag for line: ")
+  (setq p (point-marker))
+  (save-excursion
+    (insert-tag-at-position-and-indent b "<%s>")
+    (insert-tag-at-position-and-indent p "</%s>")
+    (indent-region b p)
+    (beginning-of-line)
+    (indent-according-to-mode)))
+
+
+(defun rdio-play ()
+  (interactive)
+  (shell-command "osascript -e 'tell application \"Rdio\" to playpause'"))
+
+(defun rdio-next ()
+  (interactive)
+  (shell-command "osascript -e 'tell application \"Rdio\" to next track'"))
+
+(defun rdio-previous ()
+  (interactive)
+  (shell-command "osascript -e 'tell application \"Rdio\" to previous track'"))
