@@ -1,8 +1,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
- (let ((default-directory "~/.emacs.d/elpa/"))
-   (normal-top-level-add-to-load-path '(".")) 
-  (normal-top-level-add-subdirs-to-load-path))
+  (let ((default-directory "~/emacs"))
+    (normal-top-level-add-to-load-path '("."))
+   (normal-top-level-add-subdirs-to-load-path))
 
 (setq w32-use-w32-font-dialog nil)
 
@@ -11,6 +11,9 @@
 ;(setq mac-control-modifier 'control) ; make Control key do Control
 ;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 
+(require 'auto-cask)
+(auto-cask/setup "~/emacs/")
+(cask-initialize)
 
 
 (global-font-lock-mode t)
@@ -25,9 +28,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 
-(require 'exec-path-from-shell)
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+;;(require 'exec-path-from-shell)
+;;(when (memq window-system '(mac ns))
+;;  (exec-path-from-shell-initialize))
 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -73,14 +76,6 @@
           (lambda ()
             (local-unset-key (kbd "M-n"))
             (local-set-key (kbd "M-n") 'forward-word)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ELK
-(require 'elk-test)
-(add-to-list 'auto-mode-alist '("\\.elk\\'" . elk-test-mode))
-(define-key elk-test-mode-map (kbd "C-c C-t") 'elk-test-run-buffer)
-(define-key emacs-lisp-mode-map (kbd "<f7>") 'elk-test-run-a-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ISEARCH SHIT
@@ -161,8 +156,8 @@
 (require 'rspec-mode)
 (require 'rvm)
 ;;(require 'robe)
-(require 'company)
-(push 'company-robe company-backends)
+;(require 'company)
+;(push 'company-robe company-backends)
 
 (setq load-path (append load-path (list "~/.emacs.d/rhtml")))
 (require 'rhtml-mode)
@@ -328,16 +323,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
         (ibuffer-update nil))
     (ibuffer))
   (delete-other-windows))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HIGHLIGHT SYMBOL AT POINT
-;(global-set-key (kbd "<return>") 'newline) 
-(require 'highlight-symbol)
-(global-set-key [(control .)] 'highlight-symbol-at-point)
-(global-set-key [(meta s)] 'highlight-symbol-next)
-(global-set-key [(meta r)] 'highlight-symbol-prev)
-(global-set-key [(meta m)] 'highlight-symbol-query-replace)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL KEY MAPPINGS
@@ -543,9 +528,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
                             (setq css-indent-offset 2
                                   indent-tabs-mode nil)))
 
-(require 'ctags)
-(setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
-(global-set-key (kbd "<f5>") 'ctags-create-or-update-tags-table)
+;;(require 'ctags)
+;;(setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
+;;(global-set-key (kbd "<f5>") 'ctags-create-or-update-tags-table)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SMEX MODE
@@ -571,25 +556,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
           (rename-buffer new-name)
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
-
-;; ; -------------------- Autocomplete --------------------
-;; ;; Use with Rsense for Ruby autocomplete:
-;; ;; http://cx4a.org/software/rsense/
-;; ;; Follow instructions on: http://itstickers.blogspot.com/2010/11/all-about-emacs.html
-;; (require 'auto-complete-config)
-;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-;; (ac-config-default)
-
-;; ;; Rsense
-;; (setq rsense-home "/opt/rsense-0.3")
-;; (add-to-list 'load-path (concat rsense-home "/etc"))
-;; (require 'rsense)
- 
-;; ;; Rsense + Autocomplete
-;; (add-hook 'ruby-mode-hook
-;;           (lambda ()
-;;             (add-to-list 'ac-sources 'ac-source-rsense-method)
-;;             (add-to-list 'ac-sources 'ac-source-rsense-constant)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -682,16 +648,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key "\C-\M-n" 'rdio-next)
 (global-set-key "\C-\M-h" 'rdio-previous)
 
-(require 'flx-ido)
-(flx-ido-mode 1)
 (setq ido-enable-flex-matching t)
 
 (setq projectile-completion-system 'ido)
 (setq gc-cons-threshold 20000000)
-
-
-                                        ; osascript -e 'tell application "Rdio" to playpause'
-                                        ; osascript -e 'tell application "Rdio" to next track'
-; previous track
-
-

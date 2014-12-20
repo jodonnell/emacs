@@ -15,3 +15,5 @@
 /.emacs.d/projectile-bookmarks.eld
 /.emacs.d/ido.last
 /.emacs.d/recentf
+/.cask/
+/.emacs.d/.cask/
