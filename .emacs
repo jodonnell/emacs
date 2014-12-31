@@ -70,7 +70,9 @@
 
 (setq column-number-mode t)
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TRIAL
+(global-set-key (kbd "RET") 'newline-and-indent)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ENDTRIAL
 
 (add-hook 'log-edit-mode-hook
           (lambda ()
@@ -404,6 +406,10 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (global-set-key "\C-\M-n" 'rdio-next)
 (global-set-key "\C-\M-h" 'rdio-previous)
+
+
+(global-set-key "\C-x\C-f" 'helm-projectile)
+(global-set-key "\C-xf" 'ido-find-file)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
