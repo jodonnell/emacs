@@ -28,9 +28,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 
-;;(require 'exec-path-from-shell)
-;;(when (memq window-system '(mac ns))
-;;  (exec-path-from-shell-initialize))
+(require 'exec-path-from-shell)
+(when (memq window-system '(mac ns))
+ (exec-path-from-shell-initialize))
 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -51,9 +51,6 @@
 (load "~/.emacs.d/jacobs/django_tests.el")
 
 (require 'midnight)
-(require 'pretty-lambdada)
-(add-to-list 'pretty-lambda-auto-modes 'javascript-mode)
-(pretty-lambda-for-modes)
 
 (setq calendar-latitude 40.74)
 (setq calendar-longitude -74.01)
@@ -153,7 +150,7 @@
 ;; RUBY STUFF
 ;;(require 'rails-dream)
 ;;(require 'flymake-ruby)
-;;(require 'rinari)
+(require 'rinari)
 ;(require 'show-args)
 (require 'rspec-mode)
 (require 'rvm)
@@ -184,15 +181,16 @@
                             (global-set-key "\C-crr" 'rubymotion-simulator)
                             (global-set-key "\C-crd" 'rubymotion-device)
                             (rspec-mode)
-;                            (robe-mode)
-                            (company-mode)
                             (local-set-key "\C-i" 'th-complete-or-indent)
                             (setq indent-tabs-mode nil)))
+
+(add-hook 'projectile-mode-hook 'projectile-rails-on)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HAML
 (require 'haml-mode)
-(add-hook 'haml-mode-hook (lambda() 
+(add-hook 'haml-mode-hook (lambda() ;
 			    (setq indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -202,8 +200,8 @@
 (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
 (add-to-list 'auto-mode-alist '("Cakefile" . coffee-mode))
 (add-hook 'coffee-mode-hook (lambda() 
-                            (set (make-local-variable 'tab-width) 2)
-                            (local-set-key "\C-i" 'th-complete-or-indent)))
+                           (set (make-local-variable 'tab-width) 2)
+                           (local-set-key "\C-i" 'th-complete-or-indent)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -211,6 +209,16 @@
 (add-hook 'emacs-lisp-mode-hook (lambda() 
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (setq indent-tabs-mode nil)))
+
+
+(defface elisp-function-face5
+  '((t (:foreground "deepskyblue3")))
+  "Face for simplified prefixes.")
+
+(font-lock-add-keywords 
+ 'emacs-lisp-mode
+ '(("(\\s-*\\(\\_<\\(?:\\sw\\|\\s_\\)+\\)\\_>"
+    1 'elisp-function-face5)))
 
 (defface elisp-prefix-face
   '((t (:foreground "grey50")))
@@ -314,17 +322,11 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 			    (local-set-key "\C-i" 'th-complete-or-indent)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; IBFUFER MODE
-(defun sw-list ()
-  "switch to Ibuffer; this function should be bound to F9"
-  (interactive)
-  (setq buffer (get-buffer "*Ibuffer*"))
-  (if (bufferp buffer)
-      (progn 
-        (switch-to-buffer buffer)
-        (ibuffer-update nil))
-    (ibuffer))
-  (delete-other-windows))
+;; EWW
+(add-hook 'eww-mode-hook (lambda()
+			    (local-set-key "\M-n" 'next-word)))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL KEY MAPPINGS
@@ -420,7 +422,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (ido-mode 1)
 (ido-everywhere 1)
 (flx-ido-mode 1)
-;; disable ido faces to see flx highlights.
+;;disable ido faces to see flx highlights.
 (setq ido-use-faces nil)
 
 (setq gc-cons-threshold 10000000) ; set emacs garbage collection to 10 mb
@@ -431,6 +433,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; The following lines are always needed.  Choose your own keys.
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
+
 
 (setq org-hide-leading-stars 0)
 (defun my-org-mode-hook ()
@@ -465,7 +468,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(custom-safe-themes
    (quote
     ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
- '(debug-on-error t)
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(pretty-lambda-auto-modes
@@ -474,7 +476,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
  '(warning-suppress-types (quote (nil))))
-
 
 (defun pass-buffer-to-racket ()
   (interactive)
@@ -511,6 +512,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (require 'clojure-mode)
 (require 'magit)
+(setq magit-last-seen-setup-instructions "1.4.0")
 (global-set-key "\C-cg" 'magit-status)
 
 (add-hook 'magit-log-mode-hook (lambda()
@@ -580,7 +582,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (require 'helm)
 (require 'helm-projectile)
 
-
+(global-set-key "\C-x\C-f" 'helm-projectile)
+(global-set-key "\C-xf" 'ido-find-file)
 
 ; syp
 
@@ -613,3 +616,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (setq projectile-completion-system 'ido)
 (setq gc-cons-threshold 20000000)
+
+
+(add-hook 'octave-mode-hook (lambda ()
+                              (local-set-key (kbd "C-h") 'backward-char)))

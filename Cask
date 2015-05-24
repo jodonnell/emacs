@@ -20,7 +20,6 @@
 (depends-on "flx-ido")
 (depends-on "rvm")
 (depends-on "rinari")
-(depends-on "pretty-lambdada")
 (depends-on "yasnippet")
 (depends-on "yasnippet-bundle")
 (depends-on "magit")
@@ -29,5 +28,5 @@
 (depends-on "helm-projectile")
 
 
-
-
+(depends-on "projectile-rails")
+(depends-on "exec-path-from-shell")
