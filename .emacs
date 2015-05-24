@@ -176,7 +176,8 @@
                             (local-set-key "\C-cd" 'get-rails-documentation)
                             (local-set-key "\C-cm" 'get-instance-methods-current)
                             (local-set-key "\C-cc" 'get-class-methods-current)
-                            
+                            (local-set-key "\C-\M-p" 'ruby-beginning-of-block)
+                            (local-set-key "\C-\M-n" 'ruby-end-of-block)
                             (local-set-key "\C-crs" 'rubymotion-spec)
                             (local-set-key "\C-crr" 'rubymotion-simulator)
                             (local-set-key "\C-crd" 'rubymotion-device)
