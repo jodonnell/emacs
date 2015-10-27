@@ -621,3 +621,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (add-hook 'octave-mode-hook (lambda ()
                               (local-set-key (kbd "C-h") 'backward-char)))
+
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+
+(require 'rvm)
+(rvm-use-default)
