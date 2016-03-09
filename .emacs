@@ -1,5 +1,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
   (let ((default-directory "~/emacs"))
     (normal-top-level-add-to-load-path '("."))
    (normal-top-level-add-subdirs-to-load-path))
@@ -11,9 +18,48 @@
 ;(setq mac-control-modifier 'control) ; make Control key do Control
 ;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 
-(require 'auto-cask)
-(auto-cask/setup "~/emacs/")
-(cask-initialize)
+(push "~/.emacs.d/elpa/use-package-20160226.1618/" load-path)
+
+(require 'use-package)
+(require 'package)
+
+(mapc (lambda(p) (push p package-archives))
+      '(("marmalade" . "http://marmalade-repo.org/packages/")
+        ("melpa" . "http://melpa.milkbox.net/packages/")))
+(package-refresh-contents)
+(package-initialize)
+(setq use-package-always-ensure t)
+
+(use-package clojure-mode)
+(use-package coffee-mode)
+(use-package php-mode)
+(use-package lua-mode)
+(use-package rspec-mode)
+(use-package haml-mode)
+(use-package sass-mode)
+(use-package scss-mode)
+(use-package web-mode)
+(use-package yaml-mode)
+(use-package rainbow-mode)
+(use-package smart-mode-line)
+(use-package smex)
+(use-package flx-ido)
+(use-package rvm)
+(use-package rinari)
+(use-package yasnippet)
+(use-package magit)
+(use-package helm)
+(use-package projectile)
+(use-package ag)
+(use-package helm-projectile)
+(use-package projectile-rails)
+(use-package exec-path-from-shell)
+;(use-package flycheck)
+(use-package helm-spotify)
+(use-package elixir-mode)
+(use-package csv-mode)
+(use-package iedit)
+
 
 
 (global-font-lock-mode t)
@@ -644,7 +690,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
-(require 'realgud)
 (require 'iedit)
 
 
