@@ -195,6 +195,13 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Elixir mode
+(add-hook 'elixir-mode-hook (lambda()
+                              (local-set-key "\C-i" 'th-complete-or-indent)))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HAML
 (require 'haml-mode)
 (add-hook 'haml-mode-hook (lambda() ;
@@ -336,6 +343,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 			    (local-set-key "\M-n" 'next-word)))
 
 
+(setq hippie-expand-try-functions-list '(try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-complete-file-name-partially try-complete-file-name try-expand-all-abbrevs try-expand-list try-expand-line try-complete-lisp-symbol-partially try-complete-lisp-symbol))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL KEY MAPPINGS
@@ -345,7 +354,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-c\C-k" 'kill-region)
 (global-set-key "\C-c\C-y" 'transpose-chars)
-(global-set-key "\C-t"     'dabbrev-expand)
 (global-set-key "\C-z"     'advertised-undo)
 (global-set-key "\C-ch"    'help-command)
 (global-set-key "\M-s"     'isearch-forward-regexp)
@@ -394,7 +402,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "C-p") 'delete-backward-char)
 
 (global-unset-key (kbd "C-o"))
-(global-set-key (kbd "C-o") 'dabbrev-expand)
+(global-set-key (kbd "C-o") 'hippie-expand)
 
 (global-unset-key (kbd "C-j"))
 (global-set-key (kbd "C-j") 'universal-argument)
@@ -479,6 +487,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
     ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
+ '(package-selected-packages
+   (quote
+    (yasnippet yaml-mode web-mode swift-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
  '(pretty-lambda-auto-modes
    (quote
     (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
@@ -500,7 +511,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
 
-  
+
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
 (setq mac-command-modifier 'meta)
@@ -531,13 +542,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (require 'php-mode)
 (require 'yaml-mode)
 
-(require 'yasnippet-bundle)
-(setq yas/root-directory "~/.emacs.d/snippets")
-(yas/load-directory yas/root-directory)
-(require 'dropdown-list)
-(setq yas/prompt-functions '(yas/dropdown-prompt
-                             yas/ido-prompt
-                             yas/completing-prompt))
+;; (require 'yasnippet-bundle)
+;; (setq yas/root-directory "~/.emacs.d/snippets")
+;;(yas/load-directory yas/root-directory)
+;;(require 'dropdown-list)
+;;(setq yas/prompt-functions '(yas/dropdown-prompt
+;;                             yas/ido-prompt
+;;                             yas/completing-prompt))
 
 
 (require 'sass-mode)
