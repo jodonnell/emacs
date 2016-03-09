@@ -23,7 +23,10 @@
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 (setq make-backup-files nil)
-(setq visible-bell t)
+
+;; cause el captain has a bug causing issues with bell
+(setq visible-bell nil)
+(setq ring-bell-function 'ignore)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
