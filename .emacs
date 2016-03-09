@@ -141,13 +141,16 @@
 ;; (setenv "PATH" (concat "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin:" (getenv "PATH")))
 
 (add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
-(add-hook 'js-mode-hook (lambda() 
+(add-to-list 'auto-mode-alist '("jsx" . js-mode))
+(add-hook 'js-mode-hook (lambda()
  				  (local-set-key "\C-i" 'th-complete-or-indent)
 				  (local-set-key "\C-c\C-t" 'js-run-tests)
-          ;(setq js-indent-level 2)
+          (setq js-indent-level 2)
 ;;                                  'flymake-mode
- 				  (setq indent-tabs-mode nil)))
 
+          (add-to-list 'write-file-functions 'delete-trailing-whitespace)
+          (setq indent-tabs-mode nil)))
+(setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
