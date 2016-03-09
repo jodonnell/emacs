@@ -166,7 +166,7 @@
 
 (setq load-path (append load-path (list "~/.emacs.d/rhtml")))
 (require 'rhtml-mode)
-(add-hook 'rhtml-mode-hook (lambda() 
+(add-hook 'rhtml-mode-hook (lambda()
                              (setq indent-tabs-mode nil)))
 
 
@@ -177,7 +177,7 @@
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
 
-(add-hook 'ruby-mode-hook (lambda() 
+(add-hook 'ruby-mode-hook (lambda()
                             (local-set-key "\C-ca" 'get-rails-function-argument-list-at-point)
                             (local-set-key "\C-cd" 'get-rails-documentation)
                             (local-set-key "\C-cm" 'get-instance-methods-current)
@@ -205,15 +205,17 @@
 
 (require 'coffee-mode)
 (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
+(add-to-list 'auto-mode-alist '("\\.moon$" . coffee-mode))
 (add-to-list 'auto-mode-alist '("Cakefile" . coffee-mode))
-(add-hook 'coffee-mode-hook (lambda() 
-                           (set (make-local-variable 'tab-width) 2)
-                           (local-set-key "\C-i" 'th-complete-or-indent)))
+(add-hook 'coffee-mode-hook (lambda()
+                              (set (make-local-variable 'tab-width) 2)
+                              (set (make-local-variable 'coffee-tab-width) 2)
+                              (local-set-key "\C-i" 'th-complete-or-indent)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
-(add-hook 'emacs-lisp-mode-hook (lambda() 
+(add-hook 'emacs-lisp-mode-hook (lambda()
 			    (local-set-key "\C-i" 'th-complete-or-indent)
 			    (setq indent-tabs-mode nil)))
 
@@ -222,7 +224,7 @@
   '((t (:foreground "deepskyblue3")))
   "Face for simplified prefixes.")
 
-(font-lock-add-keywords 
+(font-lock-add-keywords
  'emacs-lisp-mode
  '(("(\\s-*\\(\\_<\\(?:\\sw\\|\\s_\\)+\\)\\_>"
     1 'elisp-function-face5)))
@@ -264,7 +266,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (add-to-list 'interpreter-mode-alist '("miniperl" . cperl-mode))
 
 ;; add hook to cperl mode
-(add-hook 'cperl-mode-hook (lambda() 
+(add-hook 'cperl-mode-hook (lambda()
                              (setq tab-width 4
                                    cperl-indent-level 4
                                    indent-tabs-mode nil
@@ -489,7 +491,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
   (save-excursion
     (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "racket")))
 
-(add-hook 'scheme-mode-hook (lambda() 
+(add-hook 'scheme-mode-hook (lambda()
                              (setq tab-width 4
                                    indent-tabs-mode nil)
 			     (show-paren-mode t)
