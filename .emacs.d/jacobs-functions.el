@@ -93,7 +93,7 @@ character is a whitespace or non-word character, then
           (looking-at (rx (or word-end (any ".,;:#=?()[]{}")))))
          (require 'sort)
          (let ((case-fold-search t))
-           (dabbrev-expand arg)))
+           (hippie-expand arg)))
          (t
           (indent-according-to-mode))))
 
