@@ -160,6 +160,7 @@
 ;(require 'show-args)
 (require 'rspec-mode)
 (require 'rvm)
+(rvm-use-default)
 ;;(require 'robe)
 ;(require 'company)
 ;(push 'company-robe company-backends)
@@ -667,3 +668,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "C-c C-t") 'love-run-tests)
 (global-set-key (kbd "C-c C-r") 'love-run-game)
 (global-set-key (kbd "C-c C-d") 'love-run-deploy)
+
+
+
