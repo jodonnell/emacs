@@ -54,7 +54,7 @@
 (use-package helm-projectile)
 (use-package projectile-rails)
 (use-package exec-path-from-shell)
-;(use-package flycheck)
+(use-package flycheck)
 (use-package helm-spotify)
 (use-package elixir-mode)
 (use-package csv-mode)
@@ -379,10 +379,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
           (local-set-key "\C-c\C-a" 'create-header-for-method)
 			    (flyspell-prog-mode)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SWIFT STUFF
-(add-hook 'swift-mode-hook (lambda()
-			    (local-set-key "\C-i" 'th-complete-or-indent)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EWW
@@ -536,7 +532,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
    (quote
-    (yasnippet yaml-mode web-mode swift-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
+    (yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
  '(pretty-lambda-auto-modes
    (quote
     (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
@@ -577,7 +573,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
               '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 
-(require 'clojure-mode)
 (require 'magit)
 (setq magit-last-seen-setup-instructions "1.4.0")
 (global-set-key "\C-cg" 'magit-status)
@@ -585,9 +580,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (add-hook 'magit-log-mode-hook (lambda()
                                  (local-set-key "\M-n" 'forward-word)))
 
-
-(require 'php-mode)
-(require 'yaml-mode)
 
 ;; (require 'yasnippet-bundle)
 ;; (setq yas/root-directory "~/.emacs.d/snippets")
