@@ -7,9 +7,9 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-  (let ((default-directory "~/emacs"))
-    (normal-top-level-add-to-load-path '("."))
-   (normal-top-level-add-subdirs-to-load-path))
+(let ((default-directory "~/emacs"))
+  (normal-top-level-add-to-load-path '("."))
+  (normal-top-level-add-subdirs-to-load-path))
 
 (setq w32-use-w32-font-dialog nil)
 
@@ -33,21 +33,53 @@
 (use-package clojure-mode)
 (use-package coffee-mode)
 (use-package php-mode)
-(use-package lua-mode)
+(use-package lua-mode
+  :config
+  (add-hook 'lua-mode-hook (lambda()
+                             (setq indent-tabs-mode nil)
+                             (setq lua-indent-level 2)))
+  :bind
+  ("\C-i" . th-complete-or-indent)
+  ("\C-c\C-t" . run-lua-tests))
+
 (use-package rspec-mode)
-(use-package haml-mode)
+(use-package haml-mode
+  :config
+  (setq indent-tabs-mode nil))
+
+(use-package rainbow-mode)
 (use-package sass-mode)
-(use-package scss-mode)
+(use-package scss-mode
+  :config
+  (add-hook 'scss-mode-hook (lambda()
+                              (rainbow-mode)
+                              (setq css-indent-offset 2
+                                    indent-tabs-mode nil))))
+
 (use-package web-mode)
 (use-package yaml-mode)
-(use-package rainbow-mode)
+
 (use-package smart-mode-line)
-(use-package smex)
+(use-package smex
+  :init
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key "\C-x\C-m" 'smex)
+  (global-set-key "\C-xm"    'execute-extended-command)
+  (global-set-key "\C-c\C-m" 'execute-extended-command))
+
 (use-package flx-ido)
 (use-package rvm)
 (use-package rinari)
 (use-package yasnippet)
-(use-package magit)
+(use-package magit
+  :init
+  (global-set-key "\C-cg" 'magit-status)
+  :config
+  (setq magit-last-seen-setup-instructions "1.4.0")
+  (add-hook 'magit-log-mode-hook (lambda()
+                                   (local-set-key "\M-n" 'forward-word))))
+
 (use-package helm)
 (use-package projectile)
 (use-package ag)
@@ -358,13 +390,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; LUA STUFF
-(add-hook 'lua-mode-hook (lambda()
-                           (setq indent-tabs-mode nil)
-                           (setq lua-indent-level 2)
-                           (local-set-key "\C-i" 'th-complete-or-indent)
-                           (local-set-key "\C-c\C-t" 'run-lua-tests)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -391,8 +416,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL KEY MAPPINGS
-(global-set-key "\C-x\C-m" 'execute-extended-command)
-(global-set-key "\C-xm"    'execute-extended-command)
 (global-set-key "\C-w"     'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
 (global-set-key "\C-c\C-k" 'kill-region)
@@ -573,13 +596,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
               '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 
-(require 'magit)
-(setq magit-last-seen-setup-instructions "1.4.0")
-(global-set-key "\C-cg" 'magit-status)
-
-(add-hook 'magit-log-mode-hook (lambda()
-                                 (local-set-key "\M-n" 'forward-word)))
-
 
 ;; (require 'yasnippet-bundle)
 ;; (setq yas/root-directory "~/.emacs.d/snippets")
@@ -590,26 +606,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;;                             yas/completing-prompt))
 
 
-(require 'sass-mode)
-(require 'scss-mode)
-(require 'rainbow-mode)
-(add-hook 'scss-mode-hook (lambda()
-                            (rainbow-mode)
-                            (setq css-indent-offset 2
-                                  indent-tabs-mode nil)))
-
 ;;(require 'ctags)
 ;;(setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
 ;;(global-set-key (kbd "<f5>") 'ctags-create-or-update-tags-table)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SMEX MODE
-(require 'smex)
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key "\C-x\C-m" 'smex)
-(global-set-key "\C-xm"    'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
 
 
 ;; thanks to steve yegge
