@@ -93,7 +93,6 @@
 (use-package iedit)
 
 
-
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (transient-mark-mode t)
@@ -418,8 +417,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; GLOBAL KEY MAPPINGS
 (global-set-key "\C-w"     'backward-kill-word)
 (global-set-key "\C-x\C-k" 'kill-region)
-(global-set-key "\C-c\C-k" 'kill-region)
-(global-set-key "\C-c\C-y" 'transpose-chars)
 (global-set-key "\C-z"     'advertised-undo)
 (global-set-key "\C-ch"    'help-command)
 (global-set-key "\M-s"     'isearch-forward-regexp)
