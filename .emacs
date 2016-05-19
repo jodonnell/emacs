@@ -18,7 +18,10 @@
 ;(setq mac-control-modifier 'control) ; make Control key do Control
 ;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 
-(push "~/.emacs.d/elpa/use-package-20160226.1618/" load-path)
+(if (equal (getenv "EMACS_ENV") "bb")
+    (load "~/.emacs.d/bb.el"))
+
+(push "~/.emacs.d/elpa/use-package-20160403.1129/" load-path)
 
 (require 'use-package)
 (require 'package)
@@ -56,7 +59,10 @@
                               (setq css-indent-offset 2
                                     indent-tabs-mode nil))))
 
-(use-package web-mode)
+(use-package web-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+
 (use-package yaml-mode)
 
 (use-package smart-mode-line)
@@ -552,7 +558,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
    (quote
-    (yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
+    (use-package-chords yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
  '(pretty-lambda-auto-modes
    (quote
     (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
@@ -651,13 +657,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq uniquify-buffer-name-style 'reverse)
 
 
-(setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
-(require 'multi-web-mode)
-(setq mweb-default-major-mode 'rhtml-mode)
-(setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
-                  (css-mode "<style[^>]*>" "</style>")))
-(setq mweb-filename-extensions '("htm" "html" "erb"))
-(multi-web-global-mode 1)
+;; (setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
+;; (require 'multi-web-mode)
+;; (setq mweb-default-major-mode 'rhtml-mode)
+;; (setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
+;;                   (css-mode "<style[^>]*>" "</style>")))
+;; (setq mweb-filename-extensions '("htm" "html" "erb"))
+;; (multi-web-global-mode 1)
 
 ;; (require 'smart-mode-line)
 ;; (setq sml/theme 'dark)
@@ -701,5 +707,3 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "C-c C-t") 'love-run-tests)
 (global-set-key (kbd "C-c C-r") 'love-run-game)
 (global-set-key (kbd "C-c C-d") 'love-run-deploy)
-
-
