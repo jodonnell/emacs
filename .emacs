@@ -35,7 +35,7 @@
 
 (use-package clojure-mode)
 (use-package coffee-mode)
-(use-package php-mode)
+;(use-package php-mode)
 (use-package lua-mode
   :config
   (add-hook 'lua-mode-hook (lambda()
@@ -56,12 +56,17 @@
   :config
   (add-hook 'scss-mode-hook (lambda()
                               (rainbow-mode)
+                              (local-set-key "\C-i" 'th-complete-or-indent)
                               (setq css-indent-offset 2
                                     indent-tabs-mode nil))))
 
 (use-package web-mode
   :init
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  :config
+  (add-hook 'web-mode-hook (lambda()
+                             (yas-minor-mode 1)
+                             (local-set-key "\C-i" 'th-complete-or-indent))))
 
 (use-package yaml-mode)
 
@@ -78,6 +83,9 @@
 (use-package rvm)
 (use-package rinari)
 (use-package yasnippet)
+(setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
+(yas-reload-all)
+
 (use-package magit
   :init
   (global-set-key "\C-cg" 'magit-status)
@@ -97,6 +105,19 @@
 (use-package elixir-mode)
 (use-package csv-mode)
 (use-package iedit)
+
+(use-package js
+ :init
+ (add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
+ (add-to-list 'auto-mode-alist '("jsx" . js-mode))
+ (add-to-list 'auto-mode-alist '("es6" . js-mode))
+ :config
+ (add-hook 'js-mode-hook (lambda()
+                           (local-set-key "\C-i" 'th-complete-or-indent)
+                           (local-set-key "\C-c\C-t" 'js-run-tests)
+                           (setq js-indent-level 4)
+                           (add-to-list 'write-file-functions 'delete-trailing-whitespace)
+                           (setq indent-tabs-mode nil))))
 
 
 (global-font-lock-mode t)
@@ -223,17 +244,7 @@
 ;; (push "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin" exec-path)
 ;; (setenv "PATH" (concat "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin:" (getenv "PATH")))
 
-(add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
-(add-to-list 'auto-mode-alist '("jsx" . js-mode))
-(add-hook 'js-mode-hook (lambda()
- 				  (local-set-key "\C-i" 'th-complete-or-indent)
-				  (local-set-key "\C-c\C-t" 'js-run-tests)
-          (setq js-indent-level 2)
-;;                                  'flymake-mode
-
-          (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-          (setq indent-tabs-mode nil)))
-(setq-default indent-tabs-mode nil)
+;(setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
@@ -601,7 +612,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 ;; (require 'yasnippet-bundle)
-;; (setq yas/root-directory "~/.emacs.d/snippets")
 ;;(yas/load-directory yas/root-directory)
 ;;(require 'dropdown-list)
 ;;(setq yas/prompt-functions '(yas/dropdown-prompt
@@ -682,7 +692,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (add-hook 'octave-mode-hook (lambda ()
                               (local-set-key (kbd "C-h") 'backward-char)))
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
 
 (require 'iedit)
 
