@@ -18,7 +18,10 @@
 ;(setq mac-control-modifier 'control) ; make Control key do Control
 ;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 
-(push "~/.emacs.d/elpa/use-package-20160226.1618/" load-path)
+(if (equal (getenv "EMACS_ENV") "bb")
+    (load "~/.emacs.d/bb.el"))
+
+(push "~/.emacs.d/elpa/use-package-20160403.1129/" load-path)
 
 (require 'use-package)
 (require 'package)
@@ -32,7 +35,7 @@
 
 (use-package clojure-mode)
 (use-package coffee-mode)
-(use-package php-mode)
+;(use-package php-mode)
 (use-package lua-mode
   :config
   (add-hook 'lua-mode-hook (lambda()
@@ -53,10 +56,18 @@
   :config
   (add-hook 'scss-mode-hook (lambda()
                               (rainbow-mode)
+                              (local-set-key "\C-i" 'th-complete-or-indent)
                               (setq css-indent-offset 2
                                     indent-tabs-mode nil))))
 
-(use-package web-mode)
+(use-package web-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  :config
+  (add-hook 'web-mode-hook (lambda()
+                             (yas-minor-mode 1)
+                             (local-set-key "\C-i" 'th-complete-or-indent))))
+
 (use-package yaml-mode)
 
 (use-package smart-mode-line)
@@ -72,6 +83,9 @@
 (use-package rvm)
 (use-package rinari)
 (use-package yasnippet)
+(setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
+(yas-reload-all)
+
 (use-package magit
   :init
   (global-set-key "\C-cg" 'magit-status)
@@ -91,6 +105,19 @@
 (use-package elixir-mode)
 (use-package csv-mode)
 (use-package iedit)
+
+(use-package js
+ :init
+ (add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
+ (add-to-list 'auto-mode-alist '("jsx" . js-mode))
+ (add-to-list 'auto-mode-alist '("es6" . js-mode))
+ :config
+ (add-hook 'js-mode-hook (lambda()
+                           (local-set-key "\C-i" 'th-complete-or-indent)
+                           (local-set-key "\C-c\C-t" 'js-run-tests)
+                           (setq js-indent-level 4)
+                           (add-to-list 'write-file-functions 'delete-trailing-whitespace)
+                           (setq indent-tabs-mode nil))))
 
 
 (global-font-lock-mode t)
@@ -217,17 +244,7 @@
 ;; (push "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin" exec-path)
 ;; (setenv "PATH" (concat "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin:" (getenv "PATH")))
 
-(add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
-(add-to-list 'auto-mode-alist '("jsx" . js-mode))
-(add-hook 'js-mode-hook (lambda()
- 				  (local-set-key "\C-i" 'th-complete-or-indent)
-				  (local-set-key "\C-c\C-t" 'js-run-tests)
-          (setq js-indent-level 2)
-;;                                  'flymake-mode
-
-          (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-          (setq indent-tabs-mode nil)))
-(setq-default indent-tabs-mode nil)
+;(setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
@@ -552,7 +569,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
    (quote
-    (yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
+    (use-package-chords yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
  '(pretty-lambda-auto-modes
    (quote
     (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
@@ -595,7 +612,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 ;; (require 'yasnippet-bundle)
-;; (setq yas/root-directory "~/.emacs.d/snippets")
 ;;(yas/load-directory yas/root-directory)
 ;;(require 'dropdown-list)
 ;;(setq yas/prompt-functions '(yas/dropdown-prompt
@@ -651,13 +667,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq uniquify-buffer-name-style 'reverse)
 
 
-(setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
-(require 'multi-web-mode)
-(setq mweb-default-major-mode 'rhtml-mode)
-(setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
-                  (css-mode "<style[^>]*>" "</style>")))
-(setq mweb-filename-extensions '("htm" "html" "erb"))
-(multi-web-global-mode 1)
+;; (setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
+;; (require 'multi-web-mode)
+;; (setq mweb-default-major-mode 'rhtml-mode)
+;; (setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
+;;                   (css-mode "<style[^>]*>" "</style>")))
+;; (setq mweb-filename-extensions '("htm" "html" "erb"))
+;; (multi-web-global-mode 1)
 
 ;; (require 'smart-mode-line)
 ;; (setq sml/theme 'dark)
@@ -676,7 +692,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (add-hook 'octave-mode-hook (lambda ()
                               (local-set-key (kbd "C-h") 'backward-char)))
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
 
 (require 'iedit)
 
@@ -701,6 +716,3 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "C-c C-t") 'love-run-tests)
 (global-set-key (kbd "C-c C-r") 'love-run-game)
 (global-set-key (kbd "C-c C-d") 'love-run-deploy)
-
-
-
