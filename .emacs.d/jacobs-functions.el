@@ -443,3 +443,8 @@ point reaches the beginning or end of the buffer, stop there."
 ;; remap C-a to `smarter-move-beginning-of-line'
 (global-set-key [remap move-beginning-of-line]
                 'sacha/smarter-move-beginning-of-line)
+
+
+(defun apropos-at-point ()
+  (interactive)
+  (apropos (thing-at-point 'symbol)))
