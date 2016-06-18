@@ -106,6 +106,8 @@
 (use-package csv-mode)
 (use-package iedit)
 
+(use-package nameless)
+
 (use-package js
  :init
  (add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
@@ -318,8 +320,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
 (add-hook 'emacs-lisp-mode-hook (lambda()
-			    (local-set-key "\C-i" 'th-complete-or-indent)
-			    (setq indent-tabs-mode nil)))
+                                  (local-set-key "\C-i" 'th-complete-or-indent)
+                                  (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
+                                  (setq indent-tabs-mode nil)))
 
 
 (defface elisp-function-face5
