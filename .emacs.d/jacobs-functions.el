@@ -5,23 +5,23 @@
   (let (cur-buf)
     (setq cur-buf (current-buffer))
     (get-buffer-create "dup_scratch_buffer")
-    
+
     (while (> (buffer-size) 0)
       (beginning-of-buffer)
-      
+
       (let (begin end text regex)
-        
+
         ;; get region
         (setq begin (point))
         (move-end-of-line nil)
         (setq end (point))
-        
+
         ;; save copy of text and then kill it
         (setq text (extract-rectangle begin end))
         (kill-region begin end)
         (if (> (buffer-size) 0)
             (delete-char 1)) ;; remove blank line
-        
+
         ;; put text in the unique buffer
         (set-buffer "dup_scratch_buffer")
         (yank)
@@ -32,7 +32,7 @@
         (setq regex (concat "^" (car text) "
 ")) ;; new line
         (replace-regexp regex "")))
-    
+
     (set-buffer cur-buf)
     (insert-buffer "dup_scratch_buffer")
     (kill-buffer "dup_scratch_buffer")))
@@ -123,7 +123,7 @@ character is a whitespace or non-word character, then
   (shell "shell-change")
   (sleep-for 3)
   (shell-insert-send-sleep "cd ~/cm_develop" 2)
-  
+
   (shell-insert-send-sleep "git bisect start" 3)
   (shell-insert-send-sleep "git bisect bad" 4)
   (shell-insert-send-sleep (concat "git bisect good " good) 4)
@@ -131,11 +131,11 @@ character is a whitespace or non-word character, then
   (while (eq (search-backward "is the first bad commit" (point-min) t) nil)
     (erase-buffer)
     (shell-insert-send-sleep "perl -I lib/ lib/CTAH/Mailing/Preview/tests.t" 12)
-    
+
     (if (eq (search-backward "not ok [0-9]+" (point-min) t) nil)
 	(shell-insert-send-sleep "git bisect bad" 4)
       (shell-insert-send-sleep "git bisect good" 4)))
-  
+
   (shell-insert-send-sleep "git bisect reset" 2))
 
 
@@ -149,7 +149,7 @@ character is a whitespace or non-word character, then
       (let ((begin (point)))
 	(search-forward-regexp "}" nil t)
 	(indent-region begin (point)))))
-  
+
 
   (defun get-and-delete-old-code (start end)
     (setq new-method-body (buffer-substring-no-properties start end))
@@ -225,7 +225,7 @@ character is a whitespace or non-word character, then
         (next-line)
         (beginning-of-line)
         (delete-region (point) (point-max))
-        
+
         (beginning-of-buffer)
         (search-forward "-- Starting suite")
         (previous-line)
@@ -305,7 +305,7 @@ character is a whitespace or non-word character, then
 (defun get-image-size-from-file (file-name)
   (let ((image-size (shell-command-to-string (concat "identify -format '%w %h' " file-name))))
        (message
-        (concat 
+        (concat
          "width: "
          (car (split-string image-size))
          " height: "
