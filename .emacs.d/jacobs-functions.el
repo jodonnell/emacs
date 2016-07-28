@@ -448,3 +448,19 @@ point reaches the beginning or end of the buffer, stop there."
 (defun apropos-at-point ()
   (interactive)
   (apropos (thing-at-point 'symbol)))
+
+
+(defun indent-jsx (beg end)
+  (interactive "r")
+  (kill-region beg end)
+  (save-excursion
+    (let ((buffer-name (generate-new-buffer-name "poop")))
+      (get-buffer-create buffer-name)
+      (set-buffer buffer-name)
+      (yank)
+      (html-mode)
+      (goto-char (point-min))
+      (forward-line 1)
+      (indent-region (point) (point-max))
+      (kill-region (point-min) (point-max))))
+  (yank))
