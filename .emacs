@@ -101,7 +101,7 @@
 (use-package projectile-rails)
 (use-package exec-path-from-shell)
 (use-package flycheck)
-(use-package helm-spotify)
+;(use-package helm-spotify)
 (use-package elixir-mode)
 (use-package csv-mode)
 (use-package iedit)
