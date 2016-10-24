@@ -21,6 +21,8 @@
 (if (equal (getenv "EMACS_ENV") "bb")
     (load "~/.emacs.d/bb.el"))
 
+(getenv "BLAW_REDIS_HOST")
+
 (push "~/.emacs.d/elpa/use-package-20160403.1129/" load-path)
 
 (require 'use-package)
@@ -66,6 +68,7 @@
   :config
   (add-hook 'web-mode-hook (lambda()
                              (yas-minor-mode 1)
+                             (setq-default indent-tabs-mode nil)
                              (local-set-key "\C-i" 'th-complete-or-indent))))
 
 (use-package yaml-mode)
@@ -105,6 +108,7 @@
 (use-package elixir-mode)
 (use-package csv-mode)
 (use-package iedit)
+(use-package git-timemachine)
 
 (use-package nameless)
 
@@ -719,3 +723,5 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "C-c C-t") 'love-run-tests)
 (global-set-key (kbd "C-c C-r") 'love-run-game)
 (global-set-key (kbd "C-c C-d") 'love-run-deploy)
+
+(load-theme 'noctilux t)
