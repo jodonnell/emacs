@@ -58,6 +58,7 @@
   :config
   (add-hook 'scss-mode-hook (lambda()
                               (rainbow-mode)
+                              (yas-minor-mode 1)
                               (local-set-key "\C-i" 'th-complete-or-indent)
                               (setq css-indent-offset 2
                                     indent-tabs-mode nil))))
