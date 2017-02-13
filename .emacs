@@ -511,8 +511,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key (kbd "s-h") 'backward-sexp)
 (global-set-key (kbd "s-d") 'kill-sexp)
 
-(global-set-key "\C-\M-n" 'rdio-next)
-(global-set-key "\C-\M-h" 'rdio-previous)
+(global-set-key "\C-\M-n" 'forward-sexp)
+(global-set-key "\C-\M-h" 'backward-sexp)
 
 
 (global-set-key "\C-x\C-f" 'helm-projectile)
