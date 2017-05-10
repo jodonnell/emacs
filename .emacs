@@ -713,19 +713,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq uniquify-buffer-name-style 'reverse)
 
 
-;; (setq load-path (append load-path (list "~/.emacs.d/multi-web-mode/")))
-;; (require 'multi-web-mode)
-;; (setq mweb-default-major-mode 'rhtml-mode)
-;; (setq mweb-tags '((js-mode "<script[^>]*>" "</script>")
-;;                   (css-mode "<style[^>]*>" "</style>")))
-;; (setq mweb-filename-extensions '("htm" "html" "erb"))
-;; (multi-web-global-mode 1)
-
-;; (require 'smart-mode-line)
-;; (setq sml/theme 'dark)
-;; (sml/setup)
-
-
 (setq mac-option-modifier 'super) ; make opt key do Super
 
 
