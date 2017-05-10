@@ -734,9 +734,4 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq projectile-completion-system 'ido)
 (setq gc-cons-threshold 20000000)
 
-
-(add-hook 'octave-mode-hook (lambda ()
-                              (local-set-key (kbd "C-h") 'backward-char)))
-
-
 (require 'iedit)
