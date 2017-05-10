@@ -113,18 +113,55 @@
 
 (use-package nameless)
 
-(use-package js
- :init
- (add-to-list 'auto-mode-alist '("Jakefile" . js-mode))
- (add-to-list 'auto-mode-alist '("jsx" . js-mode))
- (add-to-list 'auto-mode-alist '("es6" . js-mode))
- :config
- (add-hook 'js-mode-hook (lambda()
-                           (local-set-key "\C-i" 'th-complete-or-indent)
-                           (local-set-key "\C-c\C-t" 'js-run-tests)
-                           (setq js-indent-level 4)
-                           (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-                           (setq indent-tabs-mode nil))))
+(defun my/use-eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (and eslint (file-executable-p eslint))
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
+(use-package js2-mode
+  :init
+  (add-to-list 'auto-mode-alist '("Jakefile$" . js2-jsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.es6$" . js2-jsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
+  :config
+  (add-hook 'js2-mode-hook (lambda()
+                             (setq js-indent-level 4)
+                             (add-to-list 'write-file-functions 'delete-trailing-whitespace)
+                             (setq js2-mode-show-parse-errors nil)
+                             (setq js2-mode-show-strict-warnings nil)
+                             (flycheck-mode)
+                             (setq indent-tabs-mode nil))))
+
+
+
+(use-package js2-refactor)
+(require 'js2-refactor)
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c r")
+
+(defun js2r-extract-method-es6 (name)
+  "Extract a method from the closest statement expression from the point."
+  (interactive "sName of new method: ")
+  (js2r--extract-fn
+   name
+   (lambda ()
+       (unless (js2r--looking-at-function-declaration)
+         (goto-char (js2-node-abs-pos (js2r--closest #'js2-expr-stmt-node-p)))))
+   "this.%s(%s);"
+   "%s(%s) {\n%s\n}\n\n"))
+
+
+
+(use-package expand-region)
+(require 'expand-region)
+(global-set-key (kbd "C-f") 'er/expand-region)
 
 
 (global-font-lock-mode t)
