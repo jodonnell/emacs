@@ -657,18 +657,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 
-;; (require 'yasnippet-bundle)
-;;(yas/load-directory yas/root-directory)
-;;(require 'dropdown-list)
-;;(setq yas/prompt-functions '(yas/dropdown-prompt
-;;                             yas/ido-prompt
-;;                             yas/completing-prompt))
-
-
-;;(require 'ctags)
-;;(setq ctags-command "/usr/local/Cellar/ctags/5.8/bin/ctags -a -e -f TAGS --tag-relative -R app lib vendor")
-;;(global-set-key (kbd "<f5>") 'ctags-create-or-update-tags-table)
-
 
 ;; thanks to steve yegge
 (defun rename-file-and-buffer (new-name)
@@ -701,10 +689,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (global-set-key "\C-x\C-f" 'helm-projectile)
 (global-set-key "\C-xf" 'ido-find-file)
-
-; syp
-
-(setq-default tab-width 2)
 
 (require 'projectile)
 (projectile-global-mode)
