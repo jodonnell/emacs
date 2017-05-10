@@ -740,27 +740,3 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 (require 'iedit)
-
-
-;; TEMPORAL
-
-(defun love-run-tests()
-  (interactive)
-  (switch-to-buffer "*shell*")
-  (comint-send-string "*shell*" "./bin/test\n"))
-
-(defun love-run-deploy()
-  (interactive)
-  (switch-to-buffer "*shell*")
-  (comint-send-string "*shell*" "./bin/deploy\n"))
-
-(defun love-run-game()
-  (interactive)
-  (switch-to-buffer "*shell*")
-  (comint-send-string "*shell*" "./bin/run\n"))
-
-(global-set-key (kbd "C-c C-t") 'love-run-tests)
-(global-set-key (kbd "C-c C-r") 'love-run-game)
-(global-set-key (kbd "C-c C-d") 'love-run-deploy)
-
-(load-theme 'noctilux t)
