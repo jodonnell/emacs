@@ -21,10 +21,8 @@
 (if (equal (getenv "EMACS_ENV") "bb")
     (load "~/.emacs.d/bb.el"))
 
-(getenv "BLAW_REDIS_HOST")
 
-(push "~/.emacs.d/elpa/use-package-20160403.1129/" load-path)
-
+(push "~/.emacs.d/elpa/use-package-20170403.1234/" load-path)
 (require 'use-package)
 (require 'package)
 
@@ -156,6 +154,17 @@
          (goto-char (js2-node-abs-pos (js2r--closest #'js2-expr-stmt-node-p)))))
    "this.%s(%s);"
    "%s(%s) {\n%s\n}\n\n"))
+
+(define-key js2-refactor-mode-map (js2r--key-pairs-with-prefix "C-c r" "em") #'js2r-extract-method-es6)
+
+
+(use-package tide
+  :init
+  (add-to-list 'auto-mode-alist '("\\.ts$" . js2-jsx-mode))
+  :config
+  (add-hook 'typescript-mode-hook (lambda()
+                                    (tide-setup)
+                                    (tide-hl-identifier-mode +1))))
 
 
 
@@ -568,8 +577,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;;disable ido faces to see flx highlights.
 (setq ido-use-faces nil)
 
-(setq gc-cons-threshold 10000000) ; set emacs garbage collection to 10 mb
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ORG MODE
@@ -615,7 +622,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
    (quote
-    (use-package-chords yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flycheck flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
+    (flycheck tide use-package-chords yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
  '(pretty-lambda-auto-modes
    (quote
     (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
