@@ -131,12 +131,13 @@
   :config
   (add-hook 'js2-mode-hook (lambda()
                              (setq js-indent-level 4)
+                             (setq sgml-basic-offset 4)
                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
                              (setq js2-mode-show-parse-errors nil)
                              (setq js2-mode-show-strict-warnings nil)
                              (flycheck-mode)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
                              (setq indent-tabs-mode nil))))
-
 
 
 (use-package js2-refactor)
