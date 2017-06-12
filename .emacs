@@ -61,6 +61,15 @@
                               (setq css-indent-offset 2
                                     indent-tabs-mode nil))))
 
+(use-package css-mode
+  :config
+  (add-hook 'css-mode-hook (lambda()
+                             (rainbow-mode)
+                             (yas-minor-mode 1)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
+                             (setq css-indent-offset 2
+                                   indent-tabs-mode nil))))
+
 (use-package web-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
