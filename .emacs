@@ -328,11 +328,6 @@
 ;(require 'company)
 ;(push 'company-robe company-backends)
 
-(setq load-path (append load-path (list "~/.emacs.d/rhtml")))
-(require 'rhtml-mode)
-(add-hook 'rhtml-mode-hook (lambda()
-                             (setq indent-tabs-mode nil)))
-
 
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
