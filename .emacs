@@ -134,6 +134,7 @@
                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
                              (setq js2-mode-show-parse-errors nil)
                              (setq js2-mode-show-strict-warnings nil)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
                              (flycheck-mode)
                              (setq indent-tabs-mode nil))))
 
