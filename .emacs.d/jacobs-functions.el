@@ -464,3 +464,17 @@ point reaches the beginning or end of the buffer, stop there."
       (indent-region (point) (point-max))
       (kill-region (point-min) (point-max))))
   (yank))
+
+(defun eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (and eslint (file-executable-p eslint))
+      eslint)))
+
+(defun eslint-fix-current-file()
+  (interactive)
+  (shell-command-to-string (concat (eslint-from-node-modules) " " (buffer-file-name) " --fix")))

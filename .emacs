@@ -61,6 +61,15 @@
                               (setq css-indent-offset 2
                                     indent-tabs-mode nil))))
 
+(use-package css-mode
+  :config
+  (add-hook 'css-mode-hook (lambda()
+                             (rainbow-mode)
+                             (yas-minor-mode 1)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
+                             (setq css-indent-offset 2
+                                   indent-tabs-mode nil))))
+
 (use-package web-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
@@ -131,13 +140,14 @@
   :config
   (add-hook 'js2-mode-hook (lambda()
                              (setq js-indent-level 4)
+                             (setq sgml-basic-offset 4)
                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
                              (setq js2-mode-show-parse-errors nil)
                              (setq js2-mode-show-strict-warnings nil)
                              (local-set-key "\C-i" 'th-complete-or-indent)
                              (flycheck-mode)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
                              (setq indent-tabs-mode nil))))
-
 
 
 (use-package js2-refactor)
@@ -159,14 +169,20 @@
 (define-key js2-refactor-mode-map (js2r--key-pairs-with-prefix "C-c r" "em") #'js2r-extract-method-es6)
 
 
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (tide-hl-identifier-mode +1))
+
 (use-package tide
   :init
-  (add-to-list 'auto-mode-alist '("\\.ts$" . js2-jsx-mode))
-  :config
-  (add-hook 'typescript-mode-hook (lambda()
-                                    (tide-setup)
-                                    (tide-hl-identifier-mode +1))))
-
+  (add-to-list 'auto-mode-alist '("\\.tsx?$" . (lambda ()
+                                                 (js2-jsx-mode)
+                                                 (setup-tide-mode)
+                                                 (add-to-list 'flycheck-disabled-checkers 'javascript-eslint)
+                                                 ))))
 
 
 (use-package expand-region)
@@ -312,11 +328,6 @@
 ;;(require 'robe)
 ;(require 'company)
 ;(push 'company-robe company-backends)
-
-(setq load-path (append load-path (list "~/.emacs.d/rhtml")))
-(require 'rhtml-mode)
-(add-hook 'rhtml-mode-hook (lambda()
-                             (setq indent-tabs-mode nil)))
 
 
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
