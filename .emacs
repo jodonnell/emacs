@@ -22,7 +22,8 @@
     (load "~/.emacs.d/bb.el"))
 
 
-(push "~/.emacs.d/elpa/use-package-20170403.1234/" load-path)
+; this directory should be checked in
+(push "~/.emacs.d/elpa/use-package-20171121.1430/" load-path)
 (require 'use-package)
 (require 'package)
 
