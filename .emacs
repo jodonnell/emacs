@@ -81,6 +81,9 @@
 
 (use-package yaml-mode)
 
+(use-package dumb-jump)
+(dumb-jump-mode)
+
 (use-package smart-mode-line)
 (use-package smex
   :init
