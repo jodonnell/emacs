@@ -7,9 +7,35 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-(let ((default-directory "~/emacs"))
-  (normal-top-level-add-to-load-path '("."))
-  (normal-top-level-add-subdirs-to-load-path))
+(load-file "~/.emacs.d/key-remaps.el")
+(load-file "~/.emacs.d/colors.el")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EMACS CUSTOM VARIABLES
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(cperl-array-face ((((class color) (background dark)) (:foreground "yellow"))))
+ '(cperl-hash-face ((((class color) (background dark)) (:foreground "magenta3"))))
+ '(cperl-nonoverridable-face ((((class color) (background dark)) (:foreground "royalblue1"))))
+ '(font-lock-comment-face ((((class color) (background dark)) (:foreground "orange"))))
+ '(font-lock-constant-face ((((class color) (background dark)) (:foreground "green"))))
+ '(font-lock-function-name-face ((((class color) (background dark)) (:foreground "Coral"))))
+ '(font-lock-keyword-face ((((class color) (background dark)) (:foreground "aquamarine"))))
+ '(font-lock-string-face ((((class color) (background dark)) (:foreground "chartreuse2"))))
+ '(font-lock-type-face ((((class color) (background dark)) (:foreground "green"))))
+ '(font-lock-variable-name-face ((((class color) (background dark)) (:foreground "green"))))
+ '(underline ((t nil))))
+
+
+;; (let ((default-directory "~/.emacs.d"))
+;;   (normal-top-level-add-to-load-path '("."))
+;;   (normal-top-level-add-subdirs-to-load-path))
+
+;;(let (normal-top-level-add-to-load-path '("."))
+   ;;(normal-top-level-add-subdirs-to-load-path))
 
 (setq w32-use-w32-font-dialog nil)
 
@@ -272,45 +298,6 @@
              (setq history-length 100)
              (define-key shell-mode-map "\M-n" 'forward-word)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; COLORS
-(set-background-color "black")
-(set-foreground-color "ghost white")
-
-(set-cursor-color  "firebrick1")
-
-(copy-face 'default  'font-lock-comment-face)
-(set-face-foreground 'font-lock-comment-face "orange")
-
-(copy-face 'default  'font-lock-variable-name-face)
-(set-face-foreground 'font-lock-variable-name-face "color-147") ;; bluish, very pretty!
-
-(copy-face 'default  'font-lock-function-name-face)
-(make-face-bold 'font-lock-function-name-face nil 1)
-(set-face-foreground 'font-lock-function-name-face "Coral") ;; does this even work?
-(copy-face 'default  'font-lock-string-face)
-;;(make-face-italic 'font-lock-string-face nil 1)
-(set-face-foreground 'font-lock-string-face "green")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; EMACS CUSTOM VARIABLES
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(cperl-array-face ((((class color) (background dark)) (:foreground "yellow"))))
- '(cperl-hash-face ((((class color) (background dark)) (:foreground "magenta3"))))
- '(cperl-nonoverridable-face ((((class color) (background dark)) (:foreground "royalblue1"))))
- '(font-lock-comment-face ((((class color) (background dark)) (:foreground "orange"))))
- '(font-lock-constant-face ((((class color) (background dark)) (:foreground "green"))))
- '(font-lock-function-name-face ((((class color) (background dark)) (:foreground "Coral"))))
- '(font-lock-keyword-face ((((class color) (background dark)) (:foreground "aquamarine"))))
- '(font-lock-string-face ((((class color) (background dark)) (:foreground "chartreuse2"))))
- '(font-lock-type-face ((((class color) (background dark)) (:foreground "green"))))
- '(font-lock-variable-name-face ((((class color) (background dark)) (:foreground "green"))))
- '(underline ((t nil))))
-
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; JAVASCRIPT STUFF
@@ -501,87 +488,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; GLOBAL KEY MAPPINGS
-(global-set-key "\C-w"     'backward-kill-word)
-(global-set-key "\C-x\C-k" 'kill-region)
-(global-set-key "\C-z"     'advertised-undo)
-(global-set-key "\C-ch"    'help-command)
-(global-set-key "\M-s"     'isearch-forward-regexp)
-(global-set-key "\M-g"     'goto-line)
-(global-set-key "\C-xt"    'toggle-truncate-lines)
-(global-set-key "\C-xa"    'find-file-at-point-with-line)
-(global-set-key "\C-xp"    'shell)
-(global-set-key "\C-x\C-p" 'rename-buffer)
-(global-set-key [f8]       'sw-list)
-(global-set-key "\C-cp"    'new-shell)
-(global-set-key "\C-x\C-y" 'yank-regexp)
-
-(defun other-window-back()
-  (interactive)
-  (other-window -1))
-(global-set-key "\C-x\C-o" 'other-window-back)
-
-(keyboard-translate ?\C-u ?\C-x)
-(keyboard-translate ?\C-b ?\C-c)
-(keyboard-translate ?\C-c ?\C-b)
-(global-unset-key (kbd "C-n"))
-(global-set-key (kbd "C-n") 'forward-char)
-
-(global-unset-key (kbd "M-n"))
-(global-set-key (kbd "M-n") 'forward-word)
-
-(global-unset-key (kbd "C-h"))
-(global-set-key (kbd "C-h") 'backward-char)
-
-(global-unset-key (kbd "M-h"))
-(global-set-key (kbd "M-h") 'backward-word)
-
-(global-unset-key (kbd "C-t"))
-(global-set-key (kbd "C-t") 'next-line)
-
-(global-unset-key (kbd "M-t"))
-(global-set-key (kbd "M-t") 'scroll-up)
-
-(global-unset-key (kbd "C-b"))
-(global-set-key (kbd "C-b") 'previous-line)
-
-(global-unset-key (kbd "M-c"))
-(global-set-key (kbd "M-c") 'scroll-down)
-
-(global-unset-key (kbd "C-p"))
-(global-set-key (kbd "C-p") 'delete-backward-char)
-
-(global-unset-key (kbd "C-o"))
-(global-set-key (kbd "C-o") 'hippie-expand)
-
-(global-unset-key (kbd "C-j"))
-(global-set-key (kbd "C-j") 'universal-argument)
-
-(global-unset-key (kbd "M-j"))
-(global-set-key (kbd "M-j") 'universal-argument)
-
-(global-set-key (kbd "C-c e") 'erase-buffer)
-
-
-(global-set-key (kbd "s-a") 'erase-buffer)
-(global-set-key (kbd "H-a") 'erase-buffer)
-(global-set-key (kbd "A-a") 'erase-buffer)
-
-(global-set-key (kbd "s-c") 'beginning-of-defun)
-(global-set-key (kbd "s-t") 'end-of-defun)
-(global-set-key (kbd "s-n") 'forward-sexp)
-(global-set-key (kbd "s-h") 'backward-sexp)
-(global-set-key (kbd "s-d") 'kill-sexp)
-
-(global-set-key "\C-\M-n" 'forward-sexp)
-(global-set-key "\C-\M-h" 'backward-sexp)
-(global-set-key "\C-\M-c" 'backward-up-list)
-(global-set-key "\C-\M-t" 'down-list)
-
-(global-set-key "\C-x\C-f" 'helm-projectile)
-(global-set-key "\C-xf" 'ido-find-file)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IDO MODE
 (require 'ido)
 (ido-mode t)
@@ -722,7 +628,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq uniquify-buffer-name-style 'reverse)
 
 
-(setq mac-option-modifier 'super) ; make opt key do Super
+;(setq mac-option-modifier 'super) ; make opt key do Super
 
 
 (setq ido-enable-flex-matching t)
