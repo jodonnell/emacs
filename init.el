@@ -637,3 +637,5 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq gc-cons-threshold 20000000)
 
 (require 'iedit)
+
+(define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
