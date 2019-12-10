@@ -1,0 +1,3 @@
+#name : Flex direction
+# --
+flex-direction: $1;$0

@@ -1,0 +1,3 @@
+#name : Text-transform uppercase
+# --
+text-transform: uppercase;$0

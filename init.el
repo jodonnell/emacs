@@ -58,11 +58,12 @@
         ("melpa" . "http://melpa.milkbox.net/packages/")))
 (package-refresh-contents)
 (package-initialize)
+
 (setq use-package-always-ensure t)
 
 (use-package clojure-mode)
 (use-package coffee-mode)
-;(use-package php-mode)
+(use-package php-mode)
 (use-package lua-mode
   :config
   (add-hook 'lua-mode-hook (lambda()
@@ -85,7 +86,7 @@
                               (rainbow-mode)
                               (yas-minor-mode 1)
                               (local-set-key "\C-i" 'th-complete-or-indent)
-                              (setq css-indent-offset 2
+                              (setq css-indent-offset 4
                                     indent-tabs-mode nil))))
 
 (use-package css-mode
@@ -94,7 +95,7 @@
                              (rainbow-mode)
                              (yas-minor-mode 1)
                              (local-set-key "\C-i" 'th-complete-or-indent)
-                             (setq css-indent-offset 2
+                             (setq css-indent-offset 4
                                    indent-tabs-mode nil))))
 
 (use-package web-mode
@@ -161,22 +162,36 @@
       (setq-local flycheck-javascript-eslint-executable eslint))))
 (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
-(use-package js2-mode
+;; (use-package js2-mode
+;;   :init
+;;   (add-to-list 'auto-mode-alist '("Jakefile$" . js2-jsx-mode))
+;;   (add-to-list 'auto-mode-alist '("\\.es6$" . js2-jsx-mode))
+;;   (add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
+;;   (add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
+;;   :config
+;;   (add-hook 'js2-mode-hook (lambda()
+;;                              (setq js-indent-level 4)
+;;                              (setq sgml-basic-offset 4)
+;;                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
+;;                              (setq js2-mode-show-parse-errors nil)
+;;                              (setq js2-mode-show-strict-warnings nil)
+;;                              (flycheck-mode)
+;;                              (local-set-key "\M-." 'dumb-jump-go)
+;;                              (setq indent-tabs-mode nil))))
+
+(use-package rjsx-mode
   :init
-  (add-to-list 'auto-mode-alist '("Jakefile$" . js2-jsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.es6$" . js2-jsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
+  (add-to-list 'auto-mode-alist '("Jakefile$" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.es6$" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
   :config
-  (add-hook 'js2-mode-hook (lambda()
+  (add-hook 'rjsx-mode-hook (lambda()
                              (setq js-indent-level 4)
                              (setq sgml-basic-offset 4)
                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-                             (setq js2-mode-show-parse-errors nil)
-                             (setq js2-mode-show-strict-warnings nil)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
                              (flycheck-mode)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
+                             (local-set-key "\M-." 'dumb-jump-go)
                              (setq indent-tabs-mode nil))))
 
 
@@ -639,3 +654,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (require 'iedit)
 
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
+
+(global-set-key "\C-c\C-g" 'deadgrep)
+(global-set-key "\M-." 'dumb-jump-go)
