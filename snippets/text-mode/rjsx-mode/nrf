@@ -1,0 +1,12 @@
+#name : New React File
+# --
+import PropTypes from 'prop-types';
+import React from 'react';
+
+const $1 = () => (
+    <div />
+);
+
+$1.propTypes = {};
+
+export default $1;

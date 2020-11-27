@@ -13,6 +13,7 @@
 (global-set-key [f8]       'sw-list)
 (global-set-key "\C-cp"    'new-shell)
 (global-set-key "\C-x\C-y" 'yank-regexp)
+(global-set-key (kbd "C-\\")   'indent-region)
 
 (defun other-window-back()
   (interactive)
@@ -24,6 +25,8 @@
 (keyboard-translate ?\C-c ?\C-b)
 (global-unset-key (kbd "C-n"))
 (global-set-key (kbd "C-n") 'forward-char)
+
+(global-set-key (kbd "C-.") 'kill-ring-save)
 
 (global-unset-key (kbd "M-n"))
 (global-set-key (kbd "M-n") 'forward-word)

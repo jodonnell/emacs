@@ -30,40 +30,40 @@
  '(underline ((t nil))))
 
 
-;; (let ((default-directory "~/.emacs.d"))
-;;   (normal-top-level-add-to-load-path '("."))
-;;   (normal-top-level-add-subdirs-to-load-path))
-
-;;(let (normal-top-level-add-to-load-path '("."))
-   ;;(normal-top-level-add-subdirs-to-load-path))
-
 (setq w32-use-w32-font-dialog nil)
 
-;(setq mac-command-modifier 'meta) ; make cmd key do Meta
-
-;(setq mac-control-modifier 'control) ; make Control key do Control
-;(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
-
-(if (equal (getenv "EMACS_ENV") "bb")
-    (load "~/.emacs.d/bb.el"))
-
-
-; this directory should be checked in
-(push "~/.emacs.d/elpa/use-package-20171121.1430/" load-path)
-(require 'use-package)
 (require 'package)
 
 (mapc (lambda(p) (push p package-archives))
       '(("marmalade" . "http://marmalade-repo.org/packages/")
-        ("melpa" . "http://melpa.milkbox.net/packages/")))
+        ("melpa" . "https://melpa.org/packages/")))
 (package-refresh-contents)
 (package-initialize)
 
 (setq use-package-always-ensure t)
 
+; this directory should be checked in
+(push "~/.emacs.d/elpa/use-package-20190716.1829" load-path)
+(require 'use-package)
+(use-package nvm)
+
+(use-package keyfreq)
+(keyfreq-mode 1)
+(keyfreq-autosave-mode 1)
+(getenv "SHELL")
+(use-package exec-path-from-shell)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+
 (use-package clojure-mode)
 (use-package coffee-mode)
 (use-package php-mode)
+
+(use-package deadgrep
+  :init
+  (global-set-key (kbd "\C-c\C-g") 'deadgrep))
+
 (use-package lua-mode
   :config
   (add-hook 'lua-mode-hook (lambda()
@@ -98,14 +98,44 @@
                              (setq css-indent-offset 4
                                    indent-tabs-mode nil))))
 
+
+(use-package flycheck)
+(use-package tide)
+(setq exec-path (append exec-path '("~/.nvm/versions/node/v10.18.0/bin")))
+
+;;(setq tide-node-executable "~/.nvm/versions/node/v8.12.0/bin/node")
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq-default typescript-indent-level 4)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (tide-hl-identifier-mode +1))
+
+(setq tide-format-options '(:indentSize 4 :tabSize 4))
+
 (use-package web-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode))
   :config
   (add-hook 'web-mode-hook (lambda()
+                             (when (or
+                                    (string-equal "tsx" (file-name-extension buffer-file-name))
+                                    (string-equal "ts" (file-name-extension buffer-file-name)))
+                               (setup-tide-mode))
+
+                             (setq web-mode-code-indent-offset 4)
+                             (setq web-mode-markup-indent-offset 4)
                              (yas-minor-mode 1)
                              (setq-default indent-tabs-mode nil)
                              (local-set-key "\C-i" 'th-complete-or-indent))))
+
+(setq web-mode-code-indent-offset 2)
+
+;; enable typescript-tslint checker
+(flycheck-add-mode 'typescript-tslint 'web-mode)
+(setq-default typescript-indent-level 2)
 
 (use-package yaml-mode)
 
@@ -141,8 +171,7 @@
 (use-package ag)
 (use-package helm-projectile)
 (use-package projectile-rails)
-(use-package exec-path-from-shell)
-(use-package flycheck)
+
 ;(use-package helm-spotify)
 (use-package elixir-mode)
 (use-package csv-mode)
@@ -162,6 +191,17 @@
       (setq-local flycheck-javascript-eslint-executable eslint))))
 (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
+(defun my/use-flake8-from-env ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "env"))
+         (flake8 (and root
+                      (expand-file-name "env/bin/flake8"
+                                        root))))
+    (when (and flake8 (file-executable-p flake8))
+      (setq-local flycheck-python-flake8-executable flake8))))
+(add-hook 'flycheck-mode-hook #'my/use-flake8-from-env)
+
 ;; (use-package js2-mode
 ;;   :init
 ;;   (add-to-list 'auto-mode-alist '("Jakefile$" . js2-jsx-mode))
@@ -175,14 +215,8 @@
 ;;                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 ;;                              (setq js2-mode-show-parse-errors nil)
 ;;                              (setq js2-mode-show-strict-warnings nil)
-;;                              (flycheck-mode)
-;;                              (local-set-key "\M-." 'dumb-jump-go)
-;;                              (setq indent-tabs-mode nil))))
-
 (use-package rjsx-mode
   :init
-  (add-to-list 'auto-mode-alist '("Jakefile$" . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.es6$" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
   :config
@@ -191,6 +225,8 @@
                              (setq sgml-basic-offset 4)
                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
                              (flycheck-mode)
+                             (yas-minor-mode 1)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
                              (local-set-key "\M-." 'dumb-jump-go)
                              (setq indent-tabs-mode nil))))
 
@@ -214,20 +250,7 @@
 (define-key js2-refactor-mode-map (js2r--key-pairs-with-prefix "C-c r" "em") #'js2r-extract-method-es6)
 
 
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (tide-hl-identifier-mode +1))
 
-(use-package tide
-  :init
-  (add-to-list 'auto-mode-alist '("\\.tsx?$" . (lambda ()
-                                                 (js2-jsx-mode)
-                                                 (setup-tide-mode)
-                                                 (add-to-list 'flycheck-disabled-checkers 'javascript-eslint)
-                                                 ))))
 
 
 (use-package expand-region)
@@ -249,10 +272,6 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
-
-(require 'exec-path-from-shell)
-(when (memq window-system '(mac ns))
- (exec-path-from-shell-initialize))
 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -373,18 +392,6 @@
 (add-hook 'haml-mode-hook (lambda() ;
 			    (setq indent-tabs-mode nil)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; COFFEESCRIPT
-
-(require 'coffee-mode)
-(add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
-(add-to-list 'auto-mode-alist '("\\.moon$" . coffee-mode))
-(add-to-list 'auto-mode-alist '("Cakefile" . coffee-mode))
-(add-hook 'coffee-mode-hook (lambda()
-                              (set (make-local-variable 'tab-width) 2)
-                              (set (make-local-variable 'coffee-tab-width) 2)
-                              (local-set-key "\C-i" 'th-complete-or-indent)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
@@ -459,7 +466,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (local-set-key "\C-i" 'th-complete-or-indent)
    (show-paren-mode 1)
    (subword-mode 1)
-   (local-set-key "\C-c\C-t" 'django-tests-run)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
@@ -555,19 +561,16 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(ansi-color-names-vector
    ["black" "red3" "green3" "yellow3" "lime green" "magenta3" "cyan3" "gray90"])
  '(custom-safe-themes
-   (quote
-    ("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
+   '("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default))
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
-   (quote
-    (flycheck tide use-package-chords yasnippet yaml-mode web-mode smex smart-mode-line scss-mode sass-mode rvm rspec-mode rinari rainbow-mode projectile-rails php-mode magit lua-mode helm-spotify helm-projectile flx-ido exec-path-from-shell coffee-mode clojure-mode ag)))
+   '(web-mode auto-yasnippet vue-mode terraform-mode auto-virtualenvwrapper eslint-fix rust-mode format-sql rjsx-mode nvm tide deadgrep keyfreq moonscript flycheck use-package-chords rainbow-mode php-mode helm-spotify helm-projectile flx-ido exec-path-from-shell))
  '(pretty-lambda-auto-modes
-   (quote
-    (lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode)))
+   '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode))
  '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
- '(warning-suppress-types (quote (nil))))
+ '(warning-suppress-types '(nil)))
 
 (defun pass-buffer-to-racket ()
   (interactive)
@@ -597,9 +600,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; Add the user-contributed repository
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
-;;add melpa repository
-(add-to-list 'package-archives
-              '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 
 
@@ -657,3 +657,11 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (global-set-key "\C-c\C-g" 'deadgrep)
 (global-set-key "\M-." 'dumb-jump-go)
+
+;(set-default-font "Menlo-14")
+
+
+(fset 'convertDbToTypes
+   [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
+
+(nvm-use "12.14.0")
