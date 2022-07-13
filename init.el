@@ -101,7 +101,7 @@
 
 (use-package flycheck)
 (use-package tide)
-(setq exec-path (append exec-path '("~/.nvm/versions/node/v10.18.0/bin")))
+(setq exec-path (append exec-path '("~/.nvm/versions/node/v17.3.1/bin")))
 
 ;;(setq tide-node-executable "~/.nvm/versions/node/v8.12.0/bin/node")
 (defun setup-tide-mode ()
@@ -231,6 +231,19 @@
                              (setq indent-tabs-mode nil))))
 
 
+(use-package vue-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
+  :config
+  (add-hook 'vue-mode-hook (lambda()
+                             (setq js-indent-level 2)
+                             (setq sgml-basic-offset 2)
+                             (yas-minor-mode 1)
+                             (local-set-key "\C-i" 'th-complete-or-indent)
+                             (local-set-key "\M-." 'dumb-jump-go)
+                             (setq indent-tabs-mode nil))))
+
+
 (use-package js2-refactor)
 (require 'js2-refactor)
 (add-hook 'js2-mode-hook #'js2-refactor-mode)
@@ -289,7 +302,7 @@
 (setq backup-directory-alist '(("." . "~/.emacs.backups")))
 
 (load "~/.emacs.d/jacobs-functions.el")
-(load "~/.emacs.d/jacobs/django_tests.el")
+(load "~/.emacs.d/ruby-hash-syntax.el")
 
 (require 'midnight)
 
@@ -664,4 +677,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (fset 'convertDbToTypes
    [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
 
-(nvm-use "12.14.0")
+(nvm-use "17.3.1")
+
+(setq-default indent-tabs-mode nil)
