@@ -5,7 +5,6 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-(package-initialize)
 
 (load-file "~/.emacs.d/key-remaps.el")
 (load-file "~/.emacs.d/colors.el")
@@ -30,12 +29,69 @@
  '(underline ((t nil))))
 
 
+(global-font-lock-mode t)
+(setq font-lock-maximum-decoration t)
+(transient-mark-mode t)
+
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(setq make-backup-files nil)
+
+;; cause el captain has a bug causing issues with bell
+(setq visible-bell nil)
+(setq ring-bell-function 'ignore)
+
+(fset 'yes-or-no-p 'y-or-n-p)
+(show-paren-mode t)
+
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
+(setq dabbrev-case-replace nil)
+(setq kill-read-only-ok t)
+
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'erase-buffer 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+
+(setq backup-directory-alist '(("." . "~/.emacs.backups")))
+
+(load "~/.emacs.d/jacobs-functions.el")
+(load "~/.emacs.d/ruby-hash-syntax.el")
+
+(require 'midnight)
+
+(setq calendar-latitude 40.74)
+(setq calendar-longitude -74.01)
+
+(setq calendar-location-name "New York, NY")
+
+(if (equal (getenv "EMACS_ENV") "macbookair")
+    (load "~/.emacs.d/macbookair.el"))
+
+(when (equal system-type 'darwin)
+  (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
+  (setq ispell-program-name "/usr/local/bin/ispell")
+  (push "/usr/local/git/bin" exec-path))
+
+(setq column-number-mode t)
+
+(setq mac-option-key-is-meta nil)
+(setq mac-command-key-is-meta t)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+
+
+
 (setq w32-use-w32-font-dialog nil)
 
 (require 'package)
 
 (mapc (lambda(p) (push p package-archives))
-      '(("marmalade" . "http://marmalade-repo.org/packages/")
+      '(;("marmalade" . "http://marmalade-repo.org/packages/")
         ("melpa" . "https://melpa.org/packages/")))
 (package-refresh-contents)
 (package-initialize)
@@ -43,7 +99,6 @@
 (setq use-package-always-ensure t)
 
 ; this directory should be checked in
-(push "~/.emacs.d/elpa/use-package-20190716.1829" load-path)
 (require 'use-package)
 (use-package nvm)
 
@@ -168,11 +223,9 @@
 
 (use-package helm)
 (use-package projectile)
-(use-package ag)
 (use-package helm-projectile)
 (use-package projectile-rails)
 
-;(use-package helm-spotify)
 (use-package elixir-mode)
 (use-package csv-mode)
 (use-package iedit)
@@ -215,21 +268,6 @@
 ;;                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 ;;                              (setq js2-mode-show-parse-errors nil)
 ;;                              (setq js2-mode-show-strict-warnings nil)
-(use-package rjsx-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
-  :config
-  (add-hook 'rjsx-mode-hook (lambda()
-                             (setq js-indent-level 4)
-                             (setq sgml-basic-offset 4)
-                             (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-                             (flycheck-mode)
-                             (yas-minor-mode 1)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
-                             (local-set-key "\M-." 'dumb-jump-go)
-                             (setq indent-tabs-mode nil))))
-
 
 (use-package vue-mode
   :init
@@ -244,82 +282,6 @@
                              (setq indent-tabs-mode nil))))
 
 
-(use-package js2-refactor)
-(require 'js2-refactor)
-(add-hook 'js2-mode-hook #'js2-refactor-mode)
-(js2r-add-keybindings-with-prefix "C-c r")
-
-(defun js2r-extract-method-es6 (name)
-  "Extract a method from the closest statement expression from the point."
-  (interactive "sName of new method: ")
-  (js2r--extract-fn
-   name
-   (lambda ()
-       (unless (js2r--looking-at-function-declaration)
-         (goto-char (js2-node-abs-pos (js2r--closest #'js2-expr-stmt-node-p)))))
-   "this.%s(%s);"
-   "%s(%s) {\n%s\n}\n\n"))
-
-(define-key js2-refactor-mode-map (js2r--key-pairs-with-prefix "C-c r" "em") #'js2r-extract-method-es6)
-
-
-
-
-
-(use-package expand-region)
-(require 'expand-region)
-(global-set-key (kbd "C-f") 'er/expand-region)
-
-
-(global-font-lock-mode t)
-(setq font-lock-maximum-decoration t)
-(transient-mark-mode t)
-
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-(setq make-backup-files nil)
-
-;; cause el captain has a bug causing issues with bell
-(setq visible-bell nil)
-(setq ring-bell-function 'ignore)
-
-(fset 'yes-or-no-p 'y-or-n-p)
-(show-paren-mode t)
-
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-
-(setq dabbrev-case-replace nil)
-(setq kill-read-only-ok t)
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'erase-buffer 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-
-(setq backup-directory-alist '(("." . "~/.emacs.backups")))
-
-(load "~/.emacs.d/jacobs-functions.el")
-(load "~/.emacs.d/ruby-hash-syntax.el")
-
-(require 'midnight)
-
-(setq calendar-latitude 40.74)
-(setq calendar-longitude -74.01)
-
-(setq calendar-location-name "New York, NY")
-
-(if (equal (getenv "EMACS_ENV") "macbookair")
-    (load "~/.emacs.d/macbookair.el"))
-
-(when (equal system-type 'darwin)
-  (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
-  (setq ispell-program-name "/usr/local/bin/ispell")
-  (push "/usr/local/git/bin" exec-path))
-
-(setq column-number-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TRIAL
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -346,27 +308,8 @@
              (define-key shell-mode-map "\M-n" 'forward-word)))
 
 
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; JAVASCRIPT STUFF
-;;(require 'flymake-jshint)
-;; (push "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin" exec-path)
-;; (setenv "PATH" (concat "/Users/jacobodonnell/programming/bubble_bobble/node_modules/jshint/bin:" (getenv "PATH")))
-
-;(setq-default indent-tabs-mode nil)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUBY STUFF
-;;(require 'rails-dream)
-;;(require 'flymake-ruby)
-(require 'rinari)
-;(require 'show-args)
-(require 'rspec-mode)
-(require 'rvm)
-(rvm-use-default)
-;;(require 'robe)
-;(require 'company)
-;(push 'company-robe company-backends)
-
 
 (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
@@ -578,7 +521,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
-   '(web-mode auto-yasnippet vue-mode terraform-mode auto-virtualenvwrapper eslint-fix rust-mode format-sql rjsx-mode nvm tide deadgrep keyfreq moonscript flycheck use-package-chords rainbow-mode php-mode helm-spotify helm-projectile flx-ido exec-path-from-shell))
+   '(helm-ag ripgrep web-mode auto-yasnippet vue-mode terraform-mode auto-virtualenvwrapper eslint-fix rust-mode format-sql rjsx-mode nvm tide deadgrep keyfreq moonscript flycheck use-package-chords rainbow-mode php-mode helm-spotify helm-projectile flx-ido exec-path-from-shell))
  '(pretty-lambda-auto-modes
    '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode))
  '(rspec-use-rvm t)
@@ -599,11 +542,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
 
-
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
 
 
 (require 'package)
