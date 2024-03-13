@@ -183,26 +183,6 @@ character is a whitespace or non-word character, then
   (find-vars new-method-body)
 )
 
-(defun rubymotion (command)
-  (if (get-buffer "rubymotion")
-      (kill-buffer "rubymotion"))
-  (shell "rubymotion")
-  (process-kill-without-query (get-buffer-process "rubymotion"))
-  (insert (concat "cd ~/programming/FallingChars; rake " command))
-  (comint-send-input))
-
-(defun rubymotion-simulator ()
-  (interactive)
-  (rubymotion ""))
-
-(defun rubymotion-spec ()
-  (interactive)
-  (rubymotion "spec"))
-
-(defun rubymotion-device ()
-  (interactive)
-  (rubymotion "device"))
-
 (defun replace-all (dir wildcard replace with)
  (interactive "DDir: \nsFile wildcard: \nsReplace: \nsWith: ")
  (find-name-dired dir wildcard)
@@ -213,61 +193,6 @@ character is a whitespace or non-word character, then
  (save-some-buffers))
 
 
-
-(defun kill-lua-tests (process output)
-  (set-buffer "lua-tests")
-  (insert (ansi-color-apply output))
-  (if (string-match "Simulation Terminated: Lua script called os.exit() with status" output)
-      (progn
-        (highlight-regexp "FAIL:" 'hi-red-b)
-        (end-of-buffer)
-        (search-backward "Simulation Terminated: Lua script called os.exit() with status" nil t)
-        (next-line)
-        (beginning-of-line)
-        (delete-region (point) (point-max))
-
-        (beginning-of-buffer)
-        (search-forward "-- Starting suite")
-        (previous-line)
-        (end-of-line)
-        (delete-region (point-min) (point))
-
-        (end-of-buffer)
-
-        (highlight-regexp "[0-9]+ passed" 'hi-green-b)
-        (highlight-regexp "[0-9]+ failed" 'hi-red-b)
-        (highlight-regexp "[0-9]+ error" 'hi-blue-b)
-
-        (newline)
-        (newline)
-        (newline)
-
-        (beginning-of-buffer)
-        (replace-regexp (concat (format-time-string "%Y-%m-%d" (current-time)) ".*FAIL") "FAIL")
-        (replace-regexp (concat (format-time-string "%Y-%m-%d" (current-time)) ".*ERROR") "ERROR")
-        (replace-regexp (concat (format-time-string "%Y-%m-%d" (current-time)) ".*") "")
-
-        (comint-kill-subjob))))
-
-
-(defun run-lua-tests-get-parent-dir-name()
-  (string-match ".*programming/\\(.*?\\)/" (buffer-file-name))
-  (match-string 1 (buffer-file-name)))
-
-(defun run-lua-tests ()
-  "runs the lua corona tests for zombie run"
-  (interactive)
-
-  (setq run-lua-tests-dir (run-lua-tests-get-parent-dir-name))
-  (delete-other-windows)
-  (split-window-right)
-  (other-window 1)
-  (shell "lua-tests")
-  (erase-buffer)
-  ;(insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true /Applications/CoronaSDK/Corona\\ Terminal main.lua"))
-  (insert (concat "cd ~/programming/" run-lua-tests-dir "/; LUA_TEST=true love ."))
-  (comint-send-input)
-  (set-process-filter (get-buffer-process "lua-tests") 'kill-lua-tests))
 
 (defun find-file-at-point-with-line()
   "if file has an attached line num goto that line, ie boom.rb:12"
@@ -310,62 +235,6 @@ character is a whitespace or non-word character, then
          (car (split-string image-size))
          " height: "
          (car (cdr (split-string image-size)))))))
-
-(defun lua-calculate-indentation-info (&optional parse-end)
-  "Reformat functions to be only 2 levels deep"
-  (let ((combined-line-end (line-end-position))
-        indentation-info)
-
-    (while (lua-is-continuing-statement-p)
-      (lua-forward-line-skip-blanks 'back))
-
-    ;; calculate indentation modifiers for the line itself
-    (setq indentation-info (list (cons 'absolute (current-indentation))))
-
-    (back-to-indentation)
-    (setq indentation-info
-          (lua-calculate-indentation-info-1
-           indentation-info (min parse-end (line-end-position))))
-
-    (setq indentation-info (cons (car indentation-info)  (cdr (cdr indentation-info))))
-
-    ;; and do the following for each continuation line before PARSE-END
-    (while (and (eql (forward-line 1) 0)
-                (<= (point) parse-end))
-
-      ;; handle continuation lines:
-      (if (lua-is-continuing-statement-p)
-          ;; if it's the first continuation line, add one level
-          (unless (eq (car (car indentation-info)) 'continued-line)
-            (push (cons 'continued-line lua-indent-level) indentation-info))
-
-        ;; if it's the first non-continued line, subtract one level
-        (when (eq (car (car indentation-info)) 'continued-line)
-          (pop indentation-info)))
-
-      ;; add modifiers found in this continuation line
-      (setq indentation-info
-            (lua-calculate-indentation-info-1
-             indentation-info (min parse-end (line-end-position)))))
-
-    indentation-info))
-
-(defun create-header-for-method()
-  (interactive)
-  (save-excursion
-    (beginning-of-line)
-    (let ((buffer-read-only t))
-      (kill-line 1))
-    (ff-find-other-file)
-    (search-forward "@end" nil t)
-    (previous-line)
-    (end-of-line)
-    (newline)
-    (yank)
-    (backward-char)
-    (delete-char 1)
-    (insert ";")))
-
 
 (defun google(query)
   (interactive "sQuery: ")
