@@ -412,3 +412,15 @@ Version 2017-09-01"
                        (find-file $path )))))))))))
 
 (global-set-key (kbd "C-c o") 'xah-open-file-at-cursor)
+
+(defun deadgrep-filter-spec()
+  (interactive)
+  (while (re-search-forward "^spec/" nil t)
+    (deadgrep-toggle-file-results)
+  ))
+
+(defun deadgrep-filter-test()
+  (interactive)
+  (while (re-search-forward "^test/" nil t)
+    (deadgrep-toggle-file-results)
+  ))

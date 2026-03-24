@@ -6,6 +6,13 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
+;; Bloomberg proxy - commented out (not needed outside Bloomberg network)
+;; (setq url-proxy-services
+;;    '(("no_proxy" . "^\\(bloomberg.*\\)")
+;;      ("http" . "http://proxy.bloomberg.com:81")
+;;      ("https" . "http://proxy.bloomberg.com:81")))
+
+
 (load-file "~/.emacs.d/key-remaps.el")
 (load-file "~/.emacs.d/colors.el")
 
@@ -74,9 +81,9 @@
 
 (when (equal system-type 'darwin)
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
-  (setq ispell-program-name "/usr/local/bin/ispell")
   (push "/usr/local/git/bin" exec-path))
 
+(setq-default ispell-program-name "aspell")
 (setq column-number-mode t)
 
 (setq mac-option-key-is-meta nil)
@@ -90,10 +97,9 @@
 
 (require 'package)
 
-(mapc (lambda(p) (push p package-archives))
-      '(;("marmalade" . "http://marmalade-repo.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
-(package-refresh-contents)
+(setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")))
+        ;("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 (setq use-package-always-ensure t)
@@ -106,7 +112,11 @@
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
 (getenv "SHELL")
-(use-package exec-path-from-shell)
+(use-package exec-path-from-shell
+  :config
+  (dolist (var '("HTTP_PROXY" "HTTPS_PROXY" "NO_PROXY"
+                 "NODE_TLS_REJECT_UNAUTHORIZED"))
+    (add-to-list 'exec-path-from-shell-variables var)))
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
@@ -155,33 +165,34 @@
 
 
 (use-package flycheck)
-(use-package tide)
+;(use-package tide)
 (setq exec-path (append exec-path '("~/.nvm/versions/node/v17.3.1/bin")))
 
 ;;(setq tide-node-executable "~/.nvm/versions/node/v8.12.0/bin/node")
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq-default typescript-indent-level 4)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (tide-hl-identifier-mode +1))
+;; (defun setup-tide-mode ()
+;;   (interactive)
+;;   (tide-setup)
+;;   (flycheck-mode +1)
+;;   (setq-default typescript-indent-level 2)
+;;   (setq flycheck-check-syntax-automatically '(save mode-enabled))
+;;   (tide-hl-identifier-mode +1))
 
-(setq tide-format-options '(:indentSize 4 :tabSize 4))
+;(setq tide-format-options '(:indentSize 2 :tabSize 2))
 
 (use-package web-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode))
+  ;(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode))
   :config
   (add-hook 'web-mode-hook (lambda()
                              (when (or
-                                    (string-equal "tsx" (file-name-extension buffer-file-name))
+                                    ;(string-equal "tsx" (file-name-extension buffer-file-name))
                                     (string-equal "ts" (file-name-extension buffer-file-name)))
-                               (setup-tide-mode))
+                               ;(setup-tide-mode)
+                             )
 
-                             (setq web-mode-code-indent-offset 4)
-                             (setq web-mode-markup-indent-offset 4)
+                             (setq web-mode-code-indent-offset 2)
+                             (setq web-mode-markup-indent-offset 2)
                              (yas-minor-mode 1)
                              (setq-default indent-tabs-mode nil)
                              (local-set-key "\C-i" 'th-complete-or-indent))))
@@ -192,10 +203,19 @@
 (flycheck-add-mode 'typescript-tslint 'web-mode)
 (setq-default typescript-indent-level 2)
 
+(add-hook 'typescript-ts-mode-hook #'eglot-ensure)
+(add-hook 'tsx-ts-mode-hook #'eglot-ensure)
+
+;; Optional: make xref jump feel nice
+(setq xref-search-program 'ripgrep) ; if
+
 (use-package yaml-mode)
 
-(use-package dumb-jump)
-(dumb-jump-mode)
+;(use-package dumb-jump)
+;(dumb-jump-mode)
+;(setq dumb-jump-force-searcher 'rg)
+;(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+
 
 (use-package smart-mode-line)
 (use-package smex
@@ -208,7 +228,6 @@
 
 (use-package flx-ido)
 (use-package rvm)
-(use-package rinari)
 (use-package yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
 (yas-reload-all)
@@ -278,7 +297,6 @@
                              (setq sgml-basic-offset 2)
                              (yas-minor-mode 1)
                              (local-set-key "\C-i" 'th-complete-or-indent)
-                             (local-set-key "\M-." 'dumb-jump-go)
                              (setq indent-tabs-mode nil))))
 
 
@@ -348,6 +366,16 @@
 (add-hook 'haml-mode-hook (lambda() ;
 			    (setq indent-tabs-mode nil)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MARKDOWN
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+         ("C-c C-e" . markdown-do)
+         ("M-n" . nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
@@ -432,9 +460,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
            (local-file (file-relative-name
                         temp-file
                         (file-name-directory buffer-file-name))))
-      (list "flake8" (list "--max-line-length=120" local-file))))
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.py\\'" flymake-flake8-init)))
+      (list "flake8" (list "--max-line-length=120" local-file)))))
 
 ;(add-hook 'find-file-hook 'flymake-find-file-hook)
 ;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
@@ -491,9 +517,9 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SAVEPLACE
-(setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
-(setq-default save-place t)                   ;; activate it for all buffers
-(require 'saveplace)                          ;; get the package
+;(setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
+;(setq-default save-place t)                   ;; activate it for all buffers
+;(require 'saveplace)                          ;; get the package
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIRED
@@ -515,15 +541,27 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
-   ["black" "red3" "green3" "yellow3" "lime green" "magenta3" "cyan3" "gray90"])
+   ["black" "red3" "green3" "yellow3" "lime green" "magenta3" "cyan3"
+    "gray90"])
  '(custom-safe-themes
-   '("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default))
+   '("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a"
+     default))
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
-   '(helm-ag ripgrep web-mode auto-yasnippet vue-mode terraform-mode auto-virtualenvwrapper eslint-fix rust-mode format-sql rjsx-mode nvm tide deadgrep keyfreq moonscript flycheck use-package-chords rainbow-mode php-mode helm-spotify helm-projectile flx-ido exec-path-from-shell))
+   '(clojure-mode coffee-mode csv-mode deadgrep dumb-jump elixir-mode
+                  exec-path-from-shell flx-ido git-timemachine
+                  helm-projectile iedit keyfreq lua-mode magit
+                  markdown-mode nameless nvm php-mode projectile-rails
+                  rainbow-mode rspec-mode rvm sass-mode scss-mode
+                  smart-mode-line smex tide vterm vue-mode web-mode
+                  yaml-mode yasnippet))
+ '(package-vc-selected-packages
+   '((claude-code-ide :url
+                      "https://github.com/manzaltu/claude-code-ide.el")))
  '(pretty-lambda-auto-modes
-   '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode))
+   '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode
+               ruby-mode))
  '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
  '(warning-suppress-types '(nil)))
@@ -544,13 +582,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 
-(require 'package)
-;; Add the original Emacs Lisp Package Archive
-(add-to-list 'package-archives
-             '("elpa" . "http://tromey.com/elpa/"))
-;; Add the user-contributed repository
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+;; Duplicate package setup removed - see lines 96-99 for the active config
 
 
 
@@ -607,14 +639,63 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 
 (global-set-key "\C-c\C-g" 'deadgrep)
-(global-set-key "\M-." 'dumb-jump-go)
 
 ;(set-default-font "Menlo-14")
+(set-frame-font "Menlo-22" nil t)
 
 
 (fset 'convertDbToTypes
    [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
 
-(nvm-use "17.3.1")
+;(nvm-use "17.3.1")
 
 (setq-default indent-tabs-mode nil)
+
+
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(setq treesit-extra-load-path (list (locate-user-emacs-file "tree-sitter/")))
+
+(setq major-mode-remap-alist
+      '((typescript-mode . typescript-ts-mode)
+        (tsx-mode        . tsx-ts-mode)
+        (js-mode         . js-ts-mode)
+        (json-mode       . json-ts-mode)))
+
+;; Use TSX mode for .tsx files
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'"  . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'"  . json-ts-mode))
+
+(add-hook 'json-ts-mode-hook
+  (lambda ()
+    (setq-local js-indent-level 2)))
+
+
+(load-file "~/.emacs.d/vterm-improvements.el")
+
+(use-package claude-code-ide
+  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+  :bind ("C-c C-'" . claude-code-ide-menu)
+  :custom
+  (claude-code-ide-cli-extra-flags "--dangerously-skip-permissions")
+  (claude-code-ide-use-side-window nil)
+  :config
+  (claude-code-ide-emacs-tools-setup))
+
+
