@@ -67,12 +67,15 @@ boundary, then positions point there."
       (move-to-column cursor-col))))
 
 (defun jod/vterm-clamp-to-cursor-limit ()
-  "If point has moved past the saved input line, move it back."
-  (when (and jod/vterm-cursor-limit-line
-             (> (line-number-at-pos) jod/vterm-cursor-limit-line))
-    (goto-char (point-min))
-    (forward-line (1- jod/vterm-cursor-limit-line))
-    (end-of-line)))
+  "If point has moved past the saved input line, move it back.
+If point is exactly at the cursor limit line, exit copy mode."
+  (when jod/vterm-cursor-limit-line
+    (let ((current-line (line-number-at-pos)))
+      (cond
+       ((> current-line jod/vterm-cursor-limit-line)
+        (vterm-copy-mode -1))
+       ((= current-line jod/vterm-cursor-limit-line)
+        (vterm-copy-mode -1))))))
 
 (defun jod/vterm-exit-copy-mode-and-send (key)
   "Exit copy mode and send KEY to the terminal."
@@ -160,19 +163,19 @@ boundary, then positions point there."
 ;;; Copy-mode movement (clamped variants for use inside copy mode)
 
 (defun jod/vterm-copy-forward-char ()
-  "Move forward one char in copy mode, but not past the cursor limit."
+  "Move forward one char in copy mode, exit copy mode if at cursor limit."
   (interactive)
   (forward-char)
   (jod/vterm-clamp-to-cursor-limit))
 
 (defun jod/vterm-copy-forward-word ()
-  "Move forward one word in copy mode, but not past the cursor limit."
+  "Move forward one word in copy mode, exit copy mode if at cursor limit."
   (interactive)
   (forward-word)
   (jod/vterm-clamp-to-cursor-limit))
 
 (defun jod/vterm-copy-end-of-line ()
-  "Move to end of line in copy mode, but not past the cursor limit."
+  "Move to end of line in copy mode, exit copy mode if at cursor limit."
   (interactive)
   (end-of-line)
   (jod/vterm-clamp-to-cursor-limit))
