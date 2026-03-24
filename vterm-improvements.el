@@ -6,6 +6,15 @@
 
 (require 'vterm)
 
+;;; Fix spinner jitter — the ⏺ glyph is taller than normal text in most
+;;; fonts, so when Claude Code blinks it the line height changes and
+;;; everything below shifts.  Swap it for a same-height bullet.
+(add-hook 'vterm-mode-hook
+          (lambda ()
+            (unless buffer-display-table
+              (setq buffer-display-table (make-display-table)))
+            (aset buffer-display-table ?⏺ [?●])))
+
 ;;; Quick-cd shortcuts
 
 (defun jod/vterm-cd (dir)
