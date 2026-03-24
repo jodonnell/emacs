@@ -20,22 +20,59 @@
 
 ;;; Core copy-mode machinery
 
-(defvar-local jod/vterm-cursor-limit nil
-  "Buffer position of the terminal cursor when copy mode was entered.
-Movement commands will not go past this point.")
+(defvar-local jod/vterm-cursor-limit-line nil
+  "Line number of the input prompt when copy mode was entered.
+Movement commands will not go past this line.")
+
+(defun jod/vterm-find-visible-cursor ()
+  "Find the buffer position of the visible terminal cursor.
+Some terminal apps (like Claude Code) render a status bar below
+the input line, pushing point past the visible cursor.  The
+visible cursor is drawn with :inverse-video t.  We search the
+last 10 lines for it, but only use it if it is above point
+\(indicating a status bar gap).  Otherwise just return point."
+  (let ((found nil)
+        (orig-point (point)))
+    (save-excursion
+      (goto-char (point-max))
+      (let ((lines-checked 0))
+        (while (and (not found) (not (bobp)) (< lines-checked 10))
+          (let ((pos (line-beginning-position))
+                (eol (line-end-position)))
+            (while (and (not found) (< pos eol))
+              (let ((face (or (get-text-property pos 'font-lock-face)
+                              (get-text-property pos 'face))))
+                (when (and (listp face) (plist-get face :inverse-video))
+                  (setq found pos)))
+              (setq pos (1+ pos))))
+          (unless found
+            (forward-line -1)
+            (setq lines-checked (1+ lines-checked))))))
+    (if (and found (< found orig-point))
+        found
+      orig-point)))
 
 (defun jod/vterm-ensure-copy-mode ()
   "Enter vterm-copy-mode if not already in it.
-Saves the current cursor position as the lower boundary."
+Finds the visible terminal cursor and uses its line as the lower
+boundary, then positions point there."
   (unless vterm-copy-mode
-    (setq jod/vterm-cursor-limit (point))
-    (vterm-copy-mode 1)))
+    (let* ((cursor-pos (jod/vterm-find-visible-cursor))
+           (cursor-line (line-number-at-pos cursor-pos))
+           (cursor-col (save-excursion (goto-char cursor-pos) (current-column))))
+      (vterm-copy-mode 1)
+      (setq jod/vterm-cursor-limit-line cursor-line)
+      (goto-char (point-min))
+      (forward-line (1- cursor-line))
+      (move-to-column cursor-col))))
 
 (defun jod/vterm-clamp-to-cursor-limit ()
-  "If point has moved past the saved cursor position, move it back."
-  (when (and jod/vterm-cursor-limit
-             (> (point) jod/vterm-cursor-limit))
-    (goto-char jod/vterm-cursor-limit)))
+  "If point has moved past the saved input line, move it back."
+  (when (and jod/vterm-cursor-limit-line
+             (> (line-number-at-pos) jod/vterm-cursor-limit-line))
+    (goto-char (point-min))
+    (forward-line (1- jod/vterm-cursor-limit-line))
+    (end-of-line)))
 
 (defun jod/vterm-exit-copy-mode-and-send (key)
   "Exit copy mode and send KEY to the terminal."
