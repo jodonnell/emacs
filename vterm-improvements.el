@@ -6,6 +6,11 @@
 
 (require 'vterm)
 
+;;; Make C-g cancel things in the terminal (e.g. bck-i-search)
+;; We must remove C-g from exceptions so vterm doesn't hand it to Emacs,
+;; then explicitly bind it to send the real C-g (BEL) to the shell.
+(setq vterm-keymap-exceptions (delete "C-g" vterm-keymap-exceptions))
+
 ;;; Fix spinner jitter — the ⏺ glyph is taller than normal text in most
 ;;; fonts, so when Claude Code blinks it the line height changes and
 ;;; everything below shifts.  Swap it for a same-height bullet.
@@ -227,6 +232,9 @@ If point is exactly at the cursor limit line, exit copy mode."
     (vterm-send-key "s" nil nil t)))
 
 ;;; Keybindings — vterm-mode-map (terminal is active)
+
+;; C-g — send to terminal to cancel readline search, etc.
+(define-key vterm-mode-map (kbd "C-g") (lambda () (interactive) (vterm-send-key "g" nil nil t)))
 
 ;; Horizontal movement — send to terminal so you can edit the current command
 (define-key vterm-mode-map (kbd "C-h") #'jod/vterm-backward-char)
