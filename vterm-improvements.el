@@ -258,6 +258,7 @@ If point is exactly at the cursor limit line, exit copy mode."
 
 ;; Search — isearch in copy mode, readline search in terminal
 (define-key vterm-mode-map (kbd "M-s") #'jod/vterm-isearch-forward)
+(define-key vterm-mode-map (kbd "M-r") (lambda () (interactive) (vterm-send-key "r" nil nil t)))
 
 ;;; Keybindings — vterm-copy-mode-map (browsing scrollback)
 
