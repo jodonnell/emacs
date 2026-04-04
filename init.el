@@ -119,20 +119,6 @@
   :init
   (global-set-key (kbd "\C-c\C-g") 'deadgrep))
 
-(use-package lua-mode
-  :config
-  (add-hook 'lua-mode-hook (lambda()
-                             (setq-local indent-tabs-mode nil)
-                             (setq-local lua-indent-level 2)))
-  :bind
-  ("\C-i" . th-complete-or-indent)
-  ("\C-c\C-t" . run-lua-tests))
-
-(use-package rspec-mode)
-(use-package haml-mode
-  :hook (haml-mode . (lambda ()
-                       (setq-local indent-tabs-mode nil))))
-
 (use-package rainbow-mode)
 
 (use-package css-mode
@@ -144,7 +130,6 @@
                       (setq-local indent-tabs-mode nil))))
 
 
-(use-package flycheck)
 
 ;; enable typescript-tslint checker
 (setq-default typescript-indent-level 2)
@@ -170,46 +155,6 @@
 (use-package git-timemachine)
 
 (use-package nameless)
-
-(defun my/use-eslint-from-node-modules ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (eslint (and root
-                      (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                        root))))
-    (when (and eslint (file-executable-p eslint))
-      (setq-local flycheck-javascript-eslint-executable eslint))))
-(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-
-(defun my/use-flake8-from-env ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "env"))
-         (flake8 (and root
-                      (expand-file-name "env/bin/flake8"
-                                        root))))
-    (when (and flake8 (file-executable-p flake8))
-      (setq-local flycheck-python-flake8-executable flake8))))
-(add-hook 'flycheck-mode-hook #'my/use-flake8-from-env)
-
-;; (use-package js2-mode
-;;   :init
-;;   (add-to-list 'auto-mode-alist '("Jakefile$" . js2-jsx-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.es6$" . js2-jsx-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
-;;   :config
-;;   (add-hook 'js2-mode-hook (lambda()
-;;                              (setq js-indent-level 4)
-;;                              (setq sgml-basic-offset 4)
-;;                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-;;                              (setq js2-mode-show-parse-errors nil)
-;;                              (setq js2-mode-show-strict-warnings nil)
-
-(add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
-(add-hook 'js-ts-mode-hook (lambda()
-                             (setq-local js-indent-level 2)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TRIAL
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -247,16 +192,8 @@
 (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
 
 (add-hook 'ruby-mode-hook (lambda()
-                            (local-set-key "\C-ca" 'get-rails-function-argument-list-at-point)
-                            (local-set-key "\C-cd" 'get-rails-documentation)
-                            (local-set-key "\C-cm" 'get-instance-methods-current)
-                            (local-set-key "\C-cc" 'get-class-methods-current)
                             (local-set-key "\C-\M-p" 'ruby-beginning-of-block)
                             (local-set-key "\C-\M-n" 'ruby-end-of-block)
-                            (local-set-key "\C-crs" 'rubymotion-spec)
-                            (local-set-key "\C-crr" 'rubymotion-simulator)
-                            (local-set-key "\C-crd" 'rubymotion-device)
-                            (rspec-mode)
                             (local-set-key "\C-i" 'th-complete-or-indent)
                             (setq-local indent-tabs-mode nil)))
 
@@ -264,13 +201,6 @@
 ;; Elixir mode
 (add-hook 'elixir-mode-hook (lambda()
                               (local-set-key "\C-i" 'th-complete-or-indent)))
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HAML
-(add-hook 'haml-mode-hook (lambda() ;
-			    (setq-local indent-tabs-mode nil)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -322,9 +252,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;; makes cperl mode get activated when you open a perl file
 (add-to-list 'auto-mode-alist '("\\.\\([pP][Llmh]\\|al\\)\\'" . cperl-mode))
-(add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
-(add-to-list 'interpreter-mode-alist '("perl5" . cperl-mode))
-(add-to-list 'interpreter-mode-alist '("miniperl" . cperl-mode))
 
 ;; add hook to cperl mode
 (add-hook 'cperl-mode-hook (lambda()
@@ -349,12 +276,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
-;(add-hook 'find-file-hook 'flymake-find-file-hook)
-;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OBJ-C STUFF
 (add-to-list 'auto-mode-alist '("\\.h$" . objc-mode))
@@ -366,15 +287,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 	          (local-set-key "\C-c\C-o" 'ff-find-other-file)
 	          (local-set-key "\C-c\C-a" 'create-header-for-method)
 			    (flyspell-prog-mode)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; EWW
-(add-hook 'eww-mode-hook (lambda()
-			    (local-set-key "\M-n" 'next-word)))
-
-
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-complete-file-name-partially try-complete-file-name try-expand-all-abbrevs try-expand-list try-expand-line try-complete-lisp-symbol-partially try-complete-lisp-symbol))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -443,21 +355,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(scss-compile-at-save nil)
  '(warning-suppress-types '(nil)))
 
-(defun pass-buffer-to-racket ()
-  (interactive)
-  (save-excursion
-    (shell-command-on-region (beginning-of-buffer) (end-of-buffer) "racket")))
-
-(add-hook 'scheme-mode-hook (lambda()
-                             (setq tab-width 4
-                                   indent-tabs-mode nil)
-			     (show-paren-mode t)
-			     (hs-minor-mode t)
-			     (flyspell-prog-mode)
-			     (local-set-key "\C-i" 'th-complete-or-indent)
-			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
-
-
 
 ;; thanks to steve yegge
 (defun rename-file-and-buffer (new-name)
@@ -509,10 +406,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
     (error nil)))
 
 
-
-(fset 'convertDbToTypes
-   [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
-
 (setq major-mode-remap-alist
  '((yaml-mode . yaml-ts-mode)
    (bash-mode . bash-ts-mode)
@@ -521,15 +414,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (css-mode . css-ts-mode)
    (python-mode . python-ts-mode)))
 
-
-(use-package eglot
-  :hook ((js-ts-mode typescript-ts-mode tsx-ts-mode) . eglot-ensure)
-  :config
-  ;; Prefer vtsls for JS/TS/TSX
-  (add-hook 'js-ts-mode-hook  (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
-  (add-to-list 'eglot-server-programs
-               '((js-ts-mode typescript-ts-mode tsx-ts-mode)
-                 . ("vtsls" "--stdio"))))
 
 
 (defun my/--moved-p (buf pos)
