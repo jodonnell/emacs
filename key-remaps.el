@@ -79,5 +79,5 @@
 (global-set-key "\C-\M-c" 'backward-up-list)
 (global-set-key "\C-\M-t" 'down-list)
 
-(global-set-key "\C-x\C-f" 'helm-projectile)
-(global-set-key "\C-xf" 'ido-find-file)
+(global-set-key "\C-x\C-f" 'find-file)
+(global-set-key "\C-xf" 'project-find-file)

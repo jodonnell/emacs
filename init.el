@@ -154,15 +154,6 @@
 (use-package yaml-mode)
 
 (use-package smart-mode-line)
-(use-package smex
-  :init
-  (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key "\C-x\C-m" 'smex)
-  (global-set-key "\C-xm"    'execute-extended-command)
-  (global-set-key "\C-c\C-m" 'execute-extended-command))
-
-(use-package flx-ido)
 (use-package rvm)
 (use-package yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
@@ -175,9 +166,7 @@
   (add-hook 'magit-log-mode-hook (lambda()
                                    (local-set-key "\M-n" 'forward-word))))
 
-(use-package helm)
 (use-package projectile)
-(use-package helm-projectile)
 (use-package projectile-rails)
 
 (use-package elixir-mode)
@@ -410,16 +399,19 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; IDO MODE
-(require 'ido)
-(ido-mode t)
+;; COMPLETION
+(savehist-mode 1)
+(recentf-mode 1)
+(fido-vertical-mode 1)
 
-(require 'flx-ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(flx-ido-mode 1)
-;;disable ido faces to see flx highlights.
-(setq ido-use-faces nil)
+(setq completion-ignore-case t
+      read-buffer-completion-ignore-case t
+      read-file-name-completion-ignore-case t
+      completions-detailed t
+      completions-format 'one-column
+      completion-styles '(basic substring partial-completion flex)
+      completion-category-defaults nil
+      recentf-max-saved-items 200)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -459,15 +451,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(custom-safe-themes
    '("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a"
      default))
- '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
    '(clojure-mode coffee-mode csv-mode deadgrep eat eglot elixir-mode
-                  exec-path-from-shell flx-ido flycheck git-timemachine
-                  haml-mode helm-projectile iedit keyfreq lua-mode magit
-                  nameless php-mode projectile projectile-rails rainbow-mode
-                  rspec-mode rvm sass-mode smart-mode-line smex use-package
-                  vue-mode yaml-mode yasnippet))
+                  exec-path-from-shell flycheck git-timemachine haml-mode
+                  iedit keyfreq lua-mode magit nameless php-mode projectile
+                  projectile-rails rainbow-mode rspec-mode rvm sass-mode
+                  smart-mode-line use-package vue-mode yaml-mode yasnippet))
  '(pretty-lambda-auto-modes
    '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode
                ruby-mode))
@@ -508,19 +498,14 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HELM
-(require 'helm)
-
-(define-key helm-map (kbd "C-b") 'helm-previous-line)
-(define-key helm-map (kbd "C-t") 'helm-next-line)
-(define-key helm-map (kbd "C-w") 'backward-kill-word)
-(define-key helm-map (kbd "C-w") 'backward-kill-word)
-(global-set-key (kbd "s-f") 'helm-projectile)
-
-(require 'helm-projectile)
-
-(global-set-key "\C-x\C-f" 'helm-projectile)
-(global-set-key "\C-xf" 'ido-find-file)
+;; PROJECTS / FILES
+(global-set-key (kbd "M-x") #'execute-extended-command)
+(global-set-key "\C-x\C-m" #'execute-extended-command)
+(global-set-key "\C-xm" #'execute-extended-command)
+(global-set-key "\C-c\C-m" #'execute-extended-command)
+(global-set-key (kbd "s-f") #'project-find-file)
+(global-set-key "\C-x\C-f" #'find-file)
+(global-set-key "\C-xf" #'project-find-file)
 
 (require 'projectile)
 (projectile-mode +1)
@@ -528,13 +513,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
 
-
 ;(setq mac-option-modifier 'super) ; make opt key do Super
 
-
-(setq ido-enable-flex-matching t)
-
-(setq projectile-completion-system 'ido)
 (setq gc-cons-threshold 20000000)
 
 (require 'iedit)
