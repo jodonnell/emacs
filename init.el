@@ -113,7 +113,6 @@
 
 
 (use-package clojure-mode)
-(use-package coffee-mode)
 (use-package php-mode)
 
 (use-package deadgrep
@@ -135,7 +134,6 @@
                        (setq-local indent-tabs-mode nil))))
 
 (use-package rainbow-mode)
-(use-package sass-mode)
 
 (use-package css-mode
   :hook (css-mode . (lambda ()
@@ -153,8 +151,6 @@
 
 (use-package yaml-mode)
 
-(use-package smart-mode-line)
-(use-package rvm)
 (use-package yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
 (yas-reload-all)
@@ -167,7 +163,6 @@
                                    (local-set-key "\M-n" 'forward-word))))
 
 (use-package projectile)
-(use-package projectile-rails)
 
 (use-package elixir-mode)
 (use-package csv-mode)
@@ -215,19 +210,6 @@
 (add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
 (add-hook 'js-ts-mode-hook (lambda()
                              (setq-local js-indent-level 2)))
-
-(use-package vue-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
-  :config
-  (add-hook 'vue-mode-hook (lambda()
-                             (setq-local js-indent-level 2)
-                             (setq-local sgml-basic-offset 2)
-                             (yas-minor-mode 1)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
-                             (setq-local indent-tabs-mode nil))))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TRIAL
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -277,9 +259,6 @@
                             (rspec-mode)
                             (local-set-key "\C-i" 'th-complete-or-indent)
                             (setq-local indent-tabs-mode nil)))
-
-(add-hook 'projectile-mode-hook 'projectile-rails-on)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Elixir mode
@@ -453,15 +432,14 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
      default))
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
-   '(clojure-mode coffee-mode csv-mode deadgrep eat eglot elixir-mode
-                  exec-path-from-shell flycheck git-timemachine haml-mode
-                  iedit keyfreq lua-mode magit nameless php-mode projectile
-                  projectile-rails rainbow-mode rspec-mode rvm sass-mode
-                  smart-mode-line use-package vue-mode yaml-mode yasnippet))
+   '(clojure-mode csv-mode deadgrep eat eglot elixir-mode
+                  exec-path-from-shell flycheck git-timemachine
+                  haml-mode iedit keyfreq lua-mode magit nameless
+                  php-mode projectile rainbow-mode rspec-mode
+                  use-package yaml-mode yasnippet))
  '(pretty-lambda-auto-modes
    '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode
                ruby-mode))
- '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
  '(warning-suppress-types '(nil)))
 
