@@ -74,7 +74,7 @@
 
 (when (equal system-type 'darwin)
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
-  (setq ispell-program-name "/usr/local/bin/ispell")
+  (setq ispell-program-name "/opt/homebrew/Cellar/aspell/0.60.8.1_1/bin/aspell")
   (push "/usr/local/git/bin" exec-path))
 
 (setq column-number-mode t)
@@ -90,9 +90,8 @@
 
 (require 'package)
 
-(mapc (lambda(p) (push p package-archives))
-      '(;("marmalade" . "http://marmalade-repo.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
 (package-refresh-contents)
 (package-initialize)
 
@@ -100,7 +99,6 @@
 
 ; this directory should be checked in
 (require 'use-package)
-(use-package nvm)
 
 (use-package keyfreq)
 (keyfreq-mode 1)
@@ -135,14 +133,6 @@
 
 (use-package rainbow-mode)
 (use-package sass-mode)
-(use-package scss-mode
-  :config
-  (add-hook 'scss-mode-hook (lambda()
-                              (rainbow-mode)
-                              (yas-minor-mode 1)
-                              (local-set-key "\C-i" 'th-complete-or-indent)
-                              (setq css-indent-offset 4
-                                    indent-tabs-mode nil))))
 
 (use-package css-mode
   :config
@@ -156,9 +146,7 @@
 
 (use-package flycheck)
 (use-package tide)
-(setq exec-path (append exec-path '("~/.nvm/versions/node/v17.3.1/bin")))
 
-;;(setq tide-node-executable "~/.nvm/versions/node/v8.12.0/bin/node")
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
@@ -169,33 +157,10 @@
 
 (setq tide-format-options '(:indentSize 4 :tabSize 4))
 
-(use-package web-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode))
-  :config
-  (add-hook 'web-mode-hook (lambda()
-                             (when (or
-                                    (string-equal "tsx" (file-name-extension buffer-file-name))
-                                    (string-equal "ts" (file-name-extension buffer-file-name)))
-                               (setup-tide-mode))
-
-                             (setq web-mode-code-indent-offset 4)
-                             (setq web-mode-markup-indent-offset 4)
-                             (yas-minor-mode 1)
-                             (setq-default indent-tabs-mode nil)
-                             (local-set-key "\C-i" 'th-complete-or-indent))))
-
-(setq web-mode-code-indent-offset 2)
-
 ;; enable typescript-tslint checker
-(flycheck-add-mode 'typescript-tslint 'web-mode)
 (setq-default typescript-indent-level 2)
 
 (use-package yaml-mode)
-
-(use-package dumb-jump)
-(dumb-jump-mode)
 
 (use-package smart-mode-line)
 (use-package smex
@@ -208,7 +173,6 @@
 
 (use-package flx-ido)
 (use-package rvm)
-(use-package rinari)
 (use-package yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
 (yas-reload-all)
@@ -269,6 +233,10 @@
 ;;                              (setq js2-mode-show-parse-errors nil)
 ;;                              (setq js2-mode-show-strict-warnings nil)
 
+(add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
+(add-hook 'js-ts-mode-hook (lambda()
+                             (setq js-indent-level 2)))
+
 (use-package vue-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
@@ -278,7 +246,6 @@
                              (setq sgml-basic-offset 2)
                              (yas-minor-mode 1)
                              (local-set-key "\C-i" 'th-complete-or-indent)
-                             (local-set-key "\M-." 'dumb-jump-go)
                              (setq indent-tabs-mode nil))))
 
 
@@ -425,17 +392,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
-(when (load "flymake" t)
-  (defun flymake-flake8-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-           (local-file (file-relative-name
-                        temp-file
-                        (file-name-directory buffer-file-name))))
-      (list "flake8" (list "--max-line-length=120" local-file))))
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.py\\'" flymake-flake8-init)))
-
 ;(add-hook 'find-file-hook 'flymake-find-file-hook)
 ;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
 
@@ -490,12 +446,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (add-hook 'org-mode-hook 'my-org-mode-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SAVEPLACE
-(setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
-(setq-default save-place t)                   ;; activate it for all buffers
-(require 'saveplace)                          ;; get the package
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIRED
 (defun my-dired-mode-hook ()
    (local-set-key "\C-t" 'next-line))
@@ -515,15 +465,17 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
-   ["black" "red3" "green3" "yellow3" "lime green" "magenta3" "cyan3" "gray90"])
+   ["black" "red3" "green3" "yellow3" "lime green" "magenta3" "cyan3"
+    "gray90"])
  '(custom-safe-themes
-   '("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default))
+   '("fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a"
+     default))
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
- '(package-selected-packages
-   '(helm-ag ripgrep web-mode auto-yasnippet vue-mode terraform-mode auto-virtualenvwrapper eslint-fix rust-mode format-sql rjsx-mode nvm tide deadgrep keyfreq moonscript flycheck use-package-chords rainbow-mode php-mode helm-spotify helm-projectile flx-ido exec-path-from-shell))
+ '(package-selected-packages nil)
  '(pretty-lambda-auto-modes
-   '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode ruby-mode))
+   '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode
+               ruby-mode))
  '(rspec-use-rvm t)
  '(scss-compile-at-save nil)
  '(warning-suppress-types '(nil)))
@@ -548,9 +500,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; Add the original Emacs Lisp Package Archive
 (add-to-list 'package-archives
              '("elpa" . "http://tromey.com/elpa/"))
-;; Add the user-contributed repository
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
 
 
 
@@ -607,14 +556,91 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 
 (global-set-key "\C-c\C-g" 'deadgrep)
-(global-set-key "\M-." 'dumb-jump-go)
+;(global-set-key "\M-." 'dumb-jump-go)
 
-;(set-default-font "Menlo-14")
+
+(set-frame-font "Menlo-20" nil t)
+
 
 
 (fset 'convertDbToTypes
    [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
 
-(nvm-use "17.3.1")
-
 (setq-default indent-tabs-mode nil)
+
+(setq major-mode-remap-alist
+ '((yaml-mode . yaml-ts-mode)
+   (bash-mode . bash-ts-mode)
+   (typescript-mode . typescript-ts-mode)
+   (js-json-mode . json-ts-mode)
+   (css-mode . css-ts-mode)
+   (python-mode . python-ts-mode)))
+
+
+(use-package eglot
+  :hook ((js-ts-mode typescript-ts-mode tsx-ts-mode) . eglot-ensure)
+  :config
+  ;; Prefer vtsls for JS/TS/TSX
+  (add-hook 'js-ts-mode-hook  (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
+  (add-to-list 'eglot-server-programs
+               '((js-mode typescript-ts-mode tsx-ts-mode)
+                 . ("vtsls" "--stdio"))))
+
+
+(defun my/--moved-p (buf pos)
+  (or (not (eq (current-buffer) buf))
+      (not (= (point) pos))))
+
+(defun my/rg-jump-first-hit-in-file (sym)
+  "Jump to the first ripgrep hit for SYM in the current file.
+Returns non-nil if it jumped."
+  (when (and sym (executable-find "rg") buffer-file-name)
+    (let* ((pattern (format "\\b%s\\b" sym))
+           (args    (list "--no-heading" "--column" "-n" "-P" "-S" pattern buffer-file-name))
+           (out     (with-temp-buffer
+                      (apply #'process-file "rg" nil t nil args)
+                      (buffer-string))))
+      ;; Expect: /abs/path/file.js:LINE:COLUMN:...
+      (when (string-match (format "^%s:\\([0-9]+\\):\\([0-9]+\\):"
+                                  (regexp-quote (expand-file-name buffer-file-name)))
+                          out)
+        (let ((ln  (string-to-number (match-string 1 out)))
+              (col (string-to-number (match-string 2 out))))
+          (goto-char (point-min))
+          (forward-line (1- ln))
+          (move-to-column (max 0 (1- col)))
+          (recenter)
+          t)))))
+
+(defun my/jump-def ()
+  "Try LSP/xref → dumb-jump → rg(current file) → project search."
+  (interactive)
+  (let* ((sym (thing-at-point 'symbol t))
+         (start-buf (current-buffer))
+         (start-pos (point)))
+    ;; 1) LSP/xref
+    (ignore-errors (call-interactively #'xref-find-definitions))
+    (when (my/--moved-p start-buf start-pos) (cl-return-from my/jump-def))
+
+    ;; 2) dumb-jump (force rg for reliability)
+    (let ((dumb-jump-force-searcher 'rg))
+      (ignore-errors (dumb-jump-go)))
+    (when (my/--moved-p start-buf start-pos) (cl-return-from my/jump-def))
+
+    ;; 3) ripgrep in current file (first hit)
+    (when (and sym (my/rg-jump-first-hit-in-file sym))
+      (cl-return-from my/jump-def))
+
+    ;; 4) project-wide search as last resort
+    (if sym
+        (project-find-regexp (format "\\_<%s\\_>" (regexp-quote sym)))
+      (call-interactively #'project-find-regexp))))
+
+;; Bind so it wins over js/js-ts defaults
+(add-hook 'js-ts-mode-hook (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
+(add-hook 'js-mode-hook    (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
+(global-set-key (kbd "M-,") #'xref-pop-marker-stack)
+
+
+(use-package eat
+  :ensure t)
