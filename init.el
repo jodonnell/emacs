@@ -1,3 +1,5 @@
+;;; init.el --- Personal Emacs configuration -*- lexical-binding: t; -*-
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
 
@@ -6,8 +8,10 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
-(load-file "~/.emacs.d/key-remaps.el")
-(load-file "~/.emacs.d/colors.el")
+(require 'cl-lib)
+
+(load (expand-file-name "key-remaps.el" user-emacs-directory) nil 'nomessage)
+(load (expand-file-name "colors.el" user-emacs-directory) nil 'nomessage)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EMACS CUSTOM VARIABLES
@@ -29,19 +33,15 @@
  '(underline ((t nil))))
 
 
-(global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
-(transient-mark-mode t)
-
 (setq make-backup-files nil)
 (setq auto-save-default nil)
-(setq make-backup-files nil)
 
 ;; cause el captain has a bug causing issues with bell
 (setq visible-bell nil)
 (setq ring-bell-function 'ignore)
 
-(fset 'yes-or-no-p 'y-or-n-p)
+(defalias 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -57,10 +57,10 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
-(setq backup-directory-alist '(("." . "~/.emacs.backups")))
+(setq-default indent-tabs-mode nil)
 
-(load "~/.emacs.d/jacobs-functions.el")
-(load "~/.emacs.d/ruby-hash-syntax.el")
+(load (expand-file-name "jacobs-functions.el" user-emacs-directory) nil 'nomessage)
+(load (expand-file-name "ruby-hash-syntax.el" user-emacs-directory) nil 'nomessage)
 
 (require 'midnight)
 
@@ -72,28 +72,32 @@
 (if (equal (getenv "EMACS_ENV") "macbookair")
     (load "~/.emacs.d/macbookair.el"))
 
-(when (equal system-type 'darwin)
-  (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
-  (setq ispell-program-name "/opt/homebrew/Cellar/aspell/0.60.8.1_1/bin/aspell")
-  (push "/usr/local/git/bin" exec-path))
+(when (eq system-type 'darwin)
+  (setq mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier nil)
+  (let ((aspell "/opt/homebrew/bin/aspell"))
+    (when (file-executable-p aspell)
+      (setq ispell-program-name aspell))))
 
 (setq column-number-mode t)
-
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
-
-
 
 (setq w32-use-w32-font-dialog nil)
 
 (require 'package)
 
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(package-refresh-contents)
+(setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+
 (package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (package-install 'use-package))
 
 (setq use-package-always-ensure t)
 
@@ -103,7 +107,6 @@
 (use-package keyfreq)
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
-(getenv "SHELL")
 (use-package exec-path-from-shell)
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
@@ -120,42 +123,30 @@
 (use-package lua-mode
   :config
   (add-hook 'lua-mode-hook (lambda()
-                             (setq indent-tabs-mode nil)
-                             (setq lua-indent-level 2)))
+                             (setq-local indent-tabs-mode nil)
+                             (setq-local lua-indent-level 2)))
   :bind
   ("\C-i" . th-complete-or-indent)
   ("\C-c\C-t" . run-lua-tests))
 
 (use-package rspec-mode)
 (use-package haml-mode
-  :config
-  (setq indent-tabs-mode nil))
+  :hook (haml-mode . (lambda ()
+                       (setq-local indent-tabs-mode nil))))
 
 (use-package rainbow-mode)
 (use-package sass-mode)
 
 (use-package css-mode
-  :config
-  (add-hook 'css-mode-hook (lambda()
-                             (rainbow-mode)
-                             (yas-minor-mode 1)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
-                             (setq css-indent-offset 4
-                                   indent-tabs-mode nil))))
+  :hook (css-mode . (lambda ()
+                      (rainbow-mode)
+                      (yas-minor-mode 1)
+                      (local-set-key "\C-i" 'th-complete-or-indent)
+                      (setq-local css-indent-offset 4)
+                      (setq-local indent-tabs-mode nil))))
 
 
 (use-package flycheck)
-(use-package tide)
-
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq-default typescript-indent-level 4)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (tide-hl-identifier-mode +1))
-
-(setq tide-format-options '(:indentSize 4 :tabSize 4))
 
 ;; enable typescript-tslint checker
 (setq-default typescript-indent-level 2)
@@ -181,7 +172,6 @@
   :init
   (global-set-key "\C-cg" 'magit-status)
   :config
-  (setq magit-last-seen-setup-instructions "1.4.0")
   (add-hook 'magit-log-mode-hook (lambda()
                                    (local-set-key "\M-n" 'forward-word))))
 
@@ -235,18 +225,18 @@
 
 (add-to-list 'auto-mode-alist '("\\.js$" . js-ts-mode))
 (add-hook 'js-ts-mode-hook (lambda()
-                             (setq js-indent-level 2)))
+                             (setq-local js-indent-level 2)))
 
 (use-package vue-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
   :config
   (add-hook 'vue-mode-hook (lambda()
-                             (setq js-indent-level 2)
-                             (setq sgml-basic-offset 2)
+                             (setq-local js-indent-level 2)
+                             (setq-local sgml-basic-offset 2)
                              (yas-minor-mode 1)
                              (local-set-key "\C-i" 'th-complete-or-indent)
-                             (setq indent-tabs-mode nil))))
+                             (setq-local indent-tabs-mode nil))))
 
 
 
@@ -270,9 +260,9 @@
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; Fix junk characters in shell mode
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt) ;; hide passwords
 (add-hook 'shell-mode-hook
-          '(lambda ()
-             (setq history-length 100)
-             (define-key shell-mode-map "\M-n" 'forward-word)))
+          (lambda ()
+            (setq-local comint-input-ring-size 100)
+            (define-key shell-mode-map "\M-n" 'forward-word)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -297,7 +287,7 @@
                             (local-set-key "\C-crd" 'rubymotion-device)
                             (rspec-mode)
                             (local-set-key "\C-i" 'th-complete-or-indent)
-                            (setq indent-tabs-mode nil)))
+                            (setq-local indent-tabs-mode nil)))
 
 (add-hook 'projectile-mode-hook 'projectile-rails-on)
 
@@ -311,17 +301,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HAML
-(require 'haml-mode)
 (add-hook 'haml-mode-hook (lambda() ;
-			    (setq indent-tabs-mode nil)))
+			    (setq-local indent-tabs-mode nil)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
 (add-hook 'emacs-lisp-mode-hook (lambda()
                                   (local-set-key "\C-i" 'th-complete-or-indent)
-                                  (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
-                                  (setq indent-tabs-mode nil)))
+                                  (nameless-mode 1)
+                                  (setq-local indent-tabs-mode nil)))
 
 
 (defface elisp-function-face5
@@ -354,7 +343,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
           (0 (progn (put-text-property (match-beginning 0) (match-end 0)
                                        'display ,rep)
                     'elisp-prefix-face)))))
-  (font-lock-fontify-buffer))
+  (font-lock-flush))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -371,13 +360,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;; add hook to cperl mode
 (add-hook 'cperl-mode-hook (lambda()
-                             (setq tab-width 4
-                                   cperl-indent-level 4
-                                   indent-tabs-mode nil
-                                   cperl-invalid-face nil) ;; turns off show trailing whitespace
-			     (show-paren-mode t)
-			     (hs-minor-mode t)
-			     (flyspell-prog-mode)
+                             (setq-local tab-width 4
+                                         cperl-indent-level 4
+                                         indent-tabs-mode nil
+                                         cperl-invalid-face nil) ;; turns off show trailing whitespace
+				     (show-paren-mode t)
+				     (hs-minor-mode t)
+				     (flyspell-prog-mode)
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (cperl-define-key "\C-j" 'universal-argument)
 			     (cperl-define-key "\C-h" nil)))
@@ -402,12 +391,12 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; OBJ-C STUFF
 (add-to-list 'auto-mode-alist '("\\.h$" . objc-mode))
 (add-hook 'objc-mode-hook (lambda()
-			    (setq c-default-style "bsd"
-                                  c-basic-offset 4
-                                  indent-tabs-mode nil)
+			    (setq-local c-default-style "bsd"
+                                            c-basic-offset 4
+                                            indent-tabs-mode nil)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
-          (local-set-key "\C-c\C-o" 'ff-find-other-file)
-          (local-set-key "\C-c\C-a" 'create-header-for-method)
+	          (local-set-key "\C-c\C-o" 'ff-find-other-file)
+	          (local-set-key "\C-c\C-a" 'create-header-for-method)
 			    (flyspell-prog-mode)))
 
 
@@ -472,7 +461,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
      default))
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(clojure-mode coffee-mode csv-mode deadgrep eat eglot elixir-mode
+                  exec-path-from-shell flx-ido flycheck git-timemachine
+                  haml-mode helm-projectile iedit keyfreq lua-mode magit
+                  nameless php-mode projectile projectile-rails rainbow-mode
+                  rspec-mode rvm sass-mode smart-mode-line smex use-package
+                  vue-mode yaml-mode yasnippet))
  '(pretty-lambda-auto-modes
    '(lisp-mode emacs-lisp-mode lisp-interaction-mode scheme-mode
                ruby-mode))
@@ -493,14 +488,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 			     (flyspell-prog-mode)
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
-
-
-
-(require 'package)
-;; Add the original Emacs Lisp Package Archive
-(add-to-list 'package-archives
-             '("elpa" . "http://tromey.com/elpa/"))
-
 
 
 
@@ -530,14 +517,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (define-key helm-map (kbd "C-w") 'backward-kill-word)
 (global-set-key (kbd "s-f") 'helm-projectile)
 
-(require 'helm)
 (require 'helm-projectile)
 
 (global-set-key "\C-x\C-f" 'helm-projectile)
 (global-set-key "\C-xf" 'ido-find-file)
 
 (require 'projectile)
-(projectile-global-mode)
+(projectile-mode +1)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
@@ -559,14 +545,15 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;(global-set-key "\M-." 'dumb-jump-go)
 
 
-(set-frame-font "Menlo-20" nil t)
+(when (display-graphic-p)
+  (condition-case nil
+      (set-frame-font "Menlo-20" nil t)
+    (error nil)))
 
 
 
 (fset 'convertDbToTypes
    [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
-
-(setq-default indent-tabs-mode nil)
 
 (setq major-mode-remap-alist
  '((yaml-mode . yaml-ts-mode)
@@ -583,7 +570,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
   ;; Prefer vtsls for JS/TS/TSX
   (add-hook 'js-ts-mode-hook  (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
   (add-to-list 'eglot-server-programs
-               '((js-mode typescript-ts-mode tsx-ts-mode)
+               '((js-ts-mode typescript-ts-mode tsx-ts-mode)
                  . ("vtsls" "--stdio"))))
 
 
