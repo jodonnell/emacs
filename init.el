@@ -13,6 +13,8 @@
 ;;      ("https" . "http://proxy.bloomberg.com:81")))
 
 
+(server-start)
+
 (load-file "~/.emacs.d/key-remaps.el")
 (load-file "~/.emacs.d/colors.el")
 
@@ -144,15 +146,6 @@
   (setq indent-tabs-mode nil))
 
 (use-package rainbow-mode)
-(use-package sass-mode)
-(use-package scss-mode
-  :config
-  (add-hook 'scss-mode-hook (lambda()
-                              (rainbow-mode)
-                              (yas-minor-mode 1)
-                              (local-set-key "\C-i" 'th-complete-or-indent)
-                              (setq css-indent-offset 4
-                                    indent-tabs-mode nil))))
 
 (use-package css-mode
   :config
@@ -164,7 +157,6 @@
                                    indent-tabs-mode nil))))
 
 
-(use-package flycheck)
 ;(use-package tide)
 (setq exec-path (append exec-path '("~/.nvm/versions/node/v17.3.1/bin")))
 
@@ -200,7 +192,7 @@
 (setq web-mode-code-indent-offset 2)
 
 ;; enable typescript-tslint checker
-(flycheck-add-mode 'typescript-tslint 'web-mode)
+
 (setq-default typescript-indent-level 2)
 
 (add-hook 'typescript-ts-mode-hook #'eglot-ensure)
@@ -251,17 +243,6 @@
 (use-package git-timemachine)
 
 (use-package nameless)
-
-(defun my/use-eslint-from-node-modules ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules"))
-         (eslint (and root
-                      (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                        root))))
-    (when (and eslint (file-executable-p eslint))
-      (setq-local flycheck-javascript-eslint-executable eslint))))
-(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
 (defun my/use-flake8-from-env ()
   (let* ((root (locate-dominating-file
@@ -452,18 +433,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (subword-mode 1)
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
-
-(when (load "flymake" t)
-  (defun flymake-flake8-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-           (local-file (file-relative-name
-                        temp-file
-                        (file-name-directory buffer-file-name))))
-      (list "flake8" (list "--max-line-length=120" local-file)))))
-
-;(add-hook 'find-file-hook 'flymake-find-file-hook)
-;(delete '("\\.html?\\'" flymake-xml-init) flymake-allowed-file-name-masks)
 
 
 

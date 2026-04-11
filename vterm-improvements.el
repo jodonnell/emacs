@@ -6,6 +6,8 @@
 
 (require 'vterm)
 
+(setq vterm-max-scrollback 10000)
+
 ;;; Make C-g cancel things in the terminal (e.g. bck-i-search)
 ;; We must remove C-g from exceptions so vterm doesn't hand it to Emacs,
 ;; then explicitly bind it to send the real C-g (BEL) to the shell.
@@ -82,14 +84,12 @@ boundary, then positions point there."
 
 (defun jod/vterm-clamp-to-cursor-limit ()
   "If point has moved past the saved input line, move it back.
-If point is exactly at the cursor limit line, exit copy mode."
-  (when jod/vterm-cursor-limit-line
+If point is exactly at the cursor limit line, exit copy mode.
+Never exit copy mode while a region is active (user is selecting text)."
+  (when (and jod/vterm-cursor-limit-line (not (use-region-p)))
     (let ((current-line (line-number-at-pos)))
-      (cond
-       ((> current-line jod/vterm-cursor-limit-line)
-        (vterm-copy-mode -1))
-       ((= current-line jod/vterm-cursor-limit-line)
-        (vterm-copy-mode -1))))))
+      (when (>= current-line jod/vterm-cursor-limit-line)
+        (vterm-copy-mode -1)))))
 
 (defun jod/vterm-exit-copy-mode-and-send (key)
   "Exit copy mode and send KEY to the terminal."
@@ -236,6 +236,7 @@ If point is exactly at the cursor limit line, exit copy mode."
 ;; C-g — send to terminal to cancel readline search, etc.
 (define-key vterm-mode-map (kbd "C-g") (lambda () (interactive) (vterm-send-key "g" nil nil t)))
 
+
 ;; Horizontal movement — send to terminal so you can edit the current command
 (define-key vterm-mode-map (kbd "C-h") #'jod/vterm-backward-char)
 (define-key vterm-mode-map (kbd "C-n") #'jod/vterm-forward-char)
@@ -253,7 +254,16 @@ If point is exactly at the cursor limit line, exit copy mode."
 ;; Editing keys — context-aware between copy mode and terminal
 (define-key vterm-mode-map (kbd "C-p") #'jod/vterm-backspace)
 (define-key vterm-mode-map (kbd "C-w") #'jod/vterm-backward-kill-word)
+(defun jod/vterm-set-mark ()
+  "Enter copy mode if needed, then set the mark for selecting a region."
+  (interactive)
+  (unless vterm-copy-mode
+    (vterm-copy-mode 1))
+  (set-mark-command nil))
+
+(define-key vterm-mode-map (kbd "C-SPC") #'jod/vterm-set-mark)
 (define-key vterm-mode-map (kbd "C-.") #'jod/vterm-kill-ring-save)
+(define-key vterm-mode-map (kbd "M-w") #'jod/vterm-kill-ring-save)
 (define-key vterm-mode-map (kbd "RET") #'jod/vterm-return-to-prompt)
 
 ;; Search — isearch in copy mode, readline search in terminal
@@ -273,8 +283,14 @@ If point is exactly at the cursor limit line, exit copy mode."
 (define-key vterm-copy-mode-map (kbd "C-a") #'beginning-of-line)
 (define-key vterm-copy-mode-map (kbd "C-e") #'jod/vterm-copy-end-of-line)
 (define-key vterm-copy-mode-map (kbd "C-w") #'jod/vterm-backward-kill-word)
+(define-key vterm-copy-mode-map (kbd "C-SPC") #'set-mark-command)
 (define-key vterm-copy-mode-map (kbd "C-.") #'kill-ring-save)
+(define-key vterm-copy-mode-map (kbd "M-w") #'kill-ring-save)
 (define-key vterm-copy-mode-map (kbd "M-s") #'isearch-forward-regexp)
 (define-key vterm-copy-mode-map (kbd "M->") #'jod/vterm-jump-to-prompt)
+
+;; Project-wide search
+(define-key vterm-mode-map (kbd "C-c C-g") #'projectile-ripgrep)
+(define-key vterm-copy-mode-map (kbd "C-c C-g") #'projectile-ripgrep)
 
 (provide 'vterm-improvements)
