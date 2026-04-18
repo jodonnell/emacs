@@ -3,16 +3,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-
-(server-start)
 (require 'package)
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
         ("gnu"   . "https://elpa.gnu.org/packages/")))
+(package-initialize)
+
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 
 (load-file "~/.emacs.d/key-remaps.el")
@@ -561,4 +560,3 @@ Returns non-nil if it jumped."
 
 (use-package eat
   :ensure t)
-
