@@ -81,6 +81,3 @@
 
 (global-set-key "\C-x\C-f" 'helm-projectile)
 (global-set-key "\C-xf" 'ido-find-file)
-
-
-

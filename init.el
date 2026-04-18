@@ -1,3 +1,5 @@
+;;; init.el --- Personal Emacs configuration -*- lexical-binding: t; -*-
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL CHANGES
 
@@ -5,13 +7,6 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-
-;; Bloomberg proxy - commented out (not needed outside Bloomberg network)
-;; (setq url-proxy-services
-;;    '(("no_proxy" . "^\\(bloomberg.*\\)")
-;;      ("http" . "http://proxy.bloomberg.com:81")
-;;      ("https" . "http://proxy.bloomberg.com:81")))
-
 
 (server-start)
 
@@ -38,19 +33,15 @@
  '(underline ((t nil))))
 
 
-(global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
-(transient-mark-mode t)
-
 (setq make-backup-files nil)
 (setq auto-save-default nil)
-(setq make-backup-files nil)
 
 ;; cause el captain has a bug causing issues with bell
 (setq visible-bell nil)
 (setq ring-bell-function 'ignore)
 
-(fset 'yes-or-no-p 'y-or-n-p)
+(defalias 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -66,10 +57,10 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
-(setq backup-directory-alist '(("." . "~/.emacs.backups")))
+(setq-default indent-tabs-mode nil)
 
-(load "~/.emacs.d/jacobs-functions.el")
-(load "~/.emacs.d/ruby-hash-syntax.el")
+(load (expand-file-name "jacobs-functions.el" user-emacs-directory) nil 'nomessage)
+(load (expand-file-name "ruby-hash-syntax.el" user-emacs-directory) nil 'nomessage)
 
 (require 'midnight)
 
@@ -81,19 +72,22 @@
 (if (equal (getenv "EMACS_ENV") "macbookair")
     (load "~/.emacs.d/macbookair.el"))
 
+
 (when (equal system-type 'darwin)
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH") ":/usr/local/git/bin:/usr/local/mysql-5.5.14-osx10.6-x86_64/bin:~/bin"))
   (push "/usr/local/git/bin" exec-path))
 
+(when (eq system-type 'darwin)
+  (setq mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier nil)
+  (let ((aspell "/opt/homebrew/bin/aspell"))
+    (when (file-executable-p aspell)
+      (setq ispell-program-name aspell))))
+
 (setq-default ispell-program-name "aspell")
 (setq column-number-mode t)
-
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
-
-
 
 (setq w32-use-w32-font-dialog nil)
 
@@ -101,97 +95,50 @@
 
 (setq package-archives
       '(("gnu" . "https://elpa.gnu.org/packages/")))
-        ;("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (package-install 'use-package))
 
 (setq use-package-always-ensure t)
 
 ; this directory should be checked in
 (require 'use-package)
-(use-package nvm)
 
 (use-package keyfreq)
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
+
 (getenv "SHELL")
 (use-package exec-path-from-shell
   :config
   (dolist (var '("HTTP_PROXY" "HTTPS_PROXY" "NO_PROXY"
                  "NODE_TLS_REJECT_UNAUTHORIZED"))
     (add-to-list 'exec-path-from-shell-variables var)))
+
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
 
 (use-package clojure-mode)
-(use-package coffee-mode)
 (use-package php-mode)
 
 (use-package deadgrep
   :init
   (global-set-key (kbd "\C-c\C-g") 'deadgrep))
 
-(use-package lua-mode
-  :config
-  (add-hook 'lua-mode-hook (lambda()
-                             (setq indent-tabs-mode nil)
-                             (setq lua-indent-level 2)))
-  :bind
-  ("\C-i" . th-complete-or-indent)
-  ("\C-c\C-t" . run-lua-tests))
-
-(use-package rspec-mode)
-(use-package haml-mode
-  :config
-  (setq indent-tabs-mode nil))
-
 (use-package rainbow-mode)
 
 (use-package css-mode
-  :config
-  (add-hook 'css-mode-hook (lambda()
-                             (rainbow-mode)
-                             (yas-minor-mode 1)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
-                             (setq css-indent-offset 4
-                                   indent-tabs-mode nil))))
+  :hook (css-mode . (lambda ()
+                      (rainbow-mode)
+                      (yas-minor-mode 1)
+                      (local-set-key "\C-i" 'th-complete-or-indent)
+                      (setq-local css-indent-offset 4)
+                      (setq-local indent-tabs-mode nil))))
 
-
-;(use-package tide)
-(setq exec-path (append exec-path '("~/.nvm/versions/node/v17.3.1/bin")))
-
-;;(setq tide-node-executable "~/.nvm/versions/node/v8.12.0/bin/node")
-;; (defun setup-tide-mode ()
-;;   (interactive)
-;;   (tide-setup)
-;;   (flycheck-mode +1)
-;;   (setq-default typescript-indent-level 2)
-;;   (setq flycheck-check-syntax-automatically '(save mode-enabled))
-;;   (tide-hl-identifier-mode +1))
-
-;(setq tide-format-options '(:indentSize 2 :tabSize 2))
-
-(use-package web-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  ;(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode))
-  :config
-  (add-hook 'web-mode-hook (lambda()
-                             (when (or
-                                    ;(string-equal "tsx" (file-name-extension buffer-file-name))
-                                    (string-equal "ts" (file-name-extension buffer-file-name)))
-                               ;(setup-tide-mode)
-                             )
-
-                             (setq web-mode-code-indent-offset 2)
-                             (setq web-mode-markup-indent-offset 2)
-                             (yas-minor-mode 1)
-                             (setq-default indent-tabs-mode nil)
-                             (local-set-key "\C-i" 'th-complete-or-indent))))
-
-(setq web-mode-code-indent-offset 2)
-
-;; enable typescript-tslint checker
 
 (setq-default typescript-indent-level 2)
 
@@ -203,12 +150,6 @@
 
 (use-package yaml-mode)
 
-;(use-package dumb-jump)
-;(dumb-jump-mode)
-;(setq dumb-jump-force-searcher 'rg)
-;(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-
-
 (use-package smart-mode-line)
 (use-package smex
   :init
@@ -219,7 +160,6 @@
   (global-set-key "\C-c\C-m" 'execute-extended-command))
 
 (use-package flx-ido)
-(use-package rvm)
 (use-package yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
 (yas-reload-all)
@@ -228,14 +168,10 @@
   :init
   (global-set-key "\C-cg" 'magit-status)
   :config
-  (setq magit-last-seen-setup-instructions "1.4.0")
   (add-hook 'magit-log-mode-hook (lambda()
                                    (local-set-key "\M-n" 'forward-word))))
 
-(use-package helm)
 (use-package projectile)
-(use-package helm-projectile)
-(use-package projectile-rails)
 
 (use-package elixir-mode)
 (use-package csv-mode)
@@ -243,44 +179,6 @@
 (use-package git-timemachine)
 
 (use-package nameless)
-
-(defun my/use-flake8-from-env ()
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "env"))
-         (flake8 (and root
-                      (expand-file-name "env/bin/flake8"
-                                        root))))
-    (when (and flake8 (file-executable-p flake8))
-      (setq-local flycheck-python-flake8-executable flake8))))
-(add-hook 'flycheck-mode-hook #'my/use-flake8-from-env)
-
-;; (use-package js2-mode
-;;   :init
-;;   (add-to-list 'auto-mode-alist '("Jakefile$" . js2-jsx-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.es6$" . js2-jsx-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.js$" . js2-jsx-mode))
-;;   :config
-;;   (add-hook 'js2-mode-hook (lambda()
-;;                              (setq js-indent-level 4)
-;;                              (setq sgml-basic-offset 4)
-;;                              (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-;;                              (setq js2-mode-show-parse-errors nil)
-;;                              (setq js2-mode-show-strict-warnings nil)
-
-(use-package vue-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
-  :config
-  (add-hook 'vue-mode-hook (lambda()
-                             (setq js-indent-level 2)
-                             (setq sgml-basic-offset 2)
-                             (yas-minor-mode 1)
-                             (local-set-key "\C-i" 'th-complete-or-indent)
-                             (setq indent-tabs-mode nil))))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TRIAL
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -302,9 +200,9 @@
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; Fix junk characters in shell mode
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt) ;; hide passwords
 (add-hook 'shell-mode-hook
-          '(lambda ()
-             (setq history-length 100)
-             (define-key shell-mode-map "\M-n" 'forward-word)))
+          (lambda ()
+            (setq-local comint-input-ring-size 100)
+            (define-key shell-mode-map "\M-n" 'forward-word)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -318,21 +216,10 @@
 (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
 
 (add-hook 'ruby-mode-hook (lambda()
-                            (local-set-key "\C-ca" 'get-rails-function-argument-list-at-point)
-                            (local-set-key "\C-cd" 'get-rails-documentation)
-                            (local-set-key "\C-cm" 'get-instance-methods-current)
-                            (local-set-key "\C-cc" 'get-class-methods-current)
                             (local-set-key "\C-\M-p" 'ruby-beginning-of-block)
                             (local-set-key "\C-\M-n" 'ruby-end-of-block)
-                            (local-set-key "\C-crs" 'rubymotion-spec)
-                            (local-set-key "\C-crr" 'rubymotion-simulator)
-                            (local-set-key "\C-crd" 'rubymotion-device)
-                            (rspec-mode)
                             (local-set-key "\C-i" 'th-complete-or-indent)
-                            (setq indent-tabs-mode nil)))
-
-(add-hook 'projectile-mode-hook 'projectile-rails-on)
-
+                            (setq-local indent-tabs-mode nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Elixir mode
@@ -340,30 +227,12 @@
                               (local-set-key "\C-i" 'th-complete-or-indent)))
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HAML
-(require 'haml-mode)
-(add-hook 'haml-mode-hook (lambda() ;
-			    (setq indent-tabs-mode nil)))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MARKDOWN
-(use-package markdown-mode
-  :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown")
-  :bind (:map markdown-mode-map
-         ("C-c C-e" . markdown-do)
-         ("M-n" . nil)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ELISP STUFF
 (add-hook 'emacs-lisp-mode-hook (lambda()
                                   (local-set-key "\C-i" 'th-complete-or-indent)
-                                  (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
-                                  (setq indent-tabs-mode nil)))
+                                  (nameless-mode 1)
+                                  (setq-local indent-tabs-mode nil)))
 
 
 (defface elisp-function-face5
@@ -396,7 +265,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
           (0 (progn (put-text-property (match-beginning 0) (match-end 0)
                                        'display ,rep)
                     'elisp-prefix-face)))))
-  (font-lock-fontify-buffer))
+  (font-lock-flush))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -407,19 +276,16 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;; makes cperl mode get activated when you open a perl file
 (add-to-list 'auto-mode-alist '("\\.\\([pP][Llmh]\\|al\\)\\'" . cperl-mode))
-(add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
-(add-to-list 'interpreter-mode-alist '("perl5" . cperl-mode))
-(add-to-list 'interpreter-mode-alist '("miniperl" . cperl-mode))
 
 ;; add hook to cperl mode
 (add-hook 'cperl-mode-hook (lambda()
-                             (setq tab-width 4
-                                   cperl-indent-level 4
-                                   indent-tabs-mode nil
-                                   cperl-invalid-face nil) ;; turns off show trailing whitespace
-			     (show-paren-mode t)
-			     (hs-minor-mode t)
-			     (flyspell-prog-mode)
+                             (setq-local tab-width 4
+                                         cperl-indent-level 4
+                                         indent-tabs-mode nil
+                                         cperl-invalid-face nil) ;; turns off show trailing whitespace
+				     (show-paren-mode t)
+				     (hs-minor-mode t)
+				     (flyspell-prog-mode)
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (cperl-define-key "\C-j" 'universal-argument)
 			     (cperl-define-key "\C-h" nil)))
@@ -434,42 +300,33 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
    (flyspell-prog-mode))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OBJ-C STUFF
 (add-to-list 'auto-mode-alist '("\\.h$" . objc-mode))
 (add-hook 'objc-mode-hook (lambda()
-			    (setq c-default-style "bsd"
-                                  c-basic-offset 4
-                                  indent-tabs-mode nil)
+			    (setq-local c-default-style "bsd"
+                                            c-basic-offset 4
+                                            indent-tabs-mode nil)
 			    (local-set-key "\C-i" 'th-complete-or-indent)
-          (local-set-key "\C-c\C-o" 'ff-find-other-file)
-          (local-set-key "\C-c\C-a" 'create-header-for-method)
+	          (local-set-key "\C-c\C-o" 'ff-find-other-file)
+	          (local-set-key "\C-c\C-a" 'create-header-for-method)
 			    (flyspell-prog-mode)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; EWW
-(add-hook 'eww-mode-hook (lambda()
-			    (local-set-key "\M-n" 'next-word)))
+;; COMPLETION
+(savehist-mode 1)
+(recentf-mode 1)
+(fido-vertical-mode 1)
 
-
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-complete-file-name-partially try-complete-file-name try-expand-all-abbrevs try-expand-list try-expand-line try-complete-lisp-symbol-partially try-complete-lisp-symbol))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; IDO MODE
-(require 'ido)
-(ido-mode t)
-
-(require 'flx-ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(flx-ido-mode 1)
-;;disable ido faces to see flx highlights.
-(setq ido-use-faces nil)
+(setq completion-ignore-case t
+      read-buffer-completion-ignore-case t
+      read-file-name-completion-ignore-case t
+      completions-detailed t
+      completions-format 'one-column
+      completion-styles '(basic substring partial-completion flex)
+      completion-category-defaults nil
+      recentf-max-saved-items 200)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -483,12 +340,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (defun my-org-mode-hook ()
    (local-set-key "\M-h" 'backward-word))
 (add-hook 'org-mode-hook 'my-org-mode-hook)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SAVEPLACE
-;(setq save-place-file "~/.emacs.d/saveplace") ;; keep my ~/ clean
-;(setq-default save-place t)                   ;; activate it for all buffers
-;(require 'saveplace)                          ;; get the package
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIRED
@@ -553,9 +404,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;; Duplicate package setup removed - see lines 96-99 for the active config
 
-
-
-
 ;; thanks to steve yegge
 (defun rename-file-and-buffer (new-name)
  "Renames both current buffer and file it's visiting to NEW-NAME." (interactive "sNew name: ")
@@ -573,34 +421,23 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HELM
-(require 'helm)
-
-(define-key helm-map (kbd "C-b") 'helm-previous-line)
-(define-key helm-map (kbd "C-t") 'helm-next-line)
-(define-key helm-map (kbd "C-w") 'backward-kill-word)
-(define-key helm-map (kbd "C-w") 'backward-kill-word)
-(global-set-key (kbd "s-f") 'helm-projectile)
-
-(require 'helm)
-(require 'helm-projectile)
-
-(global-set-key "\C-x\C-f" 'helm-projectile)
-(global-set-key "\C-xf" 'ido-find-file)
+;; PROJECTS / FILES
+(global-set-key (kbd "M-x") #'execute-extended-command)
+(global-set-key "\C-x\C-m" #'execute-extended-command)
+(global-set-key "\C-xm" #'execute-extended-command)
+(global-set-key "\C-c\C-m" #'execute-extended-command)
+(global-set-key (kbd "s-f") #'project-find-file)
+(global-set-key "\C-x\C-f" #'find-file)
+(global-set-key "\C-xf" #'project-find-file)
 
 (require 'projectile)
-(projectile-global-mode)
+(projectile-mode +1)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
 
-
 ;(setq mac-option-modifier 'super) ; make opt key do Super
 
-
-(setq ido-enable-flex-matching t)
-
-(setq projectile-completion-system 'ido)
 (setq gc-cons-threshold 20000000)
 
 (require 'iedit)
@@ -608,15 +445,14 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 
 (global-set-key "\C-c\C-g" 'deadgrep)
-
 ;(set-default-font "Menlo-14")
 (set-frame-font "Menlo-22" nil t)
 
 
-(fset 'convertDbToTypes
-   [?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?I ?N ?T ?E ?G ?E ?R ?, return ?n ?u ?m ?b ?e ?r ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?S ?T ?R ?I ?N ?G ?, return ?s ?t ?r ?i ?n ?g ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?t ?y ?p ?e ?s ?. backspace backspace backspace backspace backspace backspace ?T ?y ?p ?e ?s ?. ?B ?O ?O ?L ?E ?A ?N ?. backspace ?, return ?b ?o ?o ?l ?e ?a ?n ?\; return ?\M-< ?\C-x ?\C-m ?r ?e ?p ?l ?a ?c ?e ?s ?t ?r ?i ?n ?g return ?D ?a ?t ?a ?T ?y ?p ?e ?s ?. ?D ?A ?T ?E ?, return ?t ?s backspace backspace ?m ?o ?m ?e ?n ?t ?. ?M ?o ?m ?e ?n ?t ?\; ?\C-h ?  ?| ?  ?n ?u ?l ?l return])
-
-;(nvm-use "17.3.1")
+(when (display-graphic-p)
+  (condition-case nil
+      (set-frame-font "Menlo-20" nil t)
+    (error nil)))
 
 (setq-default indent-tabs-mode nil)
 
@@ -667,4 +503,71 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
   :config
   (claude-code-ide-emacs-tools-setup))
 
+(setq major-mode-remap-alist
+ '((yaml-mode . yaml-ts-mode)
+   (bash-mode . bash-ts-mode)
+   (typescript-mode . typescript-ts-mode)
+   (js-json-mode . json-ts-mode)
+   (css-mode . css-ts-mode)
+   (python-mode . python-ts-mode)))
+
+
+
+(defun my/--moved-p (buf pos)
+  (or (not (eq (current-buffer) buf))
+      (not (= (point) pos))))
+
+(defun my/rg-jump-first-hit-in-file (sym)
+  "Jump to the first ripgrep hit for SYM in the current file.
+Returns non-nil if it jumped."
+  (when (and sym (executable-find "rg") buffer-file-name)
+    (let* ((pattern (format "\\b%s\\b" sym))
+           (args    (list "--no-heading" "--column" "-n" "-P" "-S" pattern buffer-file-name))
+           (out     (with-temp-buffer
+                      (apply #'process-file "rg" nil t nil args)
+                      (buffer-string))))
+      ;; Expect: /abs/path/file.js:LINE:COLUMN:...
+      (when (string-match (format "^%s:\\([0-9]+\\):\\([0-9]+\\):"
+                                  (regexp-quote (expand-file-name buffer-file-name)))
+                          out)
+        (let ((ln  (string-to-number (match-string 1 out)))
+              (col (string-to-number (match-string 2 out))))
+          (goto-char (point-min))
+          (forward-line (1- ln))
+          (move-to-column (max 0 (1- col)))
+          (recenter)
+          t)))))
+
+(defun my/jump-def ()
+  "Try LSP/xref → dumb-jump → rg(current file) → project search."
+  (interactive)
+  (let* ((sym (thing-at-point 'symbol t))
+         (start-buf (current-buffer))
+         (start-pos (point)))
+    ;; 1) LSP/xref
+    (ignore-errors (call-interactively #'xref-find-definitions))
+    (when (my/--moved-p start-buf start-pos) (cl-return-from my/jump-def))
+
+    ;; 2) dumb-jump (force rg for reliability)
+    (let ((dumb-jump-force-searcher 'rg))
+      (ignore-errors (dumb-jump-go)))
+    (when (my/--moved-p start-buf start-pos) (cl-return-from my/jump-def))
+
+    ;; 3) ripgrep in current file (first hit)
+    (when (and sym (my/rg-jump-first-hit-in-file sym))
+      (cl-return-from my/jump-def))
+
+    ;; 4) project-wide search as last resort
+    (if sym
+        (project-find-regexp (format "\\_<%s\\_>" (regexp-quote sym)))
+      (call-interactively #'project-find-regexp))))
+
+;; Bind so it wins over js/js-ts defaults
+(add-hook 'js-ts-mode-hook (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
+(add-hook 'js-mode-hook    (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
+(global-set-key (kbd "M-,") #'xref-pop-marker-stack)
+
+
+(use-package eat
+  :ensure t)
 
