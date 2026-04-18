@@ -307,7 +307,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 ;; COMPLETION
 (savehist-mode 1)
 (recentf-mode 1)
-(fido-vertical-mode 1)
+(ido-mode 1)
+(ido-everywhere 1)
 
 (setq completion-ignore-case t
       read-buffer-completion-ignore-case t
@@ -410,8 +411,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PROJECTS / FILES
-(global-set-key (kbd "M-x") #'execute-extended-command)
-(global-set-key "\C-x\C-m" #'execute-extended-command)
+(global-set-key (kbd "M-x") #'smex)
+(global-set-key "\C-x\C-m" #'smex)
 (global-set-key "\C-xm" #'execute-extended-command)
 (global-set-key "\C-c\C-m" #'execute-extended-command)
 (global-set-key (kbd "s-f") #'project-find-file)
