@@ -9,6 +9,11 @@
 ;; You may delete these explanatory comments.
 
 (server-start)
+(require 'package)
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("gnu"   . "https://elpa.gnu.org/packages/")))
+
 
 (load-file "~/.emacs.d/key-remaps.el")
 (load-file "~/.emacs.d/colors.el")
@@ -91,11 +96,6 @@
 
 (setq w32-use-w32-font-dialog nil)
 
-(require 'package)
-
-(setq package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
 
 (unless (package-installed-p 'use-package)
   (unless package-archive-contents
@@ -107,9 +107,6 @@
 ; this directory should be checked in
 (require 'use-package)
 
-(use-package keyfreq)
-(keyfreq-mode 1)
-(keyfreq-autosave-mode 1)
 
 (getenv "SHELL")
 (use-package exec-path-from-shell
@@ -117,9 +114,6 @@
   (dolist (var '("HTTP_PROXY" "HTTPS_PROXY" "NO_PROXY"
                  "NODE_TLS_REJECT_UNAUTHORIZED"))
     (add-to-list 'exec-path-from-shell-variables var)))
-
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
 
 
 (use-package clojure-mode)
@@ -162,7 +156,6 @@
 (use-package flx-ido)
 (use-package yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
-(yas-reload-all)
 
 (use-package magit
   :init
@@ -178,7 +171,6 @@
 (use-package iedit)
 (use-package git-timemachine)
 
-(use-package nameless)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TRIAL
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -231,7 +223,6 @@
 ;; ELISP STUFF
 (add-hook 'emacs-lisp-mode-hook (lambda()
                                   (local-set-key "\C-i" 'th-complete-or-indent)
-                                  (nameless-mode 1)
                                   (setq-local indent-tabs-mode nil)))
 
 
@@ -369,13 +360,11 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
  '(ido-max-prospects 18)
  '(jshint-configuration-path "/Users/jacobodonnell/programming/bubble_bobble/.jshintrc")
  '(package-selected-packages
-   '(clojure-mode coffee-mode csv-mode deadgrep dumb-jump elixir-mode
-                  exec-path-from-shell flx-ido git-timemachine
-                  helm-projectile iedit keyfreq lua-mode magit
-                  markdown-mode nameless nvm php-mode projectile-rails
-                  rainbow-mode rspec-mode rvm sass-mode scss-mode
-                  smart-mode-line smex tide vterm vue-mode web-mode
-                  yaml-mode yasnippet))
+   '(claude-code-ide clojure-mode csv-mode deadgrep eat edit-indirect
+                     elixir-mode exec-path-from-shell flycheck
+                     git-timemachine haml-mode iedit keyfreq lua-mode
+                     magit  php-mode projectile rainbow-mode
+                     rspec-mode smex vterm yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((claude-code-ide :url
                       "https://github.com/manzaltu/claude-code-ide.el")))
@@ -492,6 +481,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
     (setq-local js-indent-level 2)))
 
 
+(use-package vterm
+    :ensure t)
 (load-file "~/.emacs.d/vterm-improvements.el")
 
 (use-package claude-code-ide
