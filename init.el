@@ -112,7 +112,8 @@
   :config
   (dolist (var '("HTTP_PROXY" "HTTPS_PROXY" "NO_PROXY"
                  "NODE_TLS_REJECT_UNAUTHORIZED"))
-    (add-to-list 'exec-path-from-shell-variables var)))
+    (add-to-list 'exec-path-from-shell-variables var))
+  (exec-path-from-shell-initialize))
 
 
 (use-package clojure-mode)
@@ -417,7 +418,7 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key "\C-c\C-m" #'execute-extended-command)
 (global-set-key (kbd "s-f") #'project-find-file)
 (global-set-key "\C-x\C-f" #'find-file)
-(global-set-key "\C-xf" #'project-find-file)
+(global-set-key "\C-xf" #'ido-find-file)
 
 (require 'projectile)
 (projectile-mode +1)
@@ -557,7 +558,3 @@ Returns non-nil if it jumped."
 (add-hook 'js-ts-mode-hook (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
 (add-hook 'js-mode-hook    (lambda () (local-set-key (kbd "M-.") #'my/jump-def)))
 (global-set-key (kbd "M-,") #'xref-pop-marker-stack)
-
-
-(use-package eat
-  :ensure t)
