@@ -107,7 +107,6 @@
 (require 'use-package)
 
 
-(getenv "SHELL")
 (use-package exec-path-from-shell
   :config
   (dolist (var '("HTTP_PROXY" "HTTPS_PROXY" "NO_PROXY"
@@ -147,11 +146,7 @@
 (use-package smart-mode-line)
 (use-package smex
   :init
-  (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key "\C-x\C-m" 'smex)
-  (global-set-key "\C-xm"    'execute-extended-command)
-  (global-set-key "\C-c\C-m" 'execute-extended-command))
+  (smex-initialize))
 
 (use-package flx-ido)
 (use-package yasnippet)
@@ -164,7 +159,13 @@
   (add-hook 'magit-log-mode-hook (lambda()
                                    (local-set-key "\M-n" 'forward-word))))
 
-(use-package projectile)
+(use-package projectile
+  :init
+  (global-set-key (kbd "s-f") #'project-find-file)
+  (global-set-key "\C-xf" #'project-find-file)
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map))
 
 (use-package elixir-mode)
 (use-package csv-mode)
@@ -390,10 +391,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 			     (local-set-key "\C-i" 'th-complete-or-indent)
 			     (local-set-key "\C-x\C-e" 'pass-buffer-to-racket)))
 
-
-
-;; Duplicate package setup removed - see lines 96-99 for the active config
-
 ;; thanks to steve yegge
 (defun rename-file-and-buffer (new-name)
  "Renames both current buffer and file it's visiting to NEW-NAME." (interactive "sNew name: ")
@@ -416,12 +413,8 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (global-set-key "\C-x\C-m" #'smex)
 (global-set-key "\C-xm" #'execute-extended-command)
 (global-set-key "\C-c\C-m" #'execute-extended-command)
-(global-set-key (kbd "s-f") #'project-find-file)
 (global-set-key "\C-x\C-f" #'find-file)
 (global-set-key "\C-xf" #'ido-find-file)
-
-(require 'projectile)
-(projectile-mode +1)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
@@ -430,21 +423,13 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 
 (setq gc-cons-threshold 20000000)
 
-(require 'iedit)
-
-(define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-
 (global-set-key "\C-c\C-g" 'deadgrep)
-;(set-default-font "Menlo-14")
-(set-frame-font "Menlo-22" nil t)
 
 
 (when (display-graphic-p)
   (condition-case nil
       (set-frame-font "Menlo-20" nil t)
     (error nil)))
-
-(setq-default indent-tabs-mode nil)
 
 
 (setq treesit-language-source-alist
@@ -467,10 +452,15 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
 (setq treesit-extra-load-path (list (locate-user-emacs-file "tree-sitter/")))
 
 (setq major-mode-remap-alist
-      '((typescript-mode . typescript-ts-mode)
-        (tsx-mode        . tsx-ts-mode)
-        (js-mode         . js-ts-mode)
-        (json-mode       . json-ts-mode)))
+      '((yaml-mode . yaml-ts-mode)
+        (bash-mode . bash-ts-mode)
+        (typescript-mode . typescript-ts-mode)
+        (tsx-mode . tsx-ts-mode)
+        (js-mode . js-ts-mode)
+        (js-json-mode . json-ts-mode)
+        (json-mode . json-ts-mode)
+        (css-mode . css-ts-mode)
+        (python-mode . python-ts-mode)))
 
 ;; Use TSX mode for .tsx files
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -494,14 +484,6 @@ PREFIX is simply displayed as REP, but not actually replaced with REP."
   (claude-code-ide-use-side-window nil)
   :config
   (claude-code-ide-emacs-tools-setup))
-
-(setq major-mode-remap-alist
- '((yaml-mode . yaml-ts-mode)
-   (bash-mode . bash-ts-mode)
-   (typescript-mode . typescript-ts-mode)
-   (js-json-mode . json-ts-mode)
-   (css-mode . css-ts-mode)
-   (python-mode . python-ts-mode)))
 
 
 

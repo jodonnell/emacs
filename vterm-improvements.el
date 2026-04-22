@@ -7,6 +7,7 @@
 (require 'vterm)
 
 (setq vterm-max-scrollback 10000)
+(setq vterm-enable-dirtrack t)
 
 ;;; Make C-g cancel things in the terminal (e.g. bck-i-search)
 ;; We must remove C-g from exceptions so vterm doesn't hand it to Emacs,
